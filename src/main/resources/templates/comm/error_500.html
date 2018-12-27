@@ -5,13 +5,13 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta content="${_csrf_token}" name="csrf_token"/>
-    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="format-detection" content="telephone=no,email=no">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,Chrome=1">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf_token" content="${_csrf_token}"/>
     <title>500</title>
-    <link rel="icon" href="/static/images/bing.ico" sizes="32x32">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
     <!--[if lte IE 8]>
     <script crossorigin="anonymous" integrity="sha384-DpyZMYXeM1EZzDFVMTZohQpDybSnl2C5t7O9OFmUz/DtsSBtUv3Aac30gGal+y/t"
             src="https://lib.baomitu.com/html5shiv/3.7/html5shiv.min.js"></script>
@@ -32,11 +32,9 @@
 <script crossorigin="anonymous" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7"
         src="https://lib.baomitu.com/jquery/3.1.1/jquery.min.js"></script>
 <script>
-    // This is just to auto-update the data-text if you're editing it directly on the page and is not required for the actual effect
-    $('[data-text]').on('keyup', function () {
-        $(this).attr('data-text', $(this).text());
+    $('[data-text]').on("keyup", function () {
+        $(this).attr("data-text", $(this).text());
     });
-    //# sourceURL=pen.js
 </script>
 </body>
 </html>

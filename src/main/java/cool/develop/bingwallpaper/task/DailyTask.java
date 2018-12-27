@@ -8,7 +8,6 @@ import cool.develop.bingwallpaper.model.dto.CoverStory;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.service.BingService;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
-import cool.develop.bingwallpaper.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -24,9 +23,6 @@ import java.util.concurrent.ExecutionException;
 @Bean
 @Slf4j
 public class DailyTask {
-
-    @Inject
-    private SiteService siteService;
 
     @Inject
     private BingService bingService;

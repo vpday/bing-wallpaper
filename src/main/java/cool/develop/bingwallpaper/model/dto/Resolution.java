@@ -27,16 +27,10 @@ import java.util.List;
  */
 @Data
 public class Resolution {
+
     private Integer width;
+
     private Integer height;
-
-    public Resolution() {
-    }
-
-    public Resolution(Integer width, Integer height) {
-        this.width = width;
-        this.height = height;
-    }
 
     public static final List<Resolution> RESOLUTIONS = Arrays.asList(
             new Resolution(1920, 1080),
@@ -54,6 +48,14 @@ public class Resolution {
             new Resolution(320, 240),
             new Resolution(240, 320)
     );
+
+    public Resolution() {
+    }
+
+    public Resolution(Integer width, Integer height) {
+        this.width = width;
+        this.height = height;
+    }
 
     public static boolean checkParam(String width, String height) {
         long count = RESOLUTIONS.stream()

@@ -143,19 +143,22 @@ public final class Site {
         String pageType1 = request.attribute("page_type");
         String type = null == pageType1 ? "index" : pageType1;
 
-        AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class);
-        if (BingWallpaperConst.TOP_CODE.equals(type)) {
-            animaQuery.order(BingWallpaper::getLikes, OrderBy.DESC);
-        } else if (BingWallpaperConst.DOWN_CODE.equals(type)) {
-            animaQuery.order(BingWallpaper::getDownloads, OrderBy.DESC);
-        } else {
-            animaQuery.order(BingWallpaper::getBid, OrderBy.DESC);
-        }
-
-        Page<BingWallpaper> wallPapers = animaQuery.page(page, limit);
+        Page<BingWallpaper> wallPapers = settingSortingType(Anima.select().from(BingWallpaper.class), type).page(page, limit);
         request.attribute("wallPapers", wallPapers);
 
         return wallPapers;
+    }
+
+    private static AnimaQuery<BingWallpaper> settingSortingType(AnimaQuery<BingWallpaper> query, String type) {
+        if (BingWallpaperConst.TOP_CODE.equals(type)) {
+            query.order(BingWallpaper::getLikes, OrderBy.DESC);
+        } else if (BingWallpaperConst.DOWN_CODE.equals(type)) {
+            query.order(BingWallpaper::getDownloads, OrderBy.DESC);
+        } else {
+            query.order(BingWallpaper::getBid, OrderBy.DESC);
+        }
+
+        return query;
     }
 
     /**

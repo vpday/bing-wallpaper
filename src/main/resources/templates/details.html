@@ -49,11 +49,11 @@
 <script>
     $(function () {
         var i = 0;
-        var img = $('.target');
-        var mini = img.attr('src');
-        var mark = $('.mark');
+        var img = $(".target");
+        var mini = img.attr("src");
+        var mark = $(".mark");
         mark.css({
-            'background-image': 'url(' + mini + ')'
+            "background-image": "url(" + mini + ")"
         });
         progressively.init({
             delay: 20,
@@ -63,10 +63,10 @@
             onLoadComplete: function () {
                 i++;
                 if (i >= 2) {
-                    var big = img.attr('src');
+                    var big = img.attr("src");
                     mark.css({
-                        backgroundImage: 'url(' + big + ')',
-                        filter: 'blur(0)'
+                        backgroundImage: "url(" + big + ")",
+                        filter: "blur(0)"
                     });
                     img.remove();
                 }
