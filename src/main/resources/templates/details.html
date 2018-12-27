@@ -1,0 +1,78 @@
+#set(String page = wallPaper.hash)
+#include('./partial/header.html')
+<body class="detail">
+<div class="preview">
+    <div class="progressive">
+        <img class="target progressive__img progressive--not-loaded"
+             alt="${wallPaper.copyright}"
+             src="${imgHref(wallPaper,'640x360')}"
+             data-progressive="${imgHref(wallPaper,'1920x1080')}">
+    </div>
+    <div class="mark"></div>
+    <div class="options" code="${wallPaper.hash}" fileName="${getFileName(wallPaper)}">
+        <a class="ctrl left" onclick="window.history.go(-1);">
+            <i class="icon icon-left"></i>
+            <em class="t">返回</em>
+        </a>
+        <span class="ctrl heart">
+            <i class="icon icon-heart"></i>
+            <em class="t">${wallPaper.likes}</em>
+        </span>
+        <a class="ctrl download">
+            <i class="icon icon-download"></i>
+            <em class="t">${wallPaper.downloads}</em>
+        </a>
+    </div>
+    <div class="description">
+        <p>${wallPaper.copyright}</p>
+        <p class="title">${wallPaper.title}, ${wallPaper.attribute}</p>
+        <p class="sub">${wallPaper.description}</p>
+        <p class="calendari icon icon-calendar">
+            <em class="t">${wallPaper.showDate}</em>
+        </p>
+        <a class="location" style="color: #fff;" href="${wallPaper.mapUrl}" title="Google Map 查看">
+            <i class="icon icon-location"></i>
+            <em class="t">${wallPaper.detailedLocation()}</em>
+        </a>
+        <p class="view">
+            <i class="icon icon-eye"></i>
+            <em class="t">${wallPaper.hits}</em>
+        </p>
+    </div>
+</div>
+<script crossorigin="anonymous" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+        src="https://lib.baomitu.com/jquery/1.12.4/jquery.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
+        src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
+<script src="/static/js/baidu-analysis.js"></script>
+<script src="/static/js/base.js"></script>
+<script>
+    $(function () {
+        var i = 0;
+        var img = $('.target');
+        var mini = img.attr('src');
+        var mark = $('.mark');
+        mark.css({
+            'background-image': 'url(' + mini + ')'
+        });
+        progressively.init({
+            delay: 20,
+            throttle: 300,
+            onLoad: function (elem) {
+            },
+            onLoadComplete: function () {
+                i++;
+                if (i >= 2) {
+                    var big = img.attr('src');
+                    mark.css({
+                        backgroundImage: 'url(' + big + ')',
+                        filter: 'blur(0)'
+                    });
+                    img.remove();
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

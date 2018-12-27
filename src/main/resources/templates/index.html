@@ -1,0 +1,128 @@
+#set(io.github.biezhi.anima.page.Page wallPapers = wallPapers())
+#set(String page = page_type)
+#include('./partial/header.html')
+<body>
+<header>
+    <div class="container">
+        <a class="logo" href="/">
+            <i class="icon icon-bing"></i>
+            <span id="hearts">必应壁纸</span>
+        </a>
+        <nav>
+            <ul class="menu">
+                <li class="active">
+                    <a href="/">
+                        <i class="icon icon-home"></i>
+                        <p class="text">首页</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/ranking/top">
+                        <i class="icon icon-ranking"></i>
+                        <p class="text">热门榜</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/ranking/down">
+                        <i class="icon icon-ranking"></i>
+                        <p class="text">下载榜</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<div class="holder"></div>
+<div class="mask"></div>
+<div class="container">
+    #for(wallPaper : wallPapers.rows)
+    <div class="item">
+        <div class="card progressive">
+            <img class="progressive__img progressive--not-loaded"
+                 data-progressive="${imgHref(wallPaper,'800x480')}"
+                 src="${imgHref(wallPaper,'400x240')}"
+                 alt="${wallPaper.copyright}">
+            <a class="mark" href="${detailsHref(wallPaper)}"></a>
+            <div class="description">
+                <h3>${wallPaper.copyright}</h3>
+                <p class="calendar">
+                    <i class="icon icon-calendar"></i>
+                    <em class="t">${wallPaper.showDate}</em>
+                </p>
+                <p class="location">
+                    <i class="icon icon-location"></i>
+                    <em class="t">${wallPaper.detailedLocation()}</em>
+                </p>
+                <p class="view">
+                    <i class="icon icon-eye"></i>
+                    <em class="t">${wallPaper.hits}</em>
+                </p>
+            </div>
+            <div class="options" code="${wallPaper.hash}" fileName="${getFileName(wallPaper)}">
+                <span class="ctrl heart">
+                        <i class="icon icon-heart"></i>
+                        <em class="t">${wallPaper.likes}</em>
+                </span>
+                <span class="ctrl download">
+                    <i class="icon icon-download"></i>
+                    <em class="t">${wallPaper.downloads}</em>
+                </span>
+            </div>
+        </div>
+    </div>
+    #end
+</div>
+<div class="page">
+    #if(wallPapers.hasPrevPage)
+    <a href="${page_prefix}/${wallPapers.prevPage}">上一页</a>
+    #end
+    <span>${wallPapers.pageNum} / ${wallPapers.totalPages}</span>
+    #if(wallPapers.hasNextPage)
+    <a href="${page_prefix}/${wallPapers.nextPage}">下一页</a>
+    #end
+</div>
+<div class="copyright">
+    <p>本站所有图片均来自<a rel='nofollow' href="https://www.bing.com">必应搜索</a></p>
+    <p>Copyright &copy; 2018 <a href="https://github.com/vpday/bing-wallpaper"> bing-wallpaper </a></p>
+</div>
+<script crossorigin="anonymous" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+        src="https://lib.baomitu.com/jquery/1.12.4/jquery.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
+        src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
+<script src="/static/js/device.js"></script>
+<script src="/static/js/baidu-analysis.js"></script>
+<script src="/static/js/base.js"></script>
+<script>
+    $(function () {
+        var i = 0;
+        var timer = setInterval(function () {
+            progressively.init();
+            if (i++ === 5) {
+                clearInterval(timer);
+            }
+        }, 1000 / 4);
+
+        if (DEVICE.isMobile) {
+            $(document.body).addClass('mobile');
+        }
+
+        hearts();
+
+        function hearts() {
+            var $one = $("#hearts");
+            var heartCount = $one.width() / 50 * 5;
+            for (var i = 0; i <= heartCount; i++) {
+                var size = $.rnd(60, 120) / 10;
+                $one.append('<span class="particle" style="top:' + $.rnd(20, 80) + '%; left:' + $.rnd(0, 95) + '%;width:' + size + 'px; height:' + size + 'px;animation-delay: ' + $.rnd(0, 30) / 10 + 's;"></span>');
+            }
+        }
+    });
+
+    jQuery.rnd = function (m, n) {
+        m = parseInt(m);
+        n = parseInt(n);
+        return Math.floor(Math.random() * (n - m + 1)) + m;
+    };
+</script>
+</body>
+</html>

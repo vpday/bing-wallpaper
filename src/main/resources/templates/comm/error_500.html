@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta content="${_csrf_token}" name="csrf_token"/>
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,Chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>500</title>
+    <link rel="icon" href="/static/images/bing.ico" sizes="32x32">
+    <!--[if lte IE 8]>
+    <script crossorigin="anonymous" integrity="sha384-DpyZMYXeM1EZzDFVMTZohQpDybSnl2C5t7O9OFmUz/DtsSBtUv3Aac30gGal+y/t"
+            src="https://lib.baomitu.com/html5shiv/3.7/html5shiv.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo"
+            src="https://lib.baomitu.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
+    <link crossorigin="anonymous" integrity="sha384-i/ZLCOBtDmoxztrtShNvc3vGe1+IbOGDzkZNC4KLXurv/BT7QInnM2AsPnvbgXH/"
+          href="https://lib.baomitu.com/normalize/5.0.0/normalize.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/error.css">
+</head>
+<body translate="no">
+<div class="text-effect">
+    <h1 class="neon" data-text="500" contenteditable>500</h1>
+    <div class="gradient"></div>
+    <div class="spotlight"></div>
+</div>
+<script crossorigin="anonymous" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7"
+        src="https://lib.baomitu.com/jquery/3.1.1/jquery.min.js"></script>
+<script>
+    // This is just to auto-update the data-text if you're editing it directly on the page and is not required for the actual effect
+    $('[data-text]').on('keyup', function () {
+        $(this).attr('data-text', $(this).text());
+    });
+    //# sourceURL=pen.js
+</script>
+</body>
+</html>
