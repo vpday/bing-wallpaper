@@ -11,6 +11,7 @@ import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 import jetbrick.template.runtime.InterpretContext;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -24,6 +25,10 @@ public final class Site {
 
     public static void setSiteService(SiteService ss) {
         siteService = ss;
+    }
+
+    public static int getYear() {
+        return LocalDate.now().getYear();
     }
 
     /**

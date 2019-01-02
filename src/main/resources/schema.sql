@@ -1,11 +1,6 @@
-PRAGMA foreign_keys = false;
-
--- ----------------------------
--- Table structure for t_bing_wall_paper
--- ----------------------------
 DROP TABLE IF EXISTS "t_bing_wall_paper";
 CREATE TABLE "t_bing_wall_paper" (
-  "bid" INTEGER NOT NULL,
+  "bid" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "hash" CHAR(32) NOT NULL,
   "name" VARCHAR(64) NOT NULL,
   "code" VARCHAR(64) NOT NULL,
@@ -23,8 +18,5 @@ CREATE TABLE "t_bing_wall_paper" (
   "city" VARCHAR(16),
   "hits" INTEGER,
   "likes" INTEGER,
-  "downloads" INTEGER,
-  PRIMARY KEY ("bid")
+  "downloads" INTEGER
 );
-
-PRAGMA foreign_keys = true;

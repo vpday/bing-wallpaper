@@ -59,6 +59,12 @@
                 </p>
             </div>
             <div class="options" code="${wallPaper.hash}" fileName="${getFileName(wallPaper)}">
+                #if (wallPaper.mapUrl)
+                <a class="ctrl share" rel="nofollow" href="${wallPaper.mapUrl}" title="Google Map 查看">
+                    <i class="icon icon-share"></i>
+                    <em class="t">去看看</em>
+                </a>
+                #end
                 <span class="ctrl heart">
                         <i class="icon icon-heart"></i>
                         <em class="t">${wallPaper.likes}</em>
@@ -82,15 +88,13 @@
     #end
 </div>
 <div class="copyright">
-    <p>本站所有图片均来自<a rel='nofollow' href="https://www.bing.com">必应搜索</a></p>
-    <p>Copyright &copy; 2018 <a href="https://github.com/vpday/bing-wallpaper"> bing-wallpaper </a></p>
+    <p>本站所有图片均来自<a rel="nofollow" href="https://www.bing.com">Bing 搜索</a> | &copy; ${getYear()} <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper"> bing-wallpaper </a></p>
 </div>
 <script crossorigin="anonymous" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
         src="https://lib.baomitu.com/jquery/1.12.4/jquery.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
         src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
-<script src="/static/js/device.js"></script>
-<script src="/static/js/baidu-analysis.js"></script>
+<!--<script src="/static/js/device.js"></script>-->
 <script src="/static/js/base.js"></script>
 <script>
     $(function () {
@@ -102,9 +106,9 @@
             }
         }, 1000 / 4);
 
-        if (DEVICE.isMobile) {
-            $(document.body).addClass("mobile");
-        }
+        //if (DEVICE.isMobile) {
+        //    $(document.body).addClass("mobile");
+        //}
 
         hearts();
 
