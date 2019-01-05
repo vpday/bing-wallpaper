@@ -9,6 +9,8 @@ import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.view.template.JetbrickTemplateEngine;
 import cool.develop.bingwallpaper.extension.Site;
+import cool.develop.bingwallpaper.service.BingService;
+import cool.develop.bingwallpaper.service.BingWallpaperService;
 import cool.develop.bingwallpaper.service.SiteService;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import io.github.biezhi.anima.Anima;
@@ -55,5 +57,15 @@ public class Bootstrap implements BladeLoader {
         BingWallpaperConst.HEAD_TITLE = environment.get("app.head_title", "");
         BingWallpaperConst.META_KEYWORDS = environment.get("app.meta_keywords", "");
         BingWallpaperConst.META_DESCRIPTION = environment.get("app.meta_description", "");
+
+        Ioc ioc = blade.ioc();
+        BingWallpaperService bingWallpaperService = ioc.getBean(BingWallpaperService.class);
+
+        // 程序启动时，判断数据库是否存在当天壁纸信息
+        if (bingWallpaperService.isNotExistToDayWallpaper()) {
+            BingService bingService = ioc.getBean(BingService.class);
+
+            SiteUtils.saveCoverStoryAndImageArchive(bingService, bingWallpaperService);
+        }
     }
 }

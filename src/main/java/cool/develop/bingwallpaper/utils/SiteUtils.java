@@ -2,11 +2,17 @@ package cool.develop.bingwallpaper.utils;
 
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.exception.TipException;
+import cool.develop.bingwallpaper.model.dto.CoverStory;
+import cool.develop.bingwallpaper.model.dto.Images;
+import cool.develop.bingwallpaper.service.BingService;
+import cool.develop.bingwallpaper.service.BingWallpaperService;
 import io.github.biezhi.request.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 工具类
@@ -66,5 +72,25 @@ public final class SiteUtils {
         }
 
         return canonicalPath;
+    }
+
+    public static void saveCoverStoryAndImageArchive(BingService bingService, BingWallpaperService bingWallpaperService) {
+        CoverStory coverStory = bingService.getCoverStory();
+        Images images = bingService.getImageArchiveByToDay();
+        Map<String, byte[]> downLoadImages;
+        try {
+            downLoadImages = bingService.downLoadImages(images);
+        } catch (ExecutionException | InterruptedException e) {
+            log.error(e.getMessage());
+            throw new TipException(e.getMessage());
+        }
+
+        bingWallpaperService.save(coverStory, images);
+        try {
+            bingWallpaperService.save(downLoadImages, images.getNameAndCode());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new TipException(e.getMessage());
+        }
     }
 }
