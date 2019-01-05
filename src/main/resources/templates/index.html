@@ -94,7 +94,7 @@
         src="https://lib.baomitu.com/jquery/1.12.4/jquery.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
         src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
-<!--<script src="/static/js/device.js"></script>-->
+<script src="/static/js/device.js"></script>
 <script src="/static/js/base.js"></script>
 <script>
     $(function () {
@@ -106,9 +106,9 @@
             }
         }, 1000 / 4);
 
-        //if (DEVICE.isMobile) {
-        //    $(document.body).addClass("mobile");
-        //}
+        if (DEVICE.isMobile) {
+            $(document.body).addClass("mobile");
+        }
 
         hearts();
 
