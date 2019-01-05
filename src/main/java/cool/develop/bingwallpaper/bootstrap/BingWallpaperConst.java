@@ -8,9 +8,9 @@ package cool.develop.bingwallpaper.bootstrap;
  */
 public final class BingWallpaperConst {
     public static final String GOOGLE_MAP_URL = "https://www.google.cn/maps/search/";
-    public static final String CN_BING = "https://cn.bing.com";
-    public static final String COVER_STORY = "https://cn.bing.com/cnhp/coverstory";
-    public static final String IMAGE_ARCHIVE = "https://cn.bing.com/HPImageArchive.aspx";
+    public static final String CN_BING = "https://www.bing.com";
+    public static final String COVER_STORY = "https://www.bing.com/cnhp/coverstory?mkt=zh-CN";
+    public static final String IMAGE_ARCHIVE = "https://www.bing.com/HPImageArchive.aspx";
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.62 Safari/537.36";
 
     public static final String IMAGE_FILE_SUFFIX = ".jpg";
