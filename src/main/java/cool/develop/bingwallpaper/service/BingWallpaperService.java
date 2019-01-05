@@ -31,11 +31,11 @@ public class BingWallpaperService {
      * 判断是否存在当天壁纸信息
      */
     public boolean isNotExistToDayWallpaper() {
-        String pattern1 = "yyyyMMdd";
+        String today = DateKit.toString(LocalDate.now(), BingWallpaperConst.DATE_PATTERN_DB);
 
         AnimaQuery<BingWallpaper> animaQuery = Anima.select()
                 .from(BingWallpaper.class)
-                .where(BingWallpaper::getShowDate, DateKit.toString(LocalDate.now(), pattern1));
+                .where(BingWallpaper::getShowDate, today);
 
         return 0 == animaQuery.count();
     }
@@ -76,6 +76,9 @@ public class BingWallpaperService {
      * 保存信息到数据库
      */
     public void save(CoverStory coverStory, Images images) {
+        String endDate = DateKit.toString(DateKit.toLocalDate(images.getEndDate(),
+                BingWallpaperConst.DATE_PATTERN), BingWallpaperConst.DATE_PATTERN_DB);
+
         BingWallpaper bingWallPaper = new BingWallpaper(
                 images.getHsh(),
                 coverStory.getTitle(),
@@ -83,7 +86,7 @@ public class BingWallpaperService {
                 coverStory.getPara1(),
                 images.getCopyright(),
                 images.getCopyrightLink(),
-                images.getEndDate(),
+                endDate,
                 coverStory.getContinent()
         );
 
