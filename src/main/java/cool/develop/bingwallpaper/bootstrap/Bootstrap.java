@@ -31,14 +31,7 @@ public class Bootstrap implements BladeLoader {
     public void preLoad(Blade blade) {
         Ioc ioc = blade.ioc();
 
-        boolean devMode = true;
-        if (blade.environment().hasKey("app.dev")) {
-            devMode = blade.environment().getBoolean("app.dev", true);
-        }
-        if (blade.environment().hasKey("app.devMode")) {
-            devMode = blade.environment().getBoolean("app.devMode", true);
-        }
-        SqliteJdbc.importSql(devMode);
+        SqliteJdbc.importSql(this.isDevMode(blade));
         Anima.open(SqliteJdbc.DB_SRC);
 
         Site.setSiteService(ioc.getBean(SiteService.class));
@@ -63,10 +56,23 @@ public class Bootstrap implements BladeLoader {
         BingWallpaperService bingWallpaperService = ioc.getBean(BingWallpaperService.class);
 
         // 程序启动时，判断数据库是否存在当天壁纸信息
-        if (bingWallpaperService.isNotExistToDayWallpaper()) {
+        boolean isCanExecute = !this.isDevMode(blade) && bingWallpaperService.isNotExistToDayWallpaper();
+        if (isCanExecute) {
             BingService bingService = ioc.getBean(BingService.class);
 
             SiteUtils.saveCoverStoryAndImageArchive(bingService, bingWallpaperService);
         }
+    }
+
+    private boolean isDevMode(Blade blade) {
+        boolean devMode = true;
+        if (blade.environment().hasKey("app.dev")) {
+            devMode = blade.environment().getBoolean("app.dev", true);
+        }
+        if (blade.environment().hasKey("app.devMode")) {
+            devMode = blade.environment().getBoolean("app.devMode", true);
+        }
+
+        return devMode;
     }
 }
