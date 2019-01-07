@@ -25,4 +25,5 @@ public final class BingWallpaperConst {
     public static String META_KEYWORDS = "";
     public static String META_DESCRIPTION = "";
     public static String META_AUTHOR = "Bing 必应搜索";
+    public static String SITE_URL = "";
 }

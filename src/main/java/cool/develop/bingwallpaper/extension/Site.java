@@ -54,7 +54,7 @@ public final class Site {
         String title;
         BingWallpaper bingWallPaper = currentBingWallPaper();
         if (Objects.nonNull(bingWallPaper)) {
-            title = bingWallPaper.getTitle();
+            title = bingWallPaper.getTitle() + "，" + bingWallPaper.getAttribute();
         } else {
             title = siteService.getTitle(hashCode);
         }

@@ -1,9 +1,17 @@
 package cool.develop.bingwallpaper.utils;
 
+import com.blade.kit.DateKit;
+import com.sun.syndication.feed.rss.Channel;
+import com.sun.syndication.feed.rss.Content;
+import com.sun.syndication.feed.rss.Item;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.WireFeedOutput;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.exception.TipException;
+import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.model.dto.CoverStory;
 import cool.develop.bingwallpaper.model.dto.Images;
+import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.service.BingService;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
 import io.github.biezhi.request.Request;
@@ -11,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -92,5 +102,35 @@ public final class SiteUtils {
             log.error(e.getMessage());
             throw new TipException(e.getMessage());
         }
+    }
+
+    public static String getRssXml(List<BingWallpaper> wallpapers) throws FeedException {
+        Channel channel = new Channel("rss_2.0");
+        channel.setTitle(BingWallpaperConst.HEAD_TITLE);
+        channel.setLink(BingWallpaperConst.SITE_URL);
+        channel.setDescription(BingWallpaperConst.META_DESCRIPTION);
+        channel.setLanguage("zh-CN");
+        channel.setCopyright(BingWallpaperConst.META_AUTHOR);
+
+        List<Item> items = new ArrayList<>();
+        wallpapers.forEach(wallpaper -> {
+            Item item = new Item();
+            item.setTitle(wallpaper.getCopyright());
+
+            Content content = new Content();
+            String url = BingWallpaperConst.SITE_URL + Site.imgHref(wallpaper, "1920x1080");
+            content.setValue("<img src=\"" + url + "\" border=\"0\"/><h2>"
+                    + wallpaper.getTitle() + " —— " + wallpaper.getAttribute() + " | " + wallpaper.detailedLocation() + "</h2><h4>"
+                    + wallpaper.getDescription() + "</h4>");
+            item.setContent(content);
+
+            item.setLink(BingWallpaperConst.SITE_URL + Site.detailsHref(wallpaper));
+            item.setPubDate(DateKit.toDate(wallpaper.getShowDate(), BingWallpaperConst.DATE_PATTERN_DB));
+            items.add(item);
+        });
+        channel.setItems(items);
+
+        WireFeedOutput out = new WireFeedOutput();
+        return out.outputString(channel);
     }
 }

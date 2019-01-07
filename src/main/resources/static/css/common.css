@@ -208,7 +208,6 @@ html {
     }
     html nav .menu li {
         background: rgba(255, 255, 255, 0.9);
-        width: 33.33%;
     }
     html nav .menu li .text {
         display: none;

@@ -12,6 +12,7 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
+import cool.develop.bingwallpaper.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -32,6 +33,9 @@ public class IndexController {
 
     @Inject
     private BingWallpaperService bingWallpaperService;
+
+    @Inject
+    private SiteService siteService;
 
     /**
      * 首页
@@ -159,5 +163,19 @@ public class IndexController {
         bingWallpaperService.updateBingWallpaperByLikes(code, likes);
 
         return RestResponse.ok(likes);
+    }
+
+    /**
+     * feed 页
+     */
+    @GetRoute(value = {"feed", "feed.xml", "atom.xml"})
+    public void feed(Response response) {
+        try {
+            String xml = siteService.getRssXml();
+            response.contentType("text/xml; charset=utf-8");
+            response.body(xml);
+        } catch (Exception e) {
+            log.error("生成 rss 失败", e);
+        }
     }
 }
