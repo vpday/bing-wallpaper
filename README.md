@@ -11,12 +11,24 @@ Daily collection Bing Wallpaper
 
 ---
 
+## Quick start
+
+Deploy with shell script：
+
+```bash
+# install bing-wallpaper
+curl -L -o tool https://git.io/fhGFn && bash tool install
+
+# upgrade bing-wallpaper
+bash tool update
+```
+
 ## License
 
 [Apache License 2.0](LICENSE)
 
 ## Thanks
 
-+ [xCss/bing](https://github.com/xCss/bing)
-+ [blade](https://github.com/biezhi/blade)
+  + [xCss/bing](https://github.com/xCss/bing)
++  [blade](https://github.com/biezhi/blade)
 + [tale](https://github.com/otale/tale)
