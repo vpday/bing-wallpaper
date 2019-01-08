@@ -29,6 +29,6 @@ bash tool update
 
 ## Thanks
 
-  + [xCss/bing](https://github.com/xCss/bing)
++  [xCss/bing](https://github.com/xCss/bing)
 +  [blade](https://github.com/biezhi/blade)
-+ [tale](https://github.com/otale/tale)
++  [tale](https://github.com/otale/tale)
