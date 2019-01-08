@@ -23,49 +23,49 @@ $(function () {
 
         beforeDownloading(formData, fileName);
     });
-});
 
-function beforeDownloading(formData, fileName) {
-    var request = new XMLHttpRequest();
-    request.open("POST", "/download", true);
-    request.responseType = "blob";
+    function beforeDownloading(formData, fileName) {
+        var request = new XMLHttpRequest();
+        request.open("POST", "/download", true);
+        request.responseType = "blob";
 
-    request.onload = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            downloadImg(request, fileName);
-        }
-    };
-    request.ontimeout = function () {
-        console.warn("request timed out, please try again later.");
-    };
-    request.onerror = function () {
-        console.error("request server failed.");
-    };
-
-    request.send(formData);
-}
-
-function downloadImg(request, fileName) {
-    var blob = request.response;
-
-    if (blob.type === "application/json") {
-        var reader = new FileReader();
-
-        reader.onloadend = function () {
-            var error = JSON.parse(reader.result);
-            var message = (typeof error.message !== "undefined") ? error.message : "unknown error";
-            console.error("download failed," + message);
+        request.onload = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                downloadImg(request, fileName);
+            }
         };
-        reader.readAsBinaryString(blob);
-    } else if (window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveBlob(blob, fileName);
-    } else {
-        var downloadLink = window.document.createElement("a");
-        var contentTypeHeader = request.getResponseHeader("Content-Type");
-        downloadLink.href = window.URL.createObjectURL(new Blob([blob], {type: contentTypeHeader}));
-        downloadLink.download = fileName;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        request.ontimeout = function () {
+            console.warn("request timed out, please try again later.");
+        };
+        request.onerror = function () {
+            console.error("request server failed.");
+        };
+
+        request.send(formData);
     }
-}
+
+    function downloadImg(request, fileName) {
+        var blob = request.response;
+
+        if (blob.type === "application/json") {
+            var reader = new FileReader();
+
+            reader.onloadend = function () {
+                var error = JSON.parse(reader.result);
+                var message = (typeof error.message !== "undefined") ? error.message : "unknown error";
+                console.error("download failed," + message);
+            };
+            reader.readAsBinaryString(blob);
+        } else if (window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveBlob(blob, fileName);
+        } else {
+            var downloadLink = window.document.createElement("a");
+            var contentTypeHeader = request.getResponseHeader("Content-Type");
+            downloadLink.href = window.URL.createObjectURL(new Blob([blob], {type: contentTypeHeader}));
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    }
+});

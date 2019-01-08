@@ -9,10 +9,10 @@ import com.blade.mvc.Const;
  */
 public final class ApplicationLoader {
 
+    private static Blade blade;
+
     private ApplicationLoader() {
     }
-
-    private static Blade blade;
 
     public static void init(Blade blade) {
         ApplicationLoader.blade = blade;
