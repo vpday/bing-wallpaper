@@ -12,10 +12,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/classes/</directory>
-            <excludes>
-                <exclude>cool/**</exclude>
-            </excludes>
+            <directory>src/main/resources/</directory>
             <outputDirectory>/resources</outputDirectory>
         </fileSet>
         <fileSet>
