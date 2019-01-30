@@ -3,12 +3,10 @@ package cool.develop.bingwallpaper.controller;
 import com.blade.ioc.annotation.Inject;
 import com.blade.kit.StringKit;
 import com.blade.mvc.annotation.*;
-import com.blade.mvc.http.ByteBody;
-import com.blade.mvc.http.Request;
-import com.blade.mvc.http.Response;
-import com.blade.mvc.http.Session;
+import com.blade.mvc.http.*;
 import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
@@ -40,7 +38,7 @@ public class IndexController {
     /**
      * 首页
      */
-    @GetRoute
+    @GetRoute(value = {"/", "index", "index.html"})
     public String index(Request request) {
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
     }
@@ -48,16 +46,16 @@ public class IndexController {
     /**
      * 首页分页
      */
-    @GetRoute(value = {"page/:page", "page/:page/:limit"})
-    public String index(Request request, @PathParam int page, @Param(defaultValue = "12") int limit) {
-        return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, page < 0 ? 1 : page, limit);
+    @GetRoute(value = {"page", "page/:page", "page/:page/:limit"})
+    public String index(Request request, @PathParam(defaultValue = "1") int page, @PathParam(defaultValue = "12") int limit) {
+        return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, page, limit);
     }
 
     /**
      * 热门榜
      */
     @GetRoute(value = {"ranking", "ranking/top", "ranking/top/:page", "ranking/top/:page/:limit"})
-    public String topRanking(Request request, @PathParam(defaultValue = "1") int page, @Param(defaultValue = "12") int limit) {
+    public String topRanking(Request request, @PathParam(defaultValue = "1") int page, @PathParam(defaultValue = "12") int limit) {
         return this.toIndex(request, "/ranking/top", BingWallpaperConst.TOP_CODE, page, limit);
     }
 
@@ -65,15 +63,25 @@ public class IndexController {
      * 下载榜
      */
     @GetRoute(value = {"ranking/down", "ranking/down/:page", "ranking/down/:page/:limit"})
-    public String downRanking(Request request, @PathParam(defaultValue = "1") int page, @Param(defaultValue = "12") int limit) {
+    public String downRanking(Request request, @PathParam(defaultValue = "1") int page, @PathParam(defaultValue = "12") int limit) {
         return this.toIndex(request, "/ranking/down", BingWallpaperConst.DOWN_CODE, page, limit);
     }
 
     private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit) {
+        CountryCode countryCode = CountryCode.getCountryCode(request.cookie(BingWallpaperConst.COUNTRY));
+        return this.toIndex(request, pagePrefix, pageType, pageNum, pageLimit, countryCode);
+    }
+
+    private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit, CountryCode country) {
+        pageNum = pageNum <= 0 ? 1 : pageNum;
+        pageLimit = pageLimit <= 0 ? 12 : pageLimit > 36 ? 12 : pageLimit;
+
         request.attribute("page_num", pageNum);
         request.attribute("page_limit", pageLimit);
         request.attribute("page_prefix", pagePrefix);
         request.attribute("page_type", pageType);
+
+        request.attribute("country_code", country);
 
         return "index";
     }
@@ -81,6 +89,7 @@ public class IndexController {
     /**
      * 必应壁纸详情页
      */
+    @Deprecated
     @GetRoute(value = {"details/:name/:code"})
     public String details(Request request, @PathParam String name, @PathParam String code) {
         if (StringKit.isEmpty(name) || StringKit.isEmpty(code)) {
@@ -93,7 +102,28 @@ public class IndexController {
         }
 
         bingWallpaperService.updateBingWallpaperByHits(name, code, (bingWallPaper.getHits() + 1));
+        request.attribute("wallPaper", bingWallPaper);
 
+        return "details";
+    }
+
+    /**
+     * 必应壁纸详情页
+     */
+    @GetRoute(value = {"details/:name"})
+    public String details(Request request, @PathParam String name) {
+        if (StringKit.isEmpty(name)) {
+            return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
+        }
+
+        CountryCode countryCode = CountryCode.getCountryCode(request.cookie(BingWallpaperConst.COUNTRY));
+
+        BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(name, countryCode);
+        if (Objects.isNull(bingWallPaper)) {
+            return "comm/error_404";
+        }
+
+        bingWallpaperService.updateBingWallpaperByHits(name, countryCode, (bingWallPaper.getHits() + 1));
         request.attribute("wallPaper", bingWallPaper);
 
         return "details";
@@ -110,14 +140,15 @@ public class IndexController {
         if (null == query.get(var) || StringKit.isEmpty(query.get(var).get(0))) {
             response.json("{\"message\":\"request parameters are incomplete.\"}");
         } else {
-            String code = query.get("code").get(0);
+            String code = query.get(var).get(0);
             BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(code);
+
             if (null == bingWallPaper) {
                 response.json("{\"message\":\"the parameter code is incorrect.\"}");
             } else {
                 bingWallpaperService.updateBingWallpaperByDownLoads(code, (bingWallPaper.getHits() + 1));
 
-                File picture = bingWallpaperService.load(bingWallPaper.getFullName(),
+                File picture = bingWallpaperService.load(bingWallPaper.getName(),
                         new Resolution(1920, 1080));
 
                 response.contentType("image/jpeg");
@@ -168,14 +199,27 @@ public class IndexController {
     /**
      * feed 页
      */
-    @GetRoute(value = {"feed", "feed.xml", "atom.xml"})
-    public void feed(Response response) {
+    @GetRoute(value = {"feed", "feed.xml", "feed/:code", "feed/:code.xml"})
+    public void feed(Response response, @PathParam String code) {
+        CountryCode country = CountryCode.getCountryCode(code);
+
         try {
-            String xml = siteService.getRssXml();
+            String xml = siteService.getRssXml(country);
             response.contentType("text/xml; charset=utf-8");
             response.body(xml);
         } catch (Exception e) {
             log.error("生成 rss 失败", e);
         }
+    }
+
+    /**
+     * 设置国家编码
+     */
+    @GetRoute(value = {"country/:code"})
+    public String setCountry(Request request, Response response, @PathParam String code) {
+        CountryCode country = CountryCode.getCountryCode(code);
+        response.cookie(BingWallpaperConst.COUNTRY, country.code(), (60 * 60 * 24 * 30));
+
+        return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12, country);
     }
 }

@@ -8,13 +8,16 @@ import com.blade.ioc.annotation.Inject;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.view.template.JetbrickTemplateEngine;
+import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
-import cool.develop.bingwallpaper.service.BingService;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
+import cool.develop.bingwallpaper.service.ServiceHandle;
 import cool.develop.bingwallpaper.service.SiteService;
-import cool.develop.bingwallpaper.utils.SiteUtils;
+import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
 
 /**
  * @author vpday
@@ -44,7 +47,7 @@ public class Bootstrap implements BladeLoader {
         blade.templateEngine(templateEngine);
 
         String bingWallpaperDir = Const.CLASSPATH + "wallpapers/";
-        BingWallpaperConst.BING_WALLPAPER_DIR = SiteUtils.getFilePath(bingWallpaperDir);
+        BingWallpaperConst.BING_WALLPAPER_DIR = FileUtils.getFilePath(bingWallpaperDir);
         blade.addStatics("/wallpapers");
 
         BingWallpaperConst.HEAD_TITLE = environment.get("app.head_title", "");
@@ -52,15 +55,26 @@ public class Bootstrap implements BladeLoader {
         BingWallpaperConst.META_DESCRIPTION = environment.get("app.meta_description", "");
         BingWallpaperConst.SITE_URL = environment.get("app.site_url", "");
 
-        Ioc ioc = blade.ioc();
-        BingWallpaperService bingWallpaperService = ioc.getBean(BingWallpaperService.class);
+        this.preAddData(blade.ioc());
+    }
 
-        // 程序启动时，判断数据库是否存在当天壁纸信息
-        boolean isCanExecute = !this.isDevMode(blade) && bingWallpaperService.isNotExistToDayWallpaper();
-        if (isCanExecute) {
-            BingService bingService = ioc.getBean(BingService.class);
+    /**
+     * 预先添加数据
+     */
+    private void preAddData(Ioc ioc) {
+        try {
+            if (SqliteJdbc.IS_NEW_DB) {
+                log.info("发现数据库为新创建，自动添加最近 15 天的必应壁纸信息");
+                ioc.getBean(ServiceHandle.class).saveBingWallpaperByFifteenDays();
 
-            SiteUtils.saveCoverStoryAndImageArchive(bingService, bingWallpaperService);
+            } else if (ioc.getBean(BingWallpaperService.class).isNotExistToDayWallpaper()) {
+                log.info("数据库中未能查询到当天必应壁纸信息，自动添加当天的必应壁纸信息");
+                // 程序启动时，判断数据库是否存在当天壁纸信息
+                ioc.getBean(ServiceHandle.class).saveBingWallpaper();
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new TipException(e.getMessage());
         }
     }
 

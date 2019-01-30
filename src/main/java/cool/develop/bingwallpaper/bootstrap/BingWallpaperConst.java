@@ -8,13 +8,14 @@ package cool.develop.bingwallpaper.bootstrap;
  */
 public final class BingWallpaperConst {
     public static final String GOOGLE_MAP_URL = "https://www.google.cn/maps/search/";
-    public static final String CN_BING = "https://www.bing.com";
-    public static final String COVER_STORY = "https://www.bing.com/cnhp/coverstory?mkt=zh-CN";
-    public static final String IMAGE_ARCHIVE = "https://www.bing.com/HPImageArchive.aspx";
+    public static final String BING = "https://www.bing.com";
+    public static final String LIFE = "https://www.bing.com/cnhp/life?mkt=zh-CN&currentDate=";
+    public static final String IMAGE_ARCHIVE = "https://global.bing.com/HPImageArchive.aspx";
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.62 Safari/537.36";
 
-    public static final String DATE_PATTERN = "yyyyMMdd";
-    public static final String DATE_PATTERN_DB = "yyyy-MM-dd";
+    public static final String COUNTRY = "country";
+
+    public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String IMAGE_FILE_SUFFIX = ".jpg";
     public static String BING_WALLPAPER_DIR = "";
 

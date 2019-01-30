@@ -29,7 +29,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/feed">
+                    <a href="/feed/${country_code.code()}">
                         <i class="icon icon-rss"></i>
                         <p class="text">订阅</p>
                     </a>
@@ -53,11 +53,11 @@
                 <h3>${wallPaper.copyright}</h3>
                 <p class="calendar">
                     <i class="icon icon-calendar"></i>
-                    <em class="t">${wallPaper.showDate}</em>
+                    <em class="t">${unixTimeToString(wallPaper.date)}</em>
                 </p>
                 <p class="location">
                     <i class="icon icon-location"></i>
-                    <em class="t">${wallPaper.detailedLocation()}</em>
+                    <em class="t">${attribute(wallPaper)}</em>
                 </p>
                 <p class="view">
                     <i class="icon icon-eye"></i>
@@ -65,8 +65,8 @@
                 </p>
             </div>
             <div class="options" code="${wallPaper.hash}" fileName="${getFileName(wallPaper)}">
-                #if (wallPaper.mapUrl)
-                <a class="ctrl share" rel="nofollow" href="${wallPaper.mapUrl}" title="Google Map 查看">
+                #if (mapUrl(wallPaper))
+                <a class="ctrl share" rel="nofollow" href="${mapUrl(wallPaper)}" title="Google Map 查看">
                     <i class="icon icon-share"></i>
                     <em class="t">去看看</em>
                 </a>
@@ -86,16 +86,23 @@
 </div>
 <div class="page">
     #if(wallPapers.hasPrevPage)
-    <a href="${page_prefix}/${wallPapers.prevPage}">上一页</a>
+    <a href="${page_prefix}/${wallPapers.prevPage}/${wallPapers.limit}">上一页</a>
     #end
     <span>${wallPapers.pageNum} / ${wallPapers.totalPages}</span>
     #if(wallPapers.hasNextPage)
-    <a href="${page_prefix}/${wallPapers.nextPage}">下一页</a>
+    <a href="${page_prefix}/${wallPapers.nextPage}/${wallPapers.limit}">下一页</a>
     #end
 </div>
 <div class="copyright">
-    <p>本站所有图片均来自<a rel="nofollow" href="https://www.bing.com"> Bing 搜索</a> | &copy; ${getYear()} <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper">
-        bing-wallpaper </a></p>
+    <label><select id="select-country">
+        #for(lang : getAllCountry())
+        <option value="${lang.code()}" #if(lang==country_code) selected #end>
+            ${lang.cnName()}
+        </option>
+        #end
+    </select></label>
+    <span>图片来源于<a rel="nofollow" href="https://www.bing.com"> Bing 搜索</a></span>
+    <span> | &copy; ${getYear()} <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper">bing-wallpaper</a></span>
 </div>
 <script crossorigin="anonymous" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
         src="https://lib.baomitu.com/jquery/1.12.4/jquery.min.js"></script>
@@ -127,6 +134,11 @@
                 $one.append('<span class="particle" style="top:' + $.rnd(20, 80) + '%; left:' + $.rnd(0, 95) + '%;width:' + size + 'px; height:' + size + 'px;animation-delay: ' + $.rnd(0, 30) / 10 + 's;"></span>');
             }
         }
+
+        $("#select-country").change(function () {
+            var code = $("#select-country option:selected").val();
+            document.location = document.location.protocol + "//" + document.location.host + "/country/" + code;
+        });
     });
 
     jQuery.rnd = function (m, n) {

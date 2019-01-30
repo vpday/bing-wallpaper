@@ -1,14 +1,14 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
-import com.blade.kit.DateKit;
-import com.blade.kit.StringKit;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.CoverStory;
+import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
+import cool.develop.bingwallpaper.model.dto.LifeInfo;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import cool.develop.bingwallpaper.utils.SiteUtils;
+import cool.develop.bingwallpaper.model.entity.FilmingLocation;
+import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
 
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,11 +32,12 @@ public class BingWallpaperService {
      * 判断是否存在当天壁纸信息
      */
     public boolean isNotExistToDayWallpaper() {
-        String today = DateKit.toString(LocalDate.now(), BingWallpaperConst.DATE_PATTERN_DB);
+        long today = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
+                .toInstant().toEpochMilli();
 
         AnimaQuery<BingWallpaper> animaQuery = Anima.select()
                 .from(BingWallpaper.class)
-                .where(BingWallpaper::getShowDate, today);
+                .where(BingWallpaper::getDate, today);
 
         return 0 == animaQuery.count();
     }
@@ -44,6 +46,14 @@ public class BingWallpaperService {
         AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getName, name)
                 .and(BingWallpaper::getCode, code);
+
+        return animaQuery.one();
+    }
+
+    public BingWallpaper getBingWallpaper(String name, CountryCode countryCode) {
+        AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
+                .where(BingWallpaper::getName, name)
+                .and(BingWallpaper::getCountry, countryCode.code());
 
         return animaQuery.one();
     }
@@ -62,6 +72,13 @@ public class BingWallpaperService {
                 .set(BingWallpaper::getHits, hits).execute();
     }
 
+    public void updateBingWallpaperByHits(String name, CountryCode countryCode, Integer hits) {
+        Anima.update().from(BingWallpaper.class)
+                .where(BingWallpaper::getName, name)
+                .and(BingWallpaper::getCountry, countryCode.code())
+                .set(BingWallpaper::getHits, hits).execute();
+    }
+
     public void updateBingWallpaperByLikes(String hash, Integer likes) {
         Anima.update().from(BingWallpaper.class)
                 .where(BingWallpaper::getHash, hash).set(BingWallpaper::getLikes, likes).execute();
@@ -75,58 +92,67 @@ public class BingWallpaperService {
     /**
      * 保存信息到数据库
      */
-    public void save(CoverStory coverStory, Images images) {
-        String endDate = DateKit.toString(DateKit.toLocalDate(images.getEndDate(),
-                BingWallpaperConst.DATE_PATTERN), BingWallpaperConst.DATE_PATTERN_DB);
-
+    public synchronized void save(LifeInfo lifeInfo, Images images, CountryCode country) {
         BingWallpaper bingWallPaper = new BingWallpaper(
                 images.getHsh(),
-                coverStory.getTitle(),
-                coverStory.getAttribute(),
-                coverStory.getPara1(),
+                lifeInfo.getDate(),
                 images.getCopyright(),
-                images.getCopyrightLink(),
-                endDate,
-                coverStory.getContinent()
+                country.code(),
+                1, 1, 1
         );
 
-        bingWallPaper.setHits(1);
-        bingWallPaper.setLikes(1);
-        bingWallPaper.setDownloads(1);
-
-        if (Objects.nonNull(coverStory.getLatitude()) && Objects.nonNull(coverStory.getLongitude())) {
-            String mapUrl = BingWallpaperConst.GOOGLE_MAP_URL + coverStory.getLatitude() + "," + coverStory.getLongitude();
-            bingWallPaper.setLatitude(coverStory.getLatitude());
-            bingWallPaper.setLongitude(coverStory.getLongitude());
-            bingWallPaper.setMapUrl(mapUrl);
+        String title = images.getTitle();
+        String caption = images.getCaption();
+        String desc = images.getDesc();
+        if (country.equals(CountryCode.ZH_CN)) {
+            title = lifeInfo.getTitle();
+            caption = lifeInfo.getCaption();
+            desc = lifeInfo.getDescription();
         }
-
-        if (StringKit.isNotEmpty(coverStory.getCountry())) {
-            bingWallPaper.setCountry(coverStory.getCountry());
-        }
-        if (StringKit.isNotEmpty(coverStory.getCity())) {
-            bingWallPaper.setCity(coverStory.getCity());
-        }
+        bingWallPaper.setTitle(title);
+        bingWallPaper.setCaption(caption);
+        bingWallPaper.setDescription(desc);
 
         bingWallPaper.parseUrlBase(images.getUrlBase());
-
         bingWallPaper.save();
+    }
+
+    /**
+     * 保存拍摄地点信息
+     */
+    public synchronized void save(String name, LifeInfo lifeInfo) {
+        FilmingLocation filmingLocation = new FilmingLocation(name, lifeInfo.getAttribute());
+
+        if (Objects.nonNull(lifeInfo.getLatitude()) && Objects.nonNull(lifeInfo.getLongitude())) {
+            String mapUrl = BingWallpaperConst.GOOGLE_MAP_URL + lifeInfo.getLatitude() + "," + lifeInfo.getLongitude();
+            filmingLocation.setLatitude(lifeInfo.getLatitude());
+            filmingLocation.setLongitude(lifeInfo.getLongitude());
+            filmingLocation.setMapUrl(mapUrl);
+        }
+
+        filmingLocation.save();
     }
 
     /**
      * 保存图片到本地文件夹
      */
-    public void save(Map<String, byte[]> images, String nameAndCode) throws IOException {
-        String filePath = SiteUtils.getFilePath((BingWallpaperConst.BING_WALLPAPER_DIR + "/" + nameAndCode));
+    public void save(Map<String, byte[]> images, String name) throws IOException {
+        String filePath = FileUtils.getFilePath((BingWallpaperConst.BING_WALLPAPER_DIR + "/" + name));
 
         for (Map.Entry<String, byte[]> var : images.entrySet()) {
-            String path = filePath + "/" + var.getKey();
-            Files.write(Paths.get(path), var.getValue());
+            String pathName = filePath + "/" + var.getKey();
+
+            if (FileUtils.isNotExistFile(pathName)) {
+                Files.write(Paths.get(pathName), var.getValue());
+            }
         }
     }
 
-    public File load(String fullName, Resolution resolution) {
-        String filePath = BingWallpaperConst.BING_WALLPAPER_DIR + "/" + fullName + "/" + fullName + "_" + resolution.format() + ".jpg";
+    /**
+     * 加载壁纸文件
+     */
+    public File load(String name, Resolution resolution) {
+        String filePath = BingWallpaperConst.BING_WALLPAPER_DIR + "/" + name + "/" + name + "_" + resolution.format() + ".jpg";
         return new File(filePath);
     }
 }

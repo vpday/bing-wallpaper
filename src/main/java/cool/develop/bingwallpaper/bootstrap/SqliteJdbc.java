@@ -24,6 +24,7 @@ public class SqliteJdbc {
 
     private static final String DB_NAME = "bing-wallpaper.db";
     public static String DB_SRC;
+    public static Boolean IS_NEW_DB;
 
     static {
         try {
@@ -53,9 +54,10 @@ public class SqliteJdbc {
 
             Connection con = DriverManager.getConnection(DB_SRC);
             Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='t_bing_wall_paper'");
-            int count = rs.getInt(1);
-            if (count == 0) {
+            ResultSet rs = statement.executeQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('t_bing_wallpaper','t_filming_location')");
+
+            IS_NEW_DB = 0 == rs.getInt(1);
+            if (IS_NEW_DB) {
                 String cp = Objects.requireNonNull(SqliteJdbc.class.getClassLoader().getResource("")).getPath();
                 InputStreamReader isr = new InputStreamReader(new FileInputStream(cp + "schema.sql"), StandardCharsets.UTF_8);
 
@@ -63,6 +65,7 @@ public class SqliteJdbc {
                 int r = statement.executeUpdate(sql);
                 log.info("initialize import database - {}", r);
             }
+
             rs.close();
             statement.close();
             con.close();

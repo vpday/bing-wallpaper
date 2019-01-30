@@ -25,6 +25,12 @@ public class Images {
     @JsonProperty("copyrightlink")
     private String copyrightLink;
     private String title;
+    private String caption;
+    @JsonProperty("copyrightonly")
+    private String copyrightOnly;
+    private String desc;
+    private String date;
+    private String bsTitle;
     private String quiz;
     private Boolean wp;
     private String hsh;
@@ -37,23 +43,46 @@ public class Images {
         return this.urlBase.substring((this.urlBase.lastIndexOf("/") + 1));
     }
 
+    public String getName() {
+        String nameAndCode = getNameAndCode();
+        return nameAndCode.substring(0, nameAndCode.lastIndexOf("_"));
+    }
+
     /*
         {
-            "startdate": "20181123",
-            "fullstartdate": "201811231600",
-            "enddate": "20181124",
-            "url": "/az/hprichbg/rb/DarwinOrigin_ZH-CN13549933105_1920x1080.jpg",
-            "urlbase": "/az/hprichbg/rb/DarwinOrigin_ZH-CN13549933105",
-            copyright": "站在巨龟头上的达尔文雀 (© Tui De Roy/Minden Pictures)",
-            "copyrightlink": "http://www.bing.com/search?q=%E8%BE%BE%E5%B0%94%E6%96%87%E9%9B%80&form=hpcapt&mkt=zh-cn",
-            "title": "",
-            "quiz": "/search?q=Bing+homepage+quiz&filters=WQOskey:%22HPQuiz_20181123_DarwinOrigin%22&FORM=HPQUIZ",
-            "wp": true,
-            "hsh": "919c6133d2da462d3d5ef750151a0659",
-            "drk": 1,
-            "top": 1,
-            "bot": 1,
-            "hs": []
+          "images": [
+            {
+              "startdate": "20190123",
+              "fullstartdate": "201901230800",
+              "enddate": "20190124",
+              "url": "/az/hprichbg/rb/ApfelTag_EN-US4068796758_1920x1080.jpg",
+              "urlbase": "/az/hprichbg/rb/ApfelTag_EN-US4068796758",
+              "copyright": "On Pie Day, an apple tree in winter (© Chris Stein/Getty Images)",
+              "copyrightlink": "/search?q=Apple+tree&form=hpcapt&filters=HpDate%3a%2220190123_0800%22",
+              "title": "Pie in the sky",
+              "caption": "Celebrating Pie Day is as easy as, well…",
+              "copyrightonly": "© Chris Stein/Getty Images",
+              "desc": "Can these frosty apples be salvaged in time for National Pie Day today?",
+              "date": "Jan 23, 2019",
+              "bsTitle": "Pie in the sky",
+              "quiz": "/search?q=Bing+homepage+quiz&filters=WQOskey:%22HPQuiz_20190123_ApfelTag%22&FORM=HPQUIZ",
+              "wp": true,
+              "hsh": "a28e1ab7431edc318defc9b9fdb26425",
+              "drk": 1,
+              "top": 1,
+              "bot": 1,
+              "hs": []
+            }
+          ],
+          "tooltips": {
+            "loading": "Loading...",
+            "previous": "Previous image",
+            "next": "Next image",
+            "walle": "This image is not available to download as wallpaper.",
+            "walls": "Download this image. Use of this image is restricted to wallpaper only.",
+            "play": "Play video",
+            "pause": "Pause video"
+          }
         }
     */
 }

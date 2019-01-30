@@ -14,8 +14,8 @@
             <i class="icon icon-left"></i>
             <em class="t">返回</em>
         </a>
-        #if (wallPaper.mapUrl)
-        <a class="ctrl share" href="${wallPaper.mapUrl}" title="Google Map 查看">
+        #if (mapUrl(wallPaper))
+        <a class="ctrl share" href="${mapUrl(wallPaper)}" title="Google Map 查看">
             <i class="icon icon-share"></i>
             <em class="t">去看看</em>
         </a>
@@ -30,15 +30,15 @@
         </a>
     </div>
     <div class="description">
-        <p>${wallPaper.copyright}</p>
-        <p class="title">${wallPaper.title} —— ${wallPaper.attribute}</p>
+        <p class="title">${wallPaper.title}</p>
+        <p>${wallPaper.caption}</p>
         <p class="sub">${wallPaper.description}</p>
         <p class="icon icon-calendar">
-            <em class="t">${wallPaper.showDate}</em>
+            <em class="t">${unixTimeToString(wallPaper.date)}</em>
         </p>
         <p class="location">
             <i class="icon icon-location"></i>
-            <em class="t">${wallPaper.detailedLocation()}</em>
+            <em class="t">${attribute(wallPaper)}</em>
         </p>
         <p class="view">
             <i class="icon icon-eye"></i>

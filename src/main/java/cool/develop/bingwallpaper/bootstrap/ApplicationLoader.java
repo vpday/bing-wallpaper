@@ -19,6 +19,9 @@ public final class ApplicationLoader {
         loadConfig();
     }
 
+    /**
+     * 重新设置配置文件加载路径，以便打包后随时更改配置
+     */
     private static void loadConfig() {
         String path = "file:" + Const.CLASSPATH + "application.properties";
         blade.environment().add("boot_conf", path);

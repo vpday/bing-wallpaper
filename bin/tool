@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP_NAME="bing-wallpaper"
-JAVA_OPTS="-Xmx128m -Xms128m -Xmn64m -Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom"
+JAVA_OPTS="-Xmx128m -Xms128m -Xmn64m -Dfile.encoding=UTF-8"
 GITHUB_PATH=vpday/bing-wallpaper
 psid=0
 
@@ -34,7 +34,7 @@ start() {
       echo "================================"
    else
       echo "Starting $APP_NAME ..."
-      nohup java $JAVA_OPTS -jar bing-wallpaper-latest.jar --app.env=prod >/dev/null 2>&1 &
+      nohup java $JAVA_OPTS -Dapp.env=prod -jar bing-wallpaper-latest.jar --app.env=prod >/dev/null 2>&1 &
       sleep 1
       check_pid
       if [ $psid -ne 0 ]; then

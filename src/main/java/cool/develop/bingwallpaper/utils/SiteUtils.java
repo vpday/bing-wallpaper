@@ -1,6 +1,6 @@
 package cool.develop.bingwallpaper.utils;
 
-import com.blade.kit.DateKit;
+import com.blade.kit.NamedThreadFactory;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Content;
 import com.sun.syndication.feed.rss.Item;
@@ -9,20 +9,19 @@ import com.sun.syndication.io.WireFeedOutput;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
-import cool.develop.bingwallpaper.model.dto.CoverStory;
-import cool.develop.bingwallpaper.model.dto.Images;
+import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import cool.develop.bingwallpaper.service.BingService;
-import cool.develop.bingwallpaper.service.BingWallpaperService;
 import io.github.biezhi.request.Request;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 工具类
@@ -33,20 +32,19 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public final class SiteUtils {
 
-    public static String buildImageArchiveUrl(Integer index, Integer number) {
+    public static String buildImageArchiveUrl(Integer index, Integer number, String mkt) {
         return BingWallpaperConst.IMAGE_ARCHIVE + "?" +
-                "format=js&" +
+                "format=js&pid=hp&video=1&" +
                 "idx=" + index + "&" +
                 "n=" + number + "&" +
-                "mkt=zh-CN";
+                "mkt=" + mkt;
     }
 
     public static String requestBing(String url) {
-        Request request = Request.get(url)
-                .acceptJson()
+        Request request = Request.get(url).acceptJson()
                 .userAgent(BingWallpaperConst.USER_AGENT);
-        checkStatus(request);
 
+        checkStatus(request);
         return request.body();
     }
 
@@ -65,51 +63,26 @@ public final class SiteUtils {
         }
     }
 
-    public static String getFilePath(String hash) {
-        File directory = new File(hash);
-        String canonicalPath;
-
-        try {
-            if (!directory.exists() && directory.mkdirs()) {
-                canonicalPath = directory.getCanonicalPath();
-                log.info("用于存放壁纸的文件夹创建成功 [{}]", canonicalPath);
-            } else {
-                canonicalPath = directory.getCanonicalPath();
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new TipException(e.getMessage());
-        }
-
-        return canonicalPath;
+    /**
+     * 构建线程池
+     */
+    public static ExecutorService newFixedThreadPool(int corePoolSize, String threadPrefix) {
+        return new ThreadPoolExecutor(corePoolSize, (corePoolSize / 2 + corePoolSize),
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingDeque<>(1024),
+                new NamedThreadFactory(threadPrefix),
+                new ThreadPoolExecutor.AbortPolicy());
     }
 
-    public static void saveCoverStoryAndImageArchive(BingService bingService, BingWallpaperService bingWallpaperService) {
-        CoverStory coverStory = bingService.getCoverStory();
-        Images images = bingService.getImageArchiveByToDay();
-        Map<String, byte[]> downLoadImages;
-        try {
-            downLoadImages = bingService.downLoadImages(images);
-        } catch (ExecutionException | InterruptedException e) {
-            log.error(e.getMessage());
-            throw new TipException(e.getMessage());
-        }
-
-        bingWallpaperService.save(coverStory, images);
-        try {
-            bingWallpaperService.save(downLoadImages, images.getNameAndCode());
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new TipException(e.getMessage());
-        }
-    }
-
-    public static String getRssXml(List<BingWallpaper> wallpapers) throws FeedException {
+    /**
+     * 构建 RSS 订阅的 XML 内容
+     */
+    public static String getRssXml(List<BingWallpaper> wallpapers, CountryCode country) throws FeedException {
         Channel channel = new Channel("rss_2.0");
         channel.setTitle(BingWallpaperConst.HEAD_TITLE);
         channel.setLink(BingWallpaperConst.SITE_URL);
         channel.setDescription(BingWallpaperConst.META_DESCRIPTION);
-        channel.setLanguage("zh-CN");
+        channel.setLanguage(country.code());
         channel.setCopyright(BingWallpaperConst.META_AUTHOR);
 
         List<Item> items = new ArrayList<>();
@@ -120,12 +93,12 @@ public final class SiteUtils {
             Content content = new Content();
             String url = BingWallpaperConst.SITE_URL + Site.imgHref(wallpaper, "1920x1080");
             content.setValue("<img src=\"" + url + "\" border=\"0\"/><h2>"
-                    + wallpaper.getTitle() + " —— " + wallpaper.getAttribute() + " | " + wallpaper.detailedLocation() + "</h2><h4>"
+                    + wallpaper.getTitle() + " —— " + wallpaper.getCaption() + "</h2><h4>"
                     + wallpaper.getDescription() + "</h4>");
             item.setContent(content);
 
             item.setLink(BingWallpaperConst.SITE_URL + Site.detailsHref(wallpaper));
-            item.setPubDate(DateKit.toDate(wallpaper.getShowDate(), BingWallpaperConst.DATE_PATTERN_DB));
+            item.setPubDate(Date.from(Instant.ofEpochMilli(wallpaper.getDate())));
             items.add(item);
         });
         channel.setItems(items);

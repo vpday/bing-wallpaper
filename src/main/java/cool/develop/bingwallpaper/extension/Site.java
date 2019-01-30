@@ -3,6 +3,7 @@ package cool.develop.bingwallpaper.extension;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.service.SiteService;
 import io.github.biezhi.anima.Anima;
@@ -11,8 +12,12 @@ import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 import jetbrick.template.runtime.InterpretContext;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 全站函数
@@ -35,9 +40,8 @@ public final class Site {
      * 获取页面标题
      */
     public static String headTitle(String hashCode) {
-        Request request = WebContext.request();
-        String pageType = request.attribute("page_type");
-        Integer pageNum = request.attribute("page_num");
+        String pageType = getRequestAttribute("page_type");
+        Integer pageNum = getRequestAttribute("page_num");
 
         if (null != pageType && null != pageNum) {
             String text = BingWallpaperConst.HEAD_TITLE;
@@ -54,7 +58,7 @@ public final class Site {
         String title;
         BingWallpaper bingWallPaper = currentBingWallPaper();
         if (Objects.nonNull(bingWallPaper)) {
-            title = bingWallPaper.getTitle() + " | " + bingWallPaper.getAttribute();
+            title = bingWallPaper.getTitle() + " | " + bingWallPaper.getCaption();
         } else {
             title = siteService.getTitle(hashCode);
         }
@@ -66,8 +70,7 @@ public final class Site {
      * 获取页面关键字
      */
     public static String metaKeywords(String hashCode) {
-        Request request = WebContext.request();
-        String pageType = request.attribute("page_type");
+        String pageType = getRequestAttribute("page_type");
 
         if (null != pageType && pageType.equals(hashCode)) {
             return BingWallpaperConst.META_KEYWORDS;
@@ -85,8 +88,7 @@ public final class Site {
      * 获取页面描述
      */
     public static String metaDescription(String hashCode) {
-        Request request = WebContext.request();
-        String pageType = request.attribute("page_type");
+        String pageType = getRequestAttribute("page_type");
 
         if (null != pageType && pageType.equals(hashCode)) {
             return BingWallpaperConst.META_DESCRIPTION;
@@ -104,8 +106,7 @@ public final class Site {
      * 获取页面创作者
      */
     public static String metaAuthor(String hashCode) {
-        Request request = WebContext.request();
-        String pageType = request.attribute("page_type");
+        String pageType = getRequestAttribute("page_type");
 
         if (null != pageType && pageType.equals(hashCode)) {
             return BingWallpaperConst.META_AUTHOR;
@@ -120,19 +121,52 @@ public final class Site {
     }
 
     /**
+     * 获取全部语言编码
+     */
+    public static CountryCode[] getAllCountry() {
+        return CountryCode.values();
+    }
+
+    /**
+     * 获取图片全称
+     */
+    public static String getFileName(BingWallpaper bingWallPaper) {
+        return bingWallPaper.getName() + ".jpg";
+    }
+
+    /**
      * 获取图片的访问 URL
      */
     public static String imgHref(BingWallpaper bingWallPaper, String resolution) {
-        String imgName = bingWallPaper.getName() + "_" + bingWallPaper.getCode();
-
-        return "/wallpapers/" + imgName + "/" + imgName + "_" + resolution + ".jpg";
+        String name = bingWallPaper.getName();
+        return "/wallpapers/" + name + "/" + name + "_" + resolution + ".jpg";
     }
 
     /**
      * 获取壁纸详情页面的 URL
      */
     public static String detailsHref(BingWallpaper bingWallPaper) {
-        return "/details/" + bingWallPaper.getName() + "/" + bingWallPaper.getCode();
+        return "/details/" + bingWallPaper.getName();
+    }
+
+    /**
+     * 获取归属地
+     */
+    public static String attribute(BingWallpaper bingWallPaper) {
+        return siteService.getAttribute(bingWallPaper.getName());
+    }
+
+    /**
+     * 获取 Google Map Url
+     */
+    public static String mapUrl(BingWallpaper bingWallPaper) {
+        return siteService.getMapUrl(bingWallPaper.getName());
+    }
+
+    public static String unixTimeToString(long unixTime) {
+        SimpleDateFormat format = new SimpleDateFormat(BingWallpaperConst.DATE_PATTERN);
+        Date date = Date.from(Instant.ofEpochMilli(unixTime));
+        return format.format(date);
     }
 
     /**
@@ -141,36 +175,40 @@ public final class Site {
     public static Page<BingWallpaper> wallPapers() {
         Request request = WebContext.request();
 
-        Integer pageNum = request.attribute("page_num");
-        Integer page = null == pageNum ? 1 : pageNum;
-        Integer pageLimit = request.attribute("page_limit");
-        Integer limit = null == pageLimit ? 1 : pageLimit;
-        String pageType1 = request.attribute("page_type");
-        String type = null == pageType1 ? "index" : pageType1;
+        Optional<Integer> optionalPage = Optional.of(request.attribute("page_num"));
+        Integer page = optionalPage.orElse(1);
 
-        Page<BingWallpaper> wallPapers = settingSortingType(Anima.select().from(BingWallpaper.class), type).page(page, limit);
+        Optional<Integer> optionalLimit = Optional.of(request.attribute("page_limit"));
+        Integer limit = optionalLimit.orElse(1);
+
+        Optional<String> optionalType = Optional.of(request.attribute("page_type"));
+        String type = optionalType.orElse("index");
+
+        Optional<CountryCode> optionalCountry = Optional.of(request.attribute("country_code"));
+        CountryCode country = optionalCountry.orElse(CountryCode.ZH_CN);
+
+        Page<BingWallpaper> wallPapers = getPaging(page, limit, type, country);
         request.attribute("wallPapers", wallPapers);
 
         return wallPapers;
     }
 
-    private static AnimaQuery<BingWallpaper> settingSortingType(AnimaQuery<BingWallpaper> query, String type) {
+    /**
+     * 构建分页查询
+     */
+    private static Page<BingWallpaper> getPaging(Integer page, Integer limit, String type, CountryCode country) {
+        AnimaQuery<BingWallpaper> query = Anima.select().from(BingWallpaper.class)
+                .where(BingWallpaper::getCountry, country.code());
+
         if (BingWallpaperConst.TOP_CODE.equals(type)) {
             query.order(BingWallpaper::getLikes, OrderBy.DESC);
         } else if (BingWallpaperConst.DOWN_CODE.equals(type)) {
             query.order(BingWallpaper::getDownloads, OrderBy.DESC);
         } else {
-            query.order(BingWallpaper::getBid, OrderBy.DESC);
+            query.order(BingWallpaper::getDate, OrderBy.DESC);
         }
 
-        return query;
-    }
-
-    /**
-     * 获取图片全称
-     */
-    public static String getFileName(BingWallpaper bingWallPaper) {
-        return bingWallPaper.getName() + "_" + bingWallPaper.getCode() + ".jpg";
+        return query.page(page, limit);
     }
 
     /**
@@ -180,10 +218,10 @@ public final class Site {
         InterpretContext ctx = InterpretContext.current();
         Object value = ctx.getValueStack().getValue("wallPaper");
 
-        if (null != value) {
-            return (BingWallpaper) value;
-        }
+        return null == value ? null : (BingWallpaper) value;
+    }
 
-        return null;
+    private static <T> T getRequestAttribute(String name) {
+        return WebContext.request().attribute(name);
     }
 }

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
  * @create 2018/11/23
  */
 @Slf4j
-public class BasisTest{
+public class BasisTest {
 
     @Test
     public void testParseUrlBase() {

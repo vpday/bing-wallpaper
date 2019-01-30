@@ -1,6 +1,5 @@
 package cool.develop.bingwallpaper.model.entity;
 
-import com.blade.kit.StringKit;
 import io.github.biezhi.anima.Model;
 import io.github.biezhi.anima.annotation.Table;
 import lombok.Data;
@@ -14,11 +13,11 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Table(name = "t_bing_wall_paper", pk = "bid")
+@Table(name = "t_bing_wallpaper", pk = "bid")
 public class BingWallpaper extends Model {
 
     /**
-     * 必应壁纸表主键
+     * 表主键
      */
     private Integer bid;
 
@@ -26,6 +25,11 @@ public class BingWallpaper extends Model {
      * 图片 hash 码
      */
     private String hash;
+
+    /**
+     * 展示日期
+     */
+    private Long date;
 
     /**
      * 图片名称
@@ -43,9 +47,9 @@ public class BingWallpaper extends Model {
     private String title;
 
     /**
-     * 归属地
+     * 说明
      */
-    private String attribute;
+    private String caption;
 
     /**
      * 描述
@@ -58,44 +62,9 @@ public class BingWallpaper extends Model {
     private String copyright;
 
     /**
-     * 版权链接
-     */
-    private String copyrightLink;
-
-    /**
-     * 展示日期
-     */
-    private String showDate;
-
-    /**
-     * 经度
-     */
-    private Double longitude;
-
-    /**
-     * 纬度
-     */
-    private Double latitude;
-
-    /**
-     * Google Map 链接
-     */
-    private String mapUrl;
-
-    /**
-     * 所属洲（大陆）
-     */
-    private String continent;
-
-    /**
-     * 国家
+     * 国家编码
      */
     private String country;
-
-    /**
-     * 城市
-     */
-    private String city;
 
     /**
      * 点击次数
@@ -115,15 +84,14 @@ public class BingWallpaper extends Model {
     public BingWallpaper() {
     }
 
-    public BingWallpaper(String hash, String title, String attribute, String description, String copyright, String copyrightLink, String showDate, String continent) {
+    public BingWallpaper(String hash, Long date, String copyright, String country, Integer hits, Integer likes, Integer downloads) {
         this.hash = hash;
-        this.title = title;
-        this.attribute = attribute;
-        this.description = description;
+        this.date = date;
         this.copyright = copyright;
-        this.copyrightLink = copyrightLink;
-        this.showDate = showDate;
-        this.continent = continent;
+        this.country = country;
+        this.hits = hits;
+        this.likes = likes;
+        this.downloads = downloads;
     }
 
     public void parseUrlBase(String urlBase) {
@@ -133,28 +101,8 @@ public class BingWallpaper extends Model {
         this.code = nameAndCode.substring((nameAndCode.lastIndexOf("_") + 1));
     }
 
-    public String getFullName() {
-        return this.getName() + "_" + this.getCode();
-    }
-
     public String getKeywords() {
-        return this.getCopyright() + ", " + this.getTitle() + ", " + this.getAttribute() + ", " + this.detailedLocation() + ", " + this.getShowDate();
-    }
-
-    /**
-     * 获取组合地址
-     */
-    public String detailedLocation() {
-        StringBuilder location = new StringBuilder();
-        location.append(this.getContinent());
-
-        if (StringKit.isNotEmpty(this.getCountry())) {
-            location.append(", ").append(this.getCountry());
-        }
-        if (StringKit.isNotEmpty(this.getCity())) {
-            location.append(", ").append(this.getCity());
-        }
-
-        return location.toString();
+        return this.getName() + ", " + this.getCopyright() + ", " +
+                this.getTitle() + ", " + this.getCaption() + ", " + this.getDate();
     }
 }

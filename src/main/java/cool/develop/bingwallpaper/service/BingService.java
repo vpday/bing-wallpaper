@@ -2,18 +2,22 @@ package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
 import com.blade.kit.JsonKit;
-import com.blade.kit.NamedThreadFactory;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.CoverStory;
-import cool.develop.bingwallpaper.model.dto.ImageArchive;
-import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.dto.Resolution;
+import cool.develop.bingwallpaper.model.dto.*;
 import cool.develop.bingwallpaper.utils.SiteUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * Bing Service
@@ -23,19 +27,29 @@ import java.util.concurrent.*;
  */
 @Bean
 public class BingService {
+
     /**
-     * 获取当日 Bing 故事
+     * 可获取最近几天的封面故事
      */
-    public CoverStory getCoverStory() {
-        String json = SiteUtils.requestBing(BingWallpaperConst.COVER_STORY);
-        return JsonKit.formJson(json, CoverStory.class);
+    public LifeInfo getLifeInfo(LocalDate date) throws IOException {
+        String newUrl = BingWallpaperConst.LIFE + date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        Document document = Jsoup.connect(newUrl).userAgent(BingWallpaperConst.USER_AGENT).get();
+
+        return LifeInfo.parseDocument(document);
     }
 
     /**
      * 获取当日图片存档
      */
     public Images getImageArchiveByToDay() {
-        String json = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 1));
+        return this.getImageArchiveByToDay(CountryCode.ZH_CN);
+    }
+
+    /**
+     * 获取当日图片存档
+     */
+    public Images getImageArchiveByToDay(CountryCode country) {
+        String json = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 1, country.code()));
         ImageArchive imageArchive = JsonKit.formJson(json, ImageArchive.class);
 
         return imageArchive.getImages().get(0);
@@ -45,10 +59,17 @@ public class BingService {
      * 获取最近 15 天的图片存档
      */
     public List<Images> getImageArchiveByFifteenDays() {
-        String sevenDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 7));
+        return this.getImageArchiveByFifteenDays(CountryCode.ZH_CN);
+    }
+
+    /**
+     * 获取最近 15 天的图片存档
+     */
+    public List<Images> getImageArchiveByFifteenDays(CountryCode country) {
+        String sevenDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 7, country.code()));
         List<Images> images = ((ImageArchive) JsonKit.formJson(sevenDays, ImageArchive.class)).getImages();
 
-        String eightDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(16, 8));
+        String eightDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(16, 8, country.code()));
         images.addAll(((ImageArchive) JsonKit.formJson(eightDays, ImageArchive.class)).getImages());
 
         return images;
@@ -60,15 +81,14 @@ public class BingService {
     public Map<String, byte[]> downLoadImages(Images images) throws ExecutionException, InterruptedException {
         List<String> urlAll = new ArrayList<>(Resolution.RESOLUTIONS.size());
         List<String> imageNames = new ArrayList<>(Resolution.RESOLUTIONS.size());
-
-        String nameAndCode = images.getNameAndCode();
+        String name = images.getName();
 
         Resolution.RESOLUTIONS.forEach(var -> {
             String suffix = "_" + var.getWidth() + "x" + var.getHeight() + BingWallpaperConst.IMAGE_FILE_SUFFIX;
-            String url = BingWallpaperConst.CN_BING + images.getUrlBase() + suffix;
+            String url = BingWallpaperConst.BING + images.getUrlBase() + suffix;
 
             urlAll.add(url);
-            imageNames.add(nameAndCode + suffix);
+            imageNames.add(name + suffix);
         });
 
         int initialCapacity = (int) Math.pow(2, (Resolution.RESOLUTIONS.size() * 1.0) / 2 + 1);
@@ -85,17 +105,14 @@ public class BingService {
         int initialCapacity = urlAll.size();
         List<Future<byte[]>> futures = new ArrayList<>(initialCapacity);
 
-        ExecutorService executorService = new ThreadPoolExecutor(initialCapacity, initialCapacity + 2,
-                0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingDeque<Runnable>(1024),
-                new NamedThreadFactory("downLoad"),
-                new ThreadPoolExecutor.AbortPolicy());
+        ExecutorService executorService = SiteUtils.newFixedThreadPool(initialCapacity, "downLoadImg@");
 
         urlAll.forEach(var -> {
             Future<byte[]> future = executorService.submit(() -> SiteUtils.downLoadWallpaper(var));
             futures.add(future);
         });
 
+        executorService.shutdown();
         return futures;
     }
 }
