@@ -15,16 +15,16 @@
             <em class="t">返回</em>
         </a>
         #if (mapUrl(wallPaper))
-        <a class="ctrl share" href="${mapUrl(wallPaper)}" title="Google Map 查看">
+        <a id="event-share" class="ctrl share" href="${mapUrl(wallPaper)}" title="Google Map 查看">
             <i class="icon icon-share"></i>
             <em class="t">去看看</em>
         </a>
         #end
-        <span class="ctrl heart">
+        <span id="event-heart" class="ctrl heart">
             <i class="icon icon-heart"></i>
             <em class="t">${wallPaper.likes}</em>
         </span>
-        <a class="ctrl download">
+        <a id="event-download" class="ctrl download">
             <i class="icon icon-download"></i>
             <em class="t">${wallPaper.downloads}</em>
         </a>
