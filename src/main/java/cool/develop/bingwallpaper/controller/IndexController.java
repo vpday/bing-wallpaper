@@ -3,9 +3,13 @@ package cool.develop.bingwallpaper.controller;
 import com.blade.ioc.annotation.Inject;
 import com.blade.kit.StringKit;
 import com.blade.mvc.annotation.*;
-import com.blade.mvc.http.*;
+import com.blade.mvc.http.ByteBody;
+import com.blade.mvc.http.Request;
+import com.blade.mvc.http.Response;
+import com.blade.mvc.http.Session;
 import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import cool.develop.bingwallpaper.exception.NotFoundException;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
@@ -14,10 +18,7 @@ import cool.develop.bingwallpaper.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 首页、壁纸详情页
@@ -96,13 +97,11 @@ public class IndexController {
             return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
         }
 
-        BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(name, code);
-        if (Objects.isNull(bingWallPaper)) {
-            return "comm/error_404";
-        }
+        Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, code);
+        BingWallpaper bingWallpaper = optionalObj.orElseThrow(NotFoundException::new);
 
-        bingWallpaperService.updateBingWallpaperByHits(name, code, (bingWallPaper.getHits() + 1));
-        request.attribute("wallPaper", bingWallPaper);
+        bingWallpaperService.updateBingWallpaperByHits(name, code, (bingWallpaper.getHits() + 1));
+        request.attribute("wallPaper", bingWallpaper);
 
         return "details";
     }
@@ -118,13 +117,11 @@ public class IndexController {
 
         CountryCode countryCode = CountryCode.getCountryCode(request.cookie(BingWallpaperConst.COUNTRY));
 
-        BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(name, countryCode);
-        if (Objects.isNull(bingWallPaper)) {
-            return "comm/error_404";
-        }
+        Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, countryCode);
+        BingWallpaper bingWallpaper = optionalObj.orElseThrow(NotFoundException::new);
 
-        bingWallpaperService.updateBingWallpaperByHits(name, countryCode, (bingWallPaper.getHits() + 1));
-        request.attribute("wallPaper", bingWallPaper);
+        bingWallpaperService.updateBingWallpaperByHits(name, countryCode, (bingWallpaper.getHits() + 1));
+        request.attribute("wallPaper", bingWallpaper);
 
         return "details";
     }

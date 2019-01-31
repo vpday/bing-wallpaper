@@ -16,7 +16,7 @@ $(function () {
     });
 
     $(document).off(click, ".ctrl.download").on(click, ".ctrl.download", function (e) {
-        var options = $(this).parent(".options").attr("code");
+        var options = $(this).parent(".options");
         var code = options.attr("code");
         var fileName = options.attr("fileName");
         var formData = "code=" + code + "&_token=" + toke;

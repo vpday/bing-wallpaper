@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author vpday
@@ -42,20 +43,20 @@ public class BingWallpaperService {
         return 0 == animaQuery.count();
     }
 
-    public BingWallpaper getBingWallpaper(String name, String code) {
+    public Optional<BingWallpaper> getBingWallpaper(String name, String code) {
         AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getName, name)
                 .and(BingWallpaper::getCode, code);
 
-        return animaQuery.one();
+        return Optional.ofNullable(animaQuery.one());
     }
 
-    public BingWallpaper getBingWallpaper(String name, CountryCode countryCode) {
+    public Optional<BingWallpaper> getBingWallpaper(String name, CountryCode countryCode) {
         AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getName, name)
                 .and(BingWallpaper::getCountry, countryCode.code());
 
-        return animaQuery.one();
+        return Optional.ofNullable(animaQuery.one());
     }
 
     public BingWallpaper getBingWallpaper(String hash) {
