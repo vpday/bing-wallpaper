@@ -30,16 +30,26 @@
         </a>
     </div>
     <div class="description">
+        #if (wallPaper.title)
         <p class="title">${wallPaper.title}</p>
+        #else
+        <p class="title">${wallPaper.copyright}</p>
+        #end
+        #if (wallPaper.caption)
         <p>${wallPaper.caption}</p>
+        #end
+        #if (wallPaper.description)
         <p class="sub">${wallPaper.description}</p>
+        #end
         <p class="icon icon-calendar">
             <em class="t">${unixTimeToString(wallPaper.date)}</em>
         </p>
+        #if (attribute(wallPaper))
         <p class="location">
             <i class="icon icon-location"></i>
             <em class="t">${attribute(wallPaper)}</em>
         </p>
+        #end
         <p class="view">
             <i class="icon icon-eye"></i>
             <em class="t">${wallPaper.hits}</em>

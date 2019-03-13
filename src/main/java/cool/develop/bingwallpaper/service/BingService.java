@@ -31,6 +31,7 @@ public class BingService {
     /**
      * 可获取最近几天的封面故事
      */
+    @Deprecated
     public LifeInfo getLifeInfo(LocalDate date) throws IOException {
         String newUrl = BingWallpaperConst.LIFE + date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         Document document = Jsoup.connect(newUrl).userAgent(BingWallpaperConst.USER_AGENT).get();

@@ -6,14 +6,11 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.dto.LifeInfo;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,23 +35,17 @@ public class ServiceHandle {
     /**
      * 获取并存储当日必应壁纸
      */
-    public void saveBingWallpaper() throws IOException {
-        LocalDate showDate = LocalDate.now();
-        long epochMilli = showDate.atStartOfDay(ZoneId.systemDefault())
-                .toInstant().toEpochMilli();
-
-        // 获取封面故事信息
-        LifeInfo lifeInfo = bingService.getLifeInfo(showDate);
-        lifeInfo.setDate(epochMilli);
-
+    public void saveBingWallpaper() {
         CountryCode[] countryCode = CountryCode.values();
         ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, "country@");
+
         for (CountryCode var : countryCode) {
             executorService.submit(() -> {
                 // 获取图片存档信息
                 Images images = bingService.getImageArchiveByToDay(var);
+                long epochMilli = SiteUtils.parseDate(var, images);
                 try {
-                    this.saveImage(var, images, lifeInfo);
+                    this.saveImage(var, images, epochMilli);
                 } catch (ExecutionException | InterruptedException | IOException e) {
                     log.error(e.getMessage());
                     throw new TipException(e.getMessage());
@@ -83,33 +74,29 @@ public class ServiceHandle {
         executorService.shutdown();
     }
 
+    /**
+     * 为每个国家都开启一个线程处理
+     */
     private void useMultiThread(ExecutorService executorService, CountryCode country, List<Images> images) {
-        LocalDate localDate = LocalDate.now();
-
         executorService.submit(() -> {
             int length = images.size();
             ExecutorService executorService2 = SiteUtils.newFixedThreadPool(length, "images@");
 
-            for (int i = 0; i < length; i++) {
-                LocalDate showDate = localDate.minusDays(length - 1 - i);
-                this.useMultiThread2(executorService2, showDate, country, images.get(i));
+            for (Images image : images) {
+                this.useMultiThread2(executorService2, country, image);
             }
 
             executorService2.shutdown();
         });
     }
 
-    private void useMultiThread2(ExecutorService executorService2, LocalDate showDate, CountryCode country, Images images) {
-        long epochMilli = showDate.atStartOfDay(ZoneId.systemDefault())
-                .toInstant().toEpochMilli();
-
+    /**
+     * 每张图片都开启一个保存图片的线程
+     */
+    private void useMultiThread2(ExecutorService executorService2, CountryCode country, Images images) {
         executorService2.submit(() -> {
             try {
-                // 获取封面故事信息
-                LifeInfo lifeInfo = bingService.getLifeInfo(showDate);
-                lifeInfo.setDate(epochMilli);
-                // 保持图片
-                this.saveImage(country, images, lifeInfo);
+                this.saveImage(country, images, SiteUtils.parseDate(country, images));
             } catch (ExecutionException | InterruptedException | IOException e) {
                 log.error(e.getMessage());
                 throw new TipException(e.getMessage());
@@ -117,13 +104,10 @@ public class ServiceHandle {
         });
     }
 
-    private void saveImage(CountryCode country, Images images, LifeInfo lifeInfo)
+    private void saveImage(CountryCode country, Images images, Long date)
             throws ExecutionException, InterruptedException, IOException {
         // 存储数据
-        bingWallpaperService.save(lifeInfo, images, country);
-        if (country.equals(CountryCode.ZH_CN)) {
-            bingWallpaperService.save(images.getName(), lifeInfo);
-        }
+        bingWallpaperService.save(date, images, country);
 
         String pathName = BingWallpaperConst.BING_WALLPAPER_DIR + "/" + images.getName();
         if (FileUtils.isNotExistFile(pathName)) {

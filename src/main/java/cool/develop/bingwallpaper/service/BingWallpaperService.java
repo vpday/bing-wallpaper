@@ -11,6 +11,8 @@ import cool.develop.bingwallpaper.model.entity.FilmingLocation;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
+import io.github.biezhi.anima.core.JoinParam;
+import io.github.biezhi.anima.core.Joins;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +54,12 @@ public class BingWallpaperService {
     }
 
     public Optional<BingWallpaper> getBingWallpaper(String name, CountryCode countryCode) {
+        JoinParam param = Joins.with(FilmingLocation.class).as(BingWallpaper::getFilmingLocation)
+                .on(BingWallpaper::getName, FilmingLocation::getName);
+        param.setFieldName("filmingLocation");
+
         AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
+                .join(param)
                 .where(BingWallpaper::getName, name)
                 .and(BingWallpaper::getCountry, countryCode.code());
 
@@ -93,26 +100,18 @@ public class BingWallpaperService {
     /**
      * 保存信息到数据库
      */
-    public synchronized void save(LifeInfo lifeInfo, Images images, CountryCode country) {
+    public synchronized void save(Long date, Images images, CountryCode country) {
         BingWallpaper bingWallPaper = new BingWallpaper(
                 images.getHsh(),
-                lifeInfo.getDate(),
+                date,
                 images.getCopyright(),
                 country.code(),
                 1, 1, 1
         );
 
-        String title = images.getTitle();
-        String caption = images.getCaption();
-        String desc = images.getDesc();
-        if (country.equals(CountryCode.ZH_CN)) {
-            title = lifeInfo.getTitle();
-            caption = lifeInfo.getCaption();
-            desc = lifeInfo.getDescription();
-        }
-        bingWallPaper.setTitle(title);
-        bingWallPaper.setCaption(caption);
-        bingWallPaper.setDescription(desc);
+        bingWallPaper.setTitle(images.getTitle());
+        bingWallPaper.setCaption(images.getCaption());
+        bingWallPaper.setDescription(images.getDesc());
 
         bingWallPaper.parseUrlBase(images.getUrlBase());
         bingWallPaper.save();
@@ -121,6 +120,7 @@ public class BingWallpaperService {
     /**
      * 保存拍摄地点信息
      */
+    @Deprecated
     public synchronized void save(String name, LifeInfo lifeInfo) {
         FilmingLocation filmingLocation = new FilmingLocation(name, lifeInfo.getAttribute());
 

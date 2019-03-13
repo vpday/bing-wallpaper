@@ -27,14 +27,11 @@ public class ImageArchiveTest {
             "fr-CH", "ar-SA", "zh-TW", "tr-TR", "es-ES",
             "zh-HK", "en-SG", "en-NZ", "it-IT", "en-IN",
             "en-ID", "en-GB", "es-CL", "zh-CN"};
-    private static final String IMAGE_ARCHIVE = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&pid=hp&video=1&setmkt=";
+    private static final String IMAGE_ARCHIVE = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&pid=hp&video=1&setlang=en-us&setmkt=";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.62 Safari/537.36";
 
     @Test
     public void testDifferentCountries() {
-        System.out.println(this.requestBing("https://www2.bing.com/cnhp/coverstory?mkt=zh-CN"));
-        System.out.println(this.requestBing("https://global.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&pid=hp&video=1&setmkt=zh-CN"));
-
         List<Future<String>> futures = this.useMultiThreadRequest(this.buildRequestUrl());
         try {
             this.showResult(futures);
@@ -50,7 +47,7 @@ public class ImageArchiveTest {
         ExecutorService executorService = new ThreadPoolExecutor(initialCapacity, initialCapacity + 2,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingDeque<>(1024),
-                new NamedThreadFactory("downLoad"),
+                new NamedThreadFactory("downLoad@"),
                 new ThreadPoolExecutor.AbortPolicy());
 
         urlAll.forEach(var -> {
@@ -84,7 +81,8 @@ public class ImageArchiveTest {
                 String copyright = imgInfo.get("copyright").getAsString();
 
                 if (!(null == title || title.isEmpty())) {
-                    System.out.println(String.format("CountryCode: %s ,CopyrightOnly: %s", LANGUAGE_CODES[i], copyright));
+                    String date = imgInfo.get("date").getAsString();
+                    System.out.println(String.format("CountryCode: %s ,Date: %s", LANGUAGE_CODES[i], date));
                 }
             }
         }

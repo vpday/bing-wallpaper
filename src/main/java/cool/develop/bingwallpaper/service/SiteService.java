@@ -1,10 +1,10 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
+import com.blade.kit.StringKit;
 import com.sun.syndication.io.FeedException;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import cool.develop.bingwallpaper.model.entity.FilmingLocation;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.enums.OrderBy;
@@ -21,7 +21,8 @@ import java.util.List;
 public class SiteService {
 
     public String getTitle(String hash) {
-        return this.getBingWallpaperByHash(hash).getTitle();
+        BingWallpaper bingWallpaper = this.getBingWallpaperByHash(hash);
+        return StringKit.isBlank(bingWallpaper.getTitle()) ? bingWallpaper.getCopyright() : bingWallpaper.getTitle();
     }
 
     public String getCopyright(String hash) {
@@ -36,16 +37,6 @@ public class SiteService {
         return this.getBingWallpaperByHash(hash).getDescription();
     }
 
-    public String getAttribute(String name) {
-        FilmingLocation filmingLocation = this.getFilmingLocationByName(name);
-        return null == filmingLocation ? "" : filmingLocation.getAttribute();
-    }
-
-    public String getMapUrl(String name) {
-        FilmingLocation filmingLocation = this.getFilmingLocationByName(name);
-        return null == filmingLocation ? "" : filmingLocation.getMapUrl();
-    }
-
     public String getRssXml(CountryCode countryCode) throws FeedException {
         List<BingWallpaper> bingWallpapers = Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getCountry, countryCode.code())
@@ -57,10 +48,5 @@ public class SiteService {
     private BingWallpaper getBingWallpaperByHash(String hash) {
         return Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getHash, hash).one();
-    }
-
-    private FilmingLocation getFilmingLocationByName(String name) {
-        return Anima.select().from(FilmingLocation.class)
-                .where(FilmingLocation::getName, name).one();
     }
 }

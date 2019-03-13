@@ -55,10 +55,12 @@
                     <i class="icon icon-calendar"></i>
                     <em class="t">${unixTimeToString(wallPaper.date)}</em>
                 </p>
+                #if (attribute(wallPaper))
                 <p class="location">
                     <i class="icon icon-location"></i>
                     <em class="t">${attribute(wallPaper)}</em>
                 </p>
+                #end
                 <p class="view">
                     <i class="icon icon-eye"></i>
                     <em class="t">${wallPaper.hits}</em>

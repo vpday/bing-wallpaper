@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
  * @create 2019/1/25
  */
 @Data
+@Deprecated
 public class LifeInfo {
     /**
      * 展示日期

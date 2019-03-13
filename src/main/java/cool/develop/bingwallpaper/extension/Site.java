@@ -1,13 +1,17 @@
 package cool.develop.bingwallpaper.extension;
 
+import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
+import cool.develop.bingwallpaper.model.entity.FilmingLocation;
 import cool.develop.bingwallpaper.service.SiteService;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
+import io.github.biezhi.anima.core.JoinParam;
+import io.github.biezhi.anima.core.Joins;
 import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 import jetbrick.template.runtime.InterpretContext;
@@ -52,18 +56,28 @@ public final class Site {
                 text = "下载榜 | " + BingWallpaperConst.HEAD_TITLE;
             }
 
-            return text + " | 第" + pageNum + "页";
+            return text + " | 第 " + pageNum + " 页";
         }
 
-        String title;
+        StringBuilder title = new StringBuilder();
         BingWallpaper bingWallPaper = currentBingWallPaper();
         if (Objects.nonNull(bingWallPaper)) {
-            title = bingWallPaper.getTitle() + " | " + bingWallPaper.getCaption();
-        } else {
-            title = siteService.getTitle(hashCode);
-        }
 
-        return title + " | " + BingWallpaperConst.HEAD_TITLE;
+            if (!StringKit.isBlank(bingWallPaper.getTitle())) {
+                title.append(bingWallPaper.getTitle());
+            } else {
+                title.append(bingWallPaper.getCopyright());
+            }
+            if (!StringKit.isBlank(bingWallPaper.getCaption())) {
+                title.append(" | ").append(bingWallPaper.getCaption());
+            }
+
+        } else {
+            title.append(siteService.getTitle(hashCode));
+        }
+        title.append(" | ").append(BingWallpaperConst.HEAD_TITLE);
+
+        return title.toString();
     }
 
     /**
@@ -153,14 +167,22 @@ public final class Site {
      * 获取归属地
      */
     public static String attribute(BingWallpaper bingWallPaper) {
-        return siteService.getAttribute(bingWallPaper.getName());
+        if (!Objects.isNull(bingWallPaper.getFilmingLocation())) {
+            return bingWallPaper.getFilmingLocation().getAttribute();
+        }
+
+        return "";
     }
 
     /**
      * 获取 Google Map Url
      */
     public static String mapUrl(BingWallpaper bingWallPaper) {
-        return siteService.getMapUrl(bingWallPaper.getName());
+        if (!Objects.isNull(bingWallPaper.getFilmingLocation())) {
+            return bingWallPaper.getFilmingLocation().getMapUrl();
+        }
+
+        return "";
     }
 
     public static String unixTimeToString(long unixTime) {
@@ -197,8 +219,12 @@ public final class Site {
      * 构建分页查询
      */
     private static Page<BingWallpaper> getPaging(Integer page, Integer limit, String type, CountryCode country) {
+        JoinParam param = Joins.with(FilmingLocation.class).as(BingWallpaper::getFilmingLocation)
+                .on(BingWallpaper::getName, FilmingLocation::getName);
+        param.setFieldName("filmingLocation");
+
         AnimaQuery<BingWallpaper> query = Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getCountry, country.code());
+                .join(param).where(BingWallpaper::getCountry, country.code());
 
         if (BingWallpaperConst.TOP_CODE.equals(type)) {
             query.order(BingWallpaper::getLikes, OrderBy.DESC);

@@ -8,16 +8,12 @@ import com.blade.ioc.annotation.Inject;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.view.template.JetbrickTemplateEngine;
-import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
-import cool.develop.bingwallpaper.service.BingWallpaperService;
 import cool.develop.bingwallpaper.service.ServiceHandle;
 import cool.develop.bingwallpaper.service.SiteService;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
 
 /**
  * @author vpday
@@ -62,19 +58,9 @@ public class Bootstrap implements BladeLoader {
      * 预先添加数据
      */
     private void preAddData(Ioc ioc) {
-        try {
-            if (SqliteJdbc.IS_NEW_DB) {
-                log.info("发现数据库为新创建，自动添加最近 15 天的必应壁纸信息");
-                ioc.getBean(ServiceHandle.class).saveBingWallpaperByFifteenDays();
-
-            } else if (ioc.getBean(BingWallpaperService.class).isNotExistToDayWallpaper()) {
-                log.info("数据库中未能查询到当天必应壁纸信息，自动添加当天的必应壁纸信息");
-                // 程序启动时，判断数据库是否存在当天壁纸信息
-                ioc.getBean(ServiceHandle.class).saveBingWallpaper();
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new TipException(e.getMessage());
+        if (SqliteJdbc.IS_NEW_DB) {
+            log.info("发现数据库为新创建，自动添加最近 15 天的必应壁纸信息");
+            ioc.getBean(ServiceHandle.class).saveBingWallpaperByFifteenDays();
         }
     }
 

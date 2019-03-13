@@ -1,6 +1,7 @@
 package cool.develop.bingwallpaper.model.entity;
 
 import io.github.biezhi.anima.Model;
+import io.github.biezhi.anima.annotation.Ignore;
 import io.github.biezhi.anima.annotation.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -81,6 +82,9 @@ public class BingWallpaper extends Model {
      */
     private Integer downloads;
 
+    @Ignore
+    private FilmingLocation filmingLocation;
+
     public BingWallpaper() {
     }
 
@@ -95,7 +99,7 @@ public class BingWallpaper extends Model {
     }
 
     public void parseUrlBase(String urlBase) {
-        String nameAndCode = urlBase.substring((urlBase.lastIndexOf("/") + 1));
+        String nameAndCode = urlBase.substring((urlBase.lastIndexOf(".") + 1));
 
         this.name = nameAndCode.substring(0, nameAndCode.lastIndexOf("_"));
         this.code = nameAndCode.substring((nameAndCode.lastIndexOf("_") + 1));
