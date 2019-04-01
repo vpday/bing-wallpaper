@@ -18,8 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,15 +30,11 @@ import java.util.Optional;
 public class BingWallpaperService {
 
     /**
-     * 判断是否存在当天壁纸信息
+     * 判断是否已存在壁纸信息
      */
-    public boolean isNotExistToDayWallpaper() {
-        long today = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
-                .toInstant().toEpochMilli();
-
-        AnimaQuery<BingWallpaper> animaQuery = Anima.select()
-                .from(BingWallpaper.class)
-                .where(BingWallpaper::getDate, today);
+    public boolean isNotExistWallpaper(String hash) {
+        AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
+                .where(BingWallpaper::getHash, hash);
 
         return 0 == animaQuery.count();
     }

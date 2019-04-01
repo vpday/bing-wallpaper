@@ -5,6 +5,7 @@ import com.blade.Environment;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
+import com.blade.kit.StringKit;
 import com.blade.loader.BladeLoader;
 import com.blade.mvc.Const;
 import com.blade.mvc.view.template.JetbrickTemplateEngine;
@@ -13,7 +14,10 @@ import cool.develop.bingwallpaper.service.ServiceHandle;
 import cool.develop.bingwallpaper.service.SiteService;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
+import io.github.biezhi.ome.OhMyEmail;
 import lombok.extern.slf4j.Slf4j;
+
+import static io.github.biezhi.ome.OhMyEmail.SMTP_QQ;
 
 /**
  * @author vpday
@@ -25,6 +29,8 @@ public class Bootstrap implements BladeLoader {
 
     @Inject
     private Environment environment;
+
+    private static boolean DEV_MODE = Boolean.TRUE;
 
     @Override
     public void preLoad(Blade blade) {
@@ -52,6 +58,7 @@ public class Bootstrap implements BladeLoader {
         BingWallpaperConst.SITE_URL = environment.get("app.site_url", "");
 
         this.preAddData(blade.ioc());
+        this.preConfigEmail();
     }
 
     /**
@@ -64,15 +71,37 @@ public class Bootstrap implements BladeLoader {
         }
     }
 
+    /**
+     * 配置邮件发送
+     */
+    private void preConfigEmail() {
+        boolean isEnable = environment.getBoolean("app.qq_email.enable", Boolean.FALSE);
+        if (isEnable) {
+            String username = environment.get("app.qq_email.username", "");
+            String password = environment.get("app.qq_email.password", "");
+            String toEmail = environment.get("app.email.to_email", "");
+
+            isEnable = StringKit.isNotEmpty(username) && StringKit.isNotEmpty(password) && StringKit.isNotEmpty(toEmail);
+            if (isEnable) {
+                BingWallpaperConst.ENABLE_EMAIL = Boolean.TRUE;
+                BingWallpaperConst.TO_EMAIL = toEmail;
+                OhMyEmail.config(SMTP_QQ(false), username, password);
+            }
+        }
+    }
+
     private boolean isDevMode(Blade blade) {
-        boolean devMode = true;
         if (blade.environment().hasKey("app.dev")) {
-            devMode = blade.environment().getBoolean("app.dev", true);
+            DEV_MODE = blade.environment().getBoolean("app.dev", true);
         }
         if (blade.environment().hasKey("app.devMode")) {
-            devMode = blade.environment().getBoolean("app.devMode", true);
+            DEV_MODE = blade.environment().getBoolean("app.devMode", true);
         }
 
-        return devMode;
+        return DEV_MODE;
+    }
+
+    public static boolean devMode() {
+        return DEV_MODE;
     }
 }

@@ -31,8 +31,8 @@ public class FileUtils {
                 canonicalPath = directory.getCanonicalPath();
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new TipException(e.getMessage());
+            log.error(SiteUtils.getStackTrace(e));
+            throw new TipException(e);
         }
 
         return canonicalPath;

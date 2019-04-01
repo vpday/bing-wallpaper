@@ -1,6 +1,7 @@
 package cool.develop.bingwallpaper.utils;
 
 import com.blade.kit.NamedThreadFactory;
+import com.blade.kit.StringKit;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Content;
 import com.sun.syndication.feed.rss.Item;
@@ -15,6 +16,8 @@ import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import io.github.biezhi.request.Request;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -122,14 +125,7 @@ public final class SiteUtils {
         wallpapers.forEach(wallpaper -> {
             Item item = new Item();
             item.setTitle(wallpaper.getCopyright());
-
-            Content content = new Content();
-            String url = BingWallpaperConst.SITE_URL + Site.imgHref(wallpaper, "1920x1080");
-            content.setValue("<img src=\"" + url + "\" border=\"0\"/><h2>"
-                    + wallpaper.getTitle() + " —— " + wallpaper.getCaption() + "</h2><h4>"
-                    + wallpaper.getDescription() + "</h4>");
-            item.setContent(content);
-
+            item.setContent(buildContent(wallpaper));
             item.setLink(BingWallpaperConst.SITE_URL + Site.detailsHref(wallpaper));
             item.setPubDate(Date.from(Instant.ofEpochMilli(wallpaper.getDate())));
             items.add(item);
@@ -138,5 +134,34 @@ public final class SiteUtils {
 
         WireFeedOutput out = new WireFeedOutput();
         return out.outputString(channel);
+    }
+
+    private static Content buildContent(BingWallpaper wallpaper) {
+        Content content = new Content();
+        String url = BingWallpaperConst.SITE_URL + Site.imgHref(wallpaper, "1920x1080");
+
+        StringBuilder contentStr = new StringBuilder();
+        contentStr.append("<img src=\"").append(url).append("\" border=\"0\"/><h2>");
+        if (StringKit.isNotEmpty(wallpaper.getTitle())) {
+            contentStr.append(wallpaper.getTitle());
+        }
+        if (StringKit.isNotEmpty(wallpaper.getCaption())) {
+            contentStr.append(" —— ").append(wallpaper.getCaption());
+        }
+        contentStr.append("</h2><h4>");
+        if (StringKit.isNotEmpty(wallpaper.getDescription())) {
+            contentStr.append(wallpaper.getDescription());
+        }
+        contentStr.append("</h4>");
+
+        content.setValue(contentStr.toString());
+        return content;
+    }
+
+    public static String getStackTrace(final Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString();
     }
 }

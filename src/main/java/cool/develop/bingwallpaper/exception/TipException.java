@@ -14,4 +14,8 @@ public class TipException extends RuntimeException {
     public TipException(String message) {
         super(message);
     }
+
+    public TipException(Throwable cause) {
+        super(cause);
+    }
 }

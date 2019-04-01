@@ -31,6 +31,25 @@ public class ServiceHandle {
     @Inject
     private BingWallpaperService bingWallpaperService;
 
+    /**
+     * 获取并存储当日指定国家的必应壁纸
+     */
+    public void saveBingWallpaper(CountryCode countryCode) {
+        // 获取图片存档信息
+        Images images = bingService.getImageArchiveByToDay(countryCode);
+        // 发布该壁纸的日期
+        long epochMilli = SiteUtils.parseDate(countryCode, images);
+        try {
+            System.out.println(images.getHsh());
+            // 判断是否已存在该壁纸信息
+            if (bingWallpaperService.isNotExistWallpaper(images.getHsh())) {
+                this.saveImage(countryCode, images, epochMilli);
+            }
+        } catch (ExecutionException | InterruptedException | IOException e) {
+            log.error(SiteUtils.getStackTrace(e));
+            throw new TipException(e);
+        }
+    }
 
     /**
      * 获取并存储当日必应壁纸
@@ -39,17 +58,9 @@ public class ServiceHandle {
         CountryCode[] countryCode = CountryCode.values();
         ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, "country@");
 
-        for (CountryCode var : countryCode) {
+        for (CountryCode code : countryCode) {
             executorService.submit(() -> {
-                // 获取图片存档信息
-                Images images = bingService.getImageArchiveByToDay(var);
-                long epochMilli = SiteUtils.parseDate(var, images);
-                try {
-                    this.saveImage(var, images, epochMilli);
-                } catch (ExecutionException | InterruptedException | IOException e) {
-                    log.error(e.getMessage());
-                    throw new TipException(e.getMessage());
-                }
+                this.saveBingWallpaper(code);
             });
         }
 
@@ -96,10 +107,13 @@ public class ServiceHandle {
     private void useMultiThread2(ExecutorService executorService2, CountryCode country, Images images) {
         executorService2.submit(() -> {
             try {
-                this.saveImage(country, images, SiteUtils.parseDate(country, images));
+                // 判断是否已存在该壁纸信息
+                if (bingWallpaperService.isNotExistWallpaper(images.getHsh())) {
+                    this.saveImage(country, images, SiteUtils.parseDate(country, images));
+                }
             } catch (ExecutionException | InterruptedException | IOException e) {
-                log.error(e.getMessage());
-                throw new TipException(e.getMessage());
+                log.error(SiteUtils.getStackTrace(e));
+                throw new TipException(e);
             }
         });
     }

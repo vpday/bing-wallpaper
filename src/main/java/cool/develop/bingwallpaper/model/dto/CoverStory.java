@@ -10,6 +10,7 @@ import lombok.Data;
  * @create 2018/11/26
  */
 @Data
+@Deprecated
 public class CoverStory {
 
     /**
