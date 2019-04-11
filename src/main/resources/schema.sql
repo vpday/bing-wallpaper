@@ -15,7 +15,8 @@ CREATE TABLE "t_bing_wallpaper" (
   "country"        CHAR(5)       NOT NULL,
   "hits"           INTEGER,
   "likes"          INTEGER,
-  "downloads"      INTEGER
+  "downloads"      INTEGER,
+  CONSTRAINT "unique_hash" UNIQUE ("hash" ASC) ON CONFLICT ROLLBACK
 );
 
 -- ----------------------------

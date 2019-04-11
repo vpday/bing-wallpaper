@@ -67,7 +67,7 @@ public class Bootstrap implements BladeLoader {
     private void preAddData(Ioc ioc) {
         if (SqliteJdbc.IS_NEW_DB) {
             log.info("发现数据库为新创建，自动添加最近 15 天的必应壁纸信息");
-            ioc.getBean(ServiceHandle.class).saveBingWallpaperByFifteenDays();
+            ioc.getBean(ServiceHandle.class).initDataBases();
         }
     }
 

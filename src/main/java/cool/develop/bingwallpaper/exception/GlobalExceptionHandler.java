@@ -25,15 +25,13 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
             Response response = WebContext.response();
             response.notFound();
             response.render("comm/error_404");
-        } else if (e instanceof TipException) {
+        } else {
             // 发送邮件
             try {
                 emailService.sendErrorInfo(SiteUtils.getStackTrace(e));
             } catch (SendMailException e1) {
                 super.handle(e1);
             }
-        } else {
-            super.handle(e);
         }
     }
 }

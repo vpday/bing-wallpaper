@@ -48,6 +48,11 @@ public class Images {
         return nameAndCode.substring(0, nameAndCode.lastIndexOf("_"));
     }
 
+    public String getCode() {
+        String nameAndCode = getNameAndCode();
+        return nameAndCode.substring((nameAndCode.lastIndexOf("_") + 1));
+    }
+
     /*
         {
           "images": [
