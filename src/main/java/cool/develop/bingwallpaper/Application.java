@@ -1,8 +1,8 @@
 package cool.develop.bingwallpaper;
 
 import com.blade.Blade;
-import com.blade.security.web.csrf.CsrfMiddleware;
 import cool.develop.bingwallpaper.bootstrap.ApplicationLoader;
+import cool.develop.bingwallpaper.hooks.CustomCsrfMiddleware;
 
 /**
  * @author vpday
@@ -13,7 +13,7 @@ public class Application {
     public static void main(String[] args) {
         Blade blade = Blade.of();
         ApplicationLoader.init(blade);
-        blade.use(new CsrfMiddleware()).start(Application.class, args);
+        blade.use(new CustomCsrfMiddleware()).start(Application.class, args);
     }
 
 }
