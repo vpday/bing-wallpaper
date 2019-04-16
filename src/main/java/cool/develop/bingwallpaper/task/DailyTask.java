@@ -56,13 +56,13 @@ public class DailyTask {
     @Schedule(name = "get-daily-archive-thirteen", cron = "30 0 15 * * ?")
     public void getCoverStoryAndImageArchiveByThirteen() {
         log.info("开始执行 get-daily-archive-thirteen 任务");
-        serviceHandle.saveBingWallpaper(CountryCode.EN_CA);
+        serviceHandle.saveBingWallpaper(CountryCode.EN_US);
     }
 
     /**
      * 每周一下午十五点十分执行，补漏
      */
-    @Schedule(name = "get-daily-archive-thirteen-days", cron = "30 30 10 ? * WED")
+    @Schedule(name = "get-daily-archive-thirteen-days", cron = "0 2 15 ? * TUE")
     public void getCoverStoryAndImageArchiveByFifteenDays() {
         log.info("开始执行 get-daily-archive-thirteen-days 任务");
         serviceHandle.saveBingWallpaperByFifteenDays();

@@ -29,6 +29,7 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
             // 发送邮件
             try {
                 emailService.sendErrorInfo(SiteUtils.getStackTrace(e));
+                super.handle(e);
             } catch (SendMailException e1) {
                 super.handle(e1);
             }
