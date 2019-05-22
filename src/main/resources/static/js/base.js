@@ -5,11 +5,13 @@ $(function () {
     $(document).off(click, ".ctrl.heart").on(click, ".ctrl.heart", function (e) {
         var _this = $(this);
         var code = _this.parent(".options").attr("code");
+        var copyright = _this.parent(".options").attr("copyright");		
 
         if (_this.hasClass("active")) {
             return;
         }
 
+        ma.trackEvent('likes', 'click', copyright, 1);
         $.post("/like", {"code": code, "_token": toke}, function (data) {
             _this.addClass("active").children("em").html(data.payload);
         }, "json");
@@ -19,8 +21,10 @@ $(function () {
         var options = $(this).parent(".options");
         var code = options.attr("code");
         var fileName = options.attr("fileName");
+        var copyright = options.attr("copyright");		
         var formData = "code=" + code + "&_token=" + toke;
 
+        ma.trackEvent('download', 'click', copyright, 1);
         beforeDownloading(formData, fileName);
     });
 
