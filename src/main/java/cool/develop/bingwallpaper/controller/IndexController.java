@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.util.*;
 
+import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
+
 /**
  * 首页、壁纸详情页
  *
@@ -69,7 +71,7 @@ public class IndexController {
     }
 
     private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit) {
-        CountryCode countryCode = CountryCode.getCountryCode(request.cookie(BingWallpaperConst.COUNTRY));
+        CountryCode countryCode = CountryCode.getCountryCode(request.session().attribute(COUNTRY));
         return this.toIndex(request, pagePrefix, pageType, pageNum, pageLimit, countryCode);
     }
 
@@ -90,37 +92,19 @@ public class IndexController {
     /**
      * 必应壁纸详情页
      */
-    @Deprecated
-    @GetRoute(value = {"details/:name/:code"})
-    public String details(Request request, @PathParam String name, @PathParam String code) {
-        if (StringKit.isEmpty(name) || StringKit.isEmpty(code)) {
-            return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
-        }
-
-        Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, code);
-        BingWallpaper bingWallpaper = optionalObj.orElseThrow(NotFoundException::new);
-
-        bingWallpaperService.updateBingWallpaperByHits(name, code, (bingWallpaper.getHits() + 1));
-        request.attribute("wallPaper", bingWallpaper);
-
-        return "details";
-    }
-
-    /**
-     * 必应壁纸详情页
-     */
-    @GetRoute(value = {"details/:name"})
-    public String details(Request request, @PathParam String name) {
+    @GetRoute(value = {"details/:name", "details/:name/:lang"})
+    public String details(Request request, @PathParam String name, @PathParam String lang) {
         if (StringKit.isEmpty(name)) {
             return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
         }
 
-        CountryCode countryCode = CountryCode.getCountryCode(request.cookie(BingWallpaperConst.COUNTRY));
+        String codeStr = StringKit.isEmpty(lang) ? request.cookie(COUNTRY) : lang;
+        CountryCode countryEnum = CountryCode.getCountryCode(codeStr);
 
-        Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, countryCode);
+        Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, countryEnum);
         BingWallpaper bingWallpaper = optionalObj.orElseThrow(NotFoundException::new);
 
-        bingWallpaperService.updateBingWallpaperByHits(name, countryCode, (bingWallpaper.getHits() + 1));
+        bingWallpaperService.updateBingWallpaperByHits(name, lang, (bingWallpaper.getHits() + 1));
         request.attribute("wallPaper", bingWallpaper);
 
         return "details";
@@ -212,10 +196,10 @@ public class IndexController {
     /**
      * 设置国家编码
      */
-    @GetRoute(value = {"country/:code"})
-    public String setCountry(Request request, Response response, @PathParam String code) {
-        CountryCode country = CountryCode.getCountryCode(code);
-        response.cookie(BingWallpaperConst.COUNTRY, country.code(), (60 * 60 * 24 * 30));
+    @GetRoute(value = {"country/:lang"})
+    public String setCountry(Request request, Response response, @PathParam String lang) {
+        CountryCode country = CountryCode.getCountryCode(lang);
+        response.cookie(COUNTRY, country.code(), (60 * 60 * 24 * 30));
 
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12, country);
     }

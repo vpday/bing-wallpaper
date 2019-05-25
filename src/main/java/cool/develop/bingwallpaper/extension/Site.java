@@ -160,7 +160,7 @@ public final class Site {
      * 获取壁纸详情页面的 URL
      */
     public static String detailsHref(BingWallpaper bingWallPaper) {
-        return "/details/" + bingWallPaper.getName();
+        return String.format("/details/%s/%s", bingWallPaper.getName(), bingWallPaper.getCountry());
     }
 
     /**

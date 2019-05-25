@@ -5,13 +5,13 @@ $(function () {
     $(document).off(click, ".ctrl.heart").on(click, ".ctrl.heart", function (e) {
         var _this = $(this);
         var code = _this.parent(".options").attr("code");
-        var copyright = _this.parent(".options").attr("copyright");		
+        var copyright = _this.parent(".options").attr("copyright");
 
         if (_this.hasClass("active")) {
             return;
         }
 
-        ma.trackEvent('likes', 'click', copyright, 1);
+         ma.trackEvent('likes', 'click', copyright, 1);
         $.post("/like", {"code": code, "_token": toke}, function (data) {
             _this.addClass("active").children("em").html(data.payload);
         }, "json");
@@ -21,21 +21,22 @@ $(function () {
         var options = $(this).parent(".options");
         var code = options.attr("code");
         var fileName = options.attr("fileName");
-        var copyright = options.attr("copyright");		
+        var copyright = options.attr("copyright");
         var formData = "code=" + code + "&_token=" + toke;
 
-        ma.trackEvent('download', 'click', copyright, 1);
-        beforeDownloading(formData, fileName);
+         ma.trackEvent('download', 'click', copyright, 1);
+        beforeDownloading(formData, fileName, $(this).children("em"));
     });
 
-    function beforeDownloading(formData, fileName) {
+    function beforeDownloading(formData, fileName, emElement) {
         var request = new XMLHttpRequest();
         request.open("POST", "/download", true);
         request.responseType = "blob";
 
         request.onload = function () {
-            if (this.readyState === 4 && this.status === 200) {
+            if (this.status === 200) {
                 downloadImg(request, fileName);
+                updateShowNum(emElement);
             }
         };
         request.ontimeout = function () {
@@ -46,6 +47,13 @@ $(function () {
         };
 
         request.send(formData);
+    }
+
+    function updateShowNum(emElement) {
+        var number = emElement.text();
+        if (!Number.isNaN(+number)) {
+            emElement.text(++number);
+        }
     }
 
     function downloadImg(request, fileName) {
@@ -63,13 +71,18 @@ $(function () {
         } else if (window.navigator.msSaveOrOpenBlob) {
             window.navigator.msSaveBlob(blob, fileName);
         } else {
-            var downloadLink = window.document.createElement("a");
             var contentTypeHeader = request.getResponseHeader("Content-Type");
-            downloadLink.href = window.URL.createObjectURL(new Blob([blob], {type: contentTypeHeader}));
-            downloadLink.download = fileName;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            createDownloadLink(fileName, blob, contentTypeHeader);
         }
+    }
+
+    function createDownloadLink(fileName, blob, contentTypeHeader) {
+        var downloadLink = window.document.createElement("a");
+        downloadLink.href = window.URL.createObjectURL(new Blob([blob], {type: contentTypeHeader}));
+        downloadLink.download = fileName;
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
     }
 });

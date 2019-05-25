@@ -4,9 +4,11 @@ import com.blade.ioc.annotation.Bean;
 import com.blade.kit.StringKit;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.WebHook;
-import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.utils.SiteUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
 
 /**
  * @author vpday
@@ -18,9 +20,17 @@ public class BaseWebHook implements WebHook {
     @Override
     public boolean before(RouteContext context) {
 
-        String lang = context.cookie(BingWallpaperConst.COUNTRY);
-        if (StringKit.isEmpty(lang) || CountryCode.isNotExistCode(lang)) {
-            context.cookie(BingWallpaperConst.COUNTRY, CountryCode.ZH_CN.code(), 2592000);
+        String langByCookie = context.cookie(COUNTRY);
+        String langBySession = context.session().attribute(COUNTRY);
+
+        boolean isNotExist = StringKit.isEmpty(langBySession) ||
+                StringKit.isEmpty(langByCookie) ||
+                CountryCode.isNotExistCode(langByCookie);
+        if (isNotExist) {
+            String displayName = SiteUtils.acceptLanguage(context).getDisplayName();
+
+            context.session().attribute(COUNTRY, displayName);
+            context.cookie(COUNTRY, displayName, 2592000);
         }
 
         return true;

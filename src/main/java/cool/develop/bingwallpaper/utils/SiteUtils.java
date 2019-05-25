@@ -2,6 +2,7 @@ package cool.develop.bingwallpaper.utils;
 
 import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.StringKit;
+import com.blade.mvc.RouteContext;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Content;
 import com.sun.syndication.feed.rss.Item;
@@ -22,10 +23,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -163,5 +161,19 @@ public final class SiteUtils {
         final PrintWriter pw = new PrintWriter(sw, true);
         throwable.printStackTrace(pw);
         return sw.getBuffer().toString();
+    }
+
+    public static Locale acceptLanguage(RouteContext context) {
+        Locale locale = Locale.CHINA;
+
+        String languages = context.header("Accept-Language");
+        if (StringKit.isNotEmpty(languages)) {
+            Optional<Locale> useLocal = Locale.LanguageRange.parse(languages).stream()
+                    .sorted(Comparator.comparing(Locale.LanguageRange::getWeight).reversed())
+                    .map(range -> new Locale(range.getRange())).findFirst();
+            locale = useLocal.orElse(Locale.CHINA);
+        }
+
+        return locale;
     }
 }
