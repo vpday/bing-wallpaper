@@ -15,7 +15,6 @@ public final class BingWallpaperConst {
 
     public static final String COUNTRY = "country";
 
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String IMAGE_FILE_SUFFIX = ".jpg";
     public static String BING_WALLPAPER_DIR = "";
 

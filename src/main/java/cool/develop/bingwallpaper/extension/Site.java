@@ -8,6 +8,7 @@ import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
 import cool.develop.bingwallpaper.service.SiteService;
+import cool.develop.bingwallpaper.utils.DateUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
 import io.github.biezhi.anima.core.JoinParam;
@@ -16,10 +17,8 @@ import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 import jetbrick.template.runtime.InterpretContext;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -160,7 +159,7 @@ public final class Site {
      * 获取壁纸详情页面的 URL
      */
     public static String detailsHref(BingWallpaper bingWallPaper) {
-        return String.format("/details/%s/%s", bingWallPaper.getName(), bingWallPaper.getCountry());
+        return String.format("/details/%s/%s.html", bingWallPaper.getName(), bingWallPaper.getCountry());
     }
 
     /**
@@ -186,9 +185,7 @@ public final class Site {
     }
 
     public static String unixTimeToString(long unixTime) {
-        SimpleDateFormat format = new SimpleDateFormat(BingWallpaperConst.DATE_PATTERN);
-        Date date = Date.from(Instant.ofEpochMilli(unixTime));
-        return format.format(date);
+        return DateUtils.epochMilliToLocalDate(unixTime).format(DateTimeFormatter.ISO_DATE);
     }
 
     /**

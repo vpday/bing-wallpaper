@@ -39,14 +39,6 @@ public class BingWallpaperService {
         return 0 == animaQuery.count();
     }
 
-    public Optional<BingWallpaper> getBingWallpaper(String name, String code) {
-        AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getName, name)
-                .and(BingWallpaper::getCode, code);
-
-        return Optional.ofNullable(animaQuery.one());
-    }
-
     public Optional<BingWallpaper> getBingWallpaper(String name, CountryCode countryCode) {
         JoinParam param = Joins.with(FilmingLocation.class).as(BingWallpaper::getFilmingLocation)
                 .on(BingWallpaper::getName, FilmingLocation::getName);
@@ -67,17 +59,9 @@ public class BingWallpaperService {
         return animaQuery.one();
     }
 
-    public void updateBingWallpaperByHits(String name, String code, Integer hits) {
+    public void updateBingWallpaperByHits(String hash, Integer hits) {
         Anima.update().from(BingWallpaper.class)
-                .where(BingWallpaper::getName, name)
-                .and(BingWallpaper::getCode, code)
-                .set(BingWallpaper::getHits, hits).execute();
-    }
-
-    public void updateBingWallpaperByHits(String name, CountryCode countryCode, Integer hits) {
-        Anima.update().from(BingWallpaper.class)
-                .where(BingWallpaper::getName, name)
-                .and(BingWallpaper::getCountry, countryCode.code())
+                .where(BingWallpaper::getHash, hash)
                 .set(BingWallpaper::getHits, hits).execute();
     }
 

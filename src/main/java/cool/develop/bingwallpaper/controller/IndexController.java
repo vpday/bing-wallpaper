@@ -18,7 +18,11 @@ import cool.develop.bingwallpaper.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
 
@@ -98,16 +102,28 @@ public class IndexController {
             return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
         }
 
-        String codeStr = StringKit.isEmpty(lang) ? request.cookie(COUNTRY) : lang;
-        CountryCode countryEnum = CountryCode.getCountryCode(codeStr);
+        CountryCode countryEnum = this.getCountryCode(request, lang);
 
         Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, countryEnum);
         BingWallpaper bingWallpaper = optionalObj.orElseThrow(NotFoundException::new);
+        bingWallpaper.setHits(bingWallpaper.getHits() + 1);
 
-        bingWallpaperService.updateBingWallpaperByHits(name, lang, (bingWallpaper.getHits() + 1));
+        bingWallpaperService.updateBingWallpaperByHits(bingWallpaper.getHash(), bingWallpaper.getHits());
         request.attribute("wallPaper", bingWallpaper);
 
         return "details";
+    }
+
+    private CountryCode getCountryCode(Request request, String lang) {
+        String codeStr;
+        // 去除 .html 后缀
+        String regex = "^.*\\.(html)$";
+        if (StringKit.isNotEmpty(lang) && Pattern.matches(regex, lang)) {
+            codeStr = lang.substring(0, lang.lastIndexOf("."));
+        } else {
+            codeStr = StringKit.isEmpty(lang) ? request.cookie(COUNTRY) : lang;
+        }
+        return CountryCode.getCountryCode(codeStr);
     }
 
     /**
@@ -175,22 +191,6 @@ public class IndexController {
         bingWallpaperService.updateBingWallpaperByLikes(code, likes);
 
         return RestResponse.ok(likes);
-    }
-
-    /**
-     * feed 页
-     */
-    @GetRoute(value = {"feed", "feed.xml", "feed/:code", "feed/:code.xml"})
-    public void feed(Response response, @PathParam String code) {
-        CountryCode country = CountryCode.getCountryCode(code);
-
-        try {
-            String xml = siteService.getRssXml(country);
-            response.contentType("text/xml; charset=utf-8");
-            response.body(xml);
-        } catch (Exception e) {
-            log.error("生成 rss 失败", e);
-        }
     }
 
     /**

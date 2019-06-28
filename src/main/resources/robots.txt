@@ -1,2 +1,3 @@
 User-Agent: * 
 Allow: /
+Sitemap: https://bing.develop.cool/sitemap.xml

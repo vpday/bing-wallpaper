@@ -3,6 +3,7 @@ package cool.develop.bingwallpaper.utils;
 import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.StringKit;
 import com.blade.mvc.RouteContext;
+import com.blade.mvc.http.Response;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Content;
 import com.sun.syndication.feed.rss.Item;
@@ -12,17 +13,15 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
-import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import io.github.biezhi.request.Request;
+import jetbrick.template.JetEngine;
+import jetbrick.template.JetTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -37,14 +36,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public final class SiteUtils {
-
-    private static final DateTimeFormatterBuilder BUILDER = new DateTimeFormatterBuilder()
-            .parseCaseInsensitive().parseLenient()
-            .appendPattern("[MMM. dd, yyyy]")
-            .appendPattern("[MMM dd, yyyy]")
-            .appendPattern("[MM dd, yyyy]")
-            .appendPattern("[yyyyMMdd]");
-
 
     public static String buildImageArchiveUrl(Integer index, Integer number, String mkt) {
         return BingWallpaperConst.IMAGE_ARCHIVE + "?" +
@@ -75,26 +66,6 @@ public final class SiteUtils {
             log.error(message);
             throw new TipException(message);
         }
-    }
-
-    /**
-     * 解析日期
-     */
-    public static Long parseDate(CountryCode countryCode, Images images) {
-        LocalDate toParse;
-
-        if (countryCode.equals(CountryCode.ZH_CN)) {
-            toParse = LocalDate.parse(images.getEndDate(), BUILDER.toFormatter(Locale.CHINA));
-        } else if (countryCode.equals(CountryCode.JA_JP)) {
-            toParse = LocalDate.parse(images.getDate(), BUILDER.toFormatter(Locale.JAPAN));
-        } else if (countryCode.equals(CountryCode.FR_FR)) {
-            toParse = LocalDate.parse(images.getDate(), BUILDER.toFormatter(Locale.FRANCE));
-        } else if (countryCode.equals(CountryCode.DE_DE)) {
-            toParse = LocalDate.parse(images.getEndDate(), BUILDER.toFormatter(Locale.GERMANY));
-        } else {
-            toParse = LocalDate.parse(images.getDate(), BUILDER.toFormatter(Locale.ENGLISH));
-        }
-        return toParse.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     /**
@@ -175,5 +146,23 @@ public final class SiteUtils {
         }
 
         return locale;
+    }
+
+    public static void render(Response response, Map<String, Object> context, String templatePath) {
+        StringWriter writer = new StringWriter();
+
+        Properties config = new Properties();
+        String classpathLoader = "jetbrick.template.loader.ClasspathResourceLoader";
+        config.put("jetx.template.suffix", ".html");
+        config.put("jetx.template.loaders", "$classpathLoader");
+        config.put("$classpathLoader", classpathLoader);
+        config.put("$classpathLoader.root", "/templates/");
+        config.put("$classpathLoader.reloadable", "true");
+
+        JetEngine engine = JetEngine.create(config);
+        JetTemplate template = engine.getTemplate(templatePath);
+        template.render(context, writer);
+
+        response.text(writer.toString());
     }
 }

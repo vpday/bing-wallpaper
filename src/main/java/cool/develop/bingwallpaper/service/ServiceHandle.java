@@ -8,6 +8,7 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
+import cool.develop.bingwallpaper.utils.DateUtils;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class ServiceHandle {
         // 获取图片存档信息
         Images images = bingService.getImageArchiveByToDay(countryCode);
         // 发布该壁纸的日期
-        long epochMilli = SiteUtils.parseDate(countryCode, images);
+        long epochMilli = DateUtils.parseDate(countryCode, images);
         // 判断是否已存在该壁纸信息
         if (bingWallpaperService.isNotExistWallpaper(images.getName(), images.getCode())) {
             // 存储数据
@@ -157,7 +158,7 @@ public class ServiceHandle {
      */
     private void saveExceptionHandle(CountryCode country, Images images) {
         try {
-            this.saveImage(country, images, SiteUtils.parseDate(country, images));
+            this.saveImage(country, images, DateUtils.parseDate(country, images));
         } catch (ExecutionException | InterruptedException | IOException e) {
             log.error(SiteUtils.getStackTrace(e));
             throw new TipException(e);
