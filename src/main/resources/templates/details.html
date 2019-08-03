@@ -1,62 +1,69 @@
-#set(String page = wallPaper.hash)
+#set(cool.develop.bingwallpaper.model.entity.BingWallpaper wallpaper = wallPaper)
 #include('./partial/header.html')
 <body class="detail">
 <div class="preview">
     <div class="progressive">
         <img class="target progressive__img progressive--not-loaded"
-             alt="${wallPaper.copyright}"
-             src="${imgHref(wallPaper,'640x360')}"
-             data-progressive="${imgHref(wallPaper,'1920x1080')}">
+             alt="${wallpaper.copyright}"
+             src="${imgHref(wallpaper,'640x360')}"
+             data-progressive="${imgHref(wallpaper,'1920x1080')}">
     </div>
     <div class="mark"></div>
-    <div class="options" copyright="${wallPaper.copyright}" code="${wallPaper.hash}" fileName="${getFileName(wallPaper)}">
+    <div class="options" copyright="${wallpaper.copyright}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}">
         <a class="ctrl left" onclick="window.history.go(-1);">
             <i class="icon icon-left"></i>
             <em class="t">返回</em>
         </a>
-        #if (mapUrl(wallPaper))
-        <a id="event-share" class="ctrl share" href="${mapUrl(wallPaper)}" title="Google Map 查看">
+        #if (mapUrl(wallpaper))
+        <a id="event-share" class="ctrl share" href="${mapUrl(wallpaper)}" title="Google Map 查看">
             <i class="icon icon-share"></i>
             <em class="t">去看看</em>
         </a>
         #end
         <span id="event-heart" class="ctrl heart">
             <i class="icon icon-heart"></i>
-            <em class="t">${wallPaper.likes}</em>
+            <em class="t">${wallpaper.likes}</em>
         </span>
         <a id="event-download" class="ctrl download">
             <i class="icon icon-download"></i>
-            <em class="t">${wallPaper.downloads}</em>
+            <em class="t">${wallpaper.downloads}</em>
         </a>
     </div>
-    <div class="description">
-        #if (wallPaper.title)
-        <p class="title">${wallPaper.title}</p>
-        #else
-        <p class="title">${wallPaper.copyright}</p>
+    <div class="description" itemscope itemtype="https://schema.org.cn/ImageObject">
+        <span itemprop="url" hidden>${context}${detailsHref(wallPaper)}</span>
+        <img itemprop="contentUrl" src="${context}${imgHref(wallpaper,'1920x1080')}" hidden/>
+        <span itemprop="inLanguage" hidden>${wallpaper.country}</span>
+        <span itemprop="copyrightHolder" hidden>${wallpaper.copyright}</span>
+        <p class="title" itemprop="name">
+            #if (wallpaper.title)
+            ${wallpaper.title}
+            #else
+            ${wallpaper.copyright}
+            #end
+        </p>
+        #if (wallpaper.caption)
+        <p itemscope="alternativeHeadline">${wallpaper.caption}</p>
         #end
-        #if (wallPaper.caption)
-        <p>${wallPaper.caption}</p>
-        #end
-        #if (wallPaper.description)
-        <p class="sub">${wallPaper.description}</p>
+        #if (wallpaper.description)
+        <p class="sub" itemprop="description">${wallpaper.description}</p>
         #end
         <p class="icon icon-calendar">
-            <em class="t">${unixTimeToString(wallPaper.date)}</em>
+            <em class="t" itemscope="dateCreated">${unixTimeToString(wallpaper.date)}</em>
         </p>
-        #if (attribute(wallPaper))
+        #if (attribute(wallpaper))
         <p class="location">
             <i class="icon icon-location"></i>
-            <em class="t">${attribute(wallPaper)}</em>
+            <em class="t">${attribute(wallpaper)}</em>
         </p>
         #end
         <p class="view">
             <i class="icon icon-eye"></i>
-            <em class="t">${wallPaper.hits}</em>
+            <em class="t">${wallpaper.hits}</em>
         </p>
     </div>
 </div>
-<script crossorigin="anonymous" integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB" src="https://lib.baomitu.com/jquery/2.2.4/jquery.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB"
+        src="https://lib.baomitu.com/jquery/2.2.4/jquery.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
         src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
 <script src="/static/js/base.js"></script>

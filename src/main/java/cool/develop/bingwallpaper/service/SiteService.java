@@ -1,7 +1,6 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
-import com.blade.kit.StringKit;
 import com.sun.syndication.io.FeedException;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.extension.Site;
@@ -27,23 +26,6 @@ import java.util.List;
  */
 @Bean
 public class SiteService {
-
-    public String getTitle(String hash) {
-        BingWallpaper bingWallpaper = this.getBingWallpaperByHash(hash);
-        return StringKit.isBlank(bingWallpaper.getTitle()) ? bingWallpaper.getCopyright() : bingWallpaper.getTitle();
-    }
-
-    public String getCopyright(String hash) {
-        return this.getBingWallpaperByHash(hash).getCopyright();
-    }
-
-    public String getKeywords(String hash) {
-        return this.getBingWallpaperByHash(hash).getKeywords();
-    }
-
-    public String getDescription(String hash) {
-        return this.getBingWallpaperByHash(hash).getDescription();
-    }
 
     public String getRssXml(CountryCode countryCode) throws FeedException {
         List<BingWallpaper> bingWallpapers = Anima.select().from(BingWallpaper.class)
@@ -87,10 +69,5 @@ public class SiteService {
         });
 
         return sitemapList;
-    }
-
-    private BingWallpaper getBingWallpaperByHash(String hash) {
-        return Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getHash, hash).one();
     }
 }

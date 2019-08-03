@@ -1,5 +1,6 @@
 package cool.develop.bingwallpaper.model.entity;
 
+import com.blade.kit.StringKit;
 import io.github.biezhi.anima.Model;
 import io.github.biezhi.anima.annotation.Ignore;
 import io.github.biezhi.anima.annotation.Table;
@@ -105,8 +106,35 @@ public class BingWallpaper extends Model {
         this.code = nameAndCode.substring((nameAndCode.lastIndexOf("_") + 1));
     }
 
-    public String getKeywords() {
-        return this.getName() + ", " + this.getCopyright() + ", " +
-                this.getTitle() + ", " + this.getCaption() + ", " + this.getDate();
+    /**
+     * 获取页面关键字
+     */
+    public String metaKeywords() {
+        StringBuilder keywords = new StringBuilder();
+        keywords.append(this.getName()).append(",")
+                .append(this.getCopyright());
+
+        if (StringKit.isNotEmpty(this.getTitle())) {
+            keywords.append(",").append(this.getTitle());
+        }
+        if (StringKit.isNotEmpty(this.getCaption())) {
+            keywords.append(",").append(this.getCaption());
+        }
+
+        return keywords.toString();
+    }
+
+    /**
+     * 获取页面描述
+     */
+    public String metaDescription() {
+        if (StringKit.isBlank(this.getDescription())) {
+            return this.getCopyright();
+        }
+        return this.getDescription();
+    }
+
+    public String htmlTitle() {
+        return StringKit.isBlank(this.getTitle()) ? this.getCopyright() : this.getTitle();
     }
 }

@@ -53,9 +53,9 @@ public class Bootstrap implements BladeLoader {
         blade.addStatics("/wallpapers");
 
         BingWallpaperConst.HEAD_TITLE = environment.get("app.head_title", "");
-        BingWallpaperConst.META_KEYWORDS = environment.get("app.meta_keywords", "");
-        BingWallpaperConst.META_DESCRIPTION = environment.get("app.meta_description", "");
         BingWallpaperConst.SITE_URL = environment.get("app.site_url", "");
+
+        templateEngine.getGlobalContext().set("context", BingWallpaperConst.SITE_URL);
 
         this.preAddData(blade.ioc());
         this.preConfigEmail();

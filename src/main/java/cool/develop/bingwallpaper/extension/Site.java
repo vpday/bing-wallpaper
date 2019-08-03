@@ -15,12 +15,13 @@ import io.github.biezhi.anima.core.JoinParam;
 import io.github.biezhi.anima.core.Joins;
 import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
-import jetbrick.template.runtime.InterpretContext;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
+
+import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
 
 /**
  * 全站函数
@@ -39,14 +40,25 @@ public final class Site {
         return LocalDate.now().getYear();
     }
 
+    public static String context() {
+        return BingWallpaperConst.SITE_URL;
+    }
+
+    public static String siteName() {
+        return BingWallpaperConst.HEAD_TITLE;
+    }
+
+    public static String wallpaperLocale() {
+        return CountryCode.getCountryCode(request().session().attribute(COUNTRY)).code();
+    }
+
     /**
      * 获取页面标题
      */
-    public static String headTitle(String hashCode) {
-        String pageType = getRequestAttribute("page_type");
-        Integer pageNum = getRequestAttribute("page_num");
-
-        if (null != pageType && null != pageNum) {
+    public static String headTitle(BingWallpaper wallpaper) {
+        if (Objects.isNull(wallpaper)) {
+            final String pageType = getRequestAttribute("page_type");
+            final Integer pageNum = getRequestAttribute("page_num");
             String text = BingWallpaperConst.HEAD_TITLE;
 
             if (BingWallpaperConst.TOP_CODE.equals(pageType)) {
@@ -55,24 +67,20 @@ public final class Site {
                 text = "下载榜 | " + BingWallpaperConst.HEAD_TITLE;
             }
 
+            if (1 == pageNum) {
+                return text;
+            }
             return text + " | 第 " + pageNum + " 页";
         }
 
         StringBuilder title = new StringBuilder();
-        BingWallpaper bingWallPaper = currentBingWallPaper();
-        if (Objects.nonNull(bingWallPaper)) {
-
-            if (!StringKit.isBlank(bingWallPaper.getTitle())) {
-                title.append(bingWallPaper.getTitle());
-            } else {
-                title.append(bingWallPaper.getCopyright());
-            }
-            if (!StringKit.isBlank(bingWallPaper.getCaption())) {
-                title.append(" | ").append(bingWallPaper.getCaption());
-            }
-
+        if (!StringKit.isBlank(wallpaper.getTitle())) {
+            title.append(wallpaper.getTitle());
         } else {
-            title.append(siteService.getTitle(hashCode));
+            title.append(wallpaper.getCopyright());
+        }
+        if (!StringKit.isBlank(wallpaper.getCaption())) {
+            title.append(" | ").append(wallpaper.getCaption());
         }
         title.append(" | ").append(BingWallpaperConst.HEAD_TITLE);
 
@@ -80,57 +88,13 @@ public final class Site {
     }
 
     /**
-     * 获取页面关键字
-     */
-    public static String metaKeywords(String hashCode) {
-        String pageType = getRequestAttribute("page_type");
-
-        if (null != pageType && pageType.equals(hashCode)) {
-            return BingWallpaperConst.META_KEYWORDS;
-        }
-
-        BingWallpaper bingWallPaper = currentBingWallPaper();
-        if (Objects.nonNull(bingWallPaper)) {
-            return bingWallPaper.getKeywords();
-        } else {
-            return siteService.getKeywords(hashCode);
-        }
-    }
-
-    /**
-     * 获取页面描述
-     */
-    public static String metaDescription(String hashCode) {
-        String pageType = getRequestAttribute("page_type");
-
-        if (null != pageType && pageType.equals(hashCode)) {
-            return BingWallpaperConst.META_DESCRIPTION;
-        }
-
-        BingWallpaper bingWallPaper = currentBingWallPaper();
-        if (Objects.nonNull(bingWallPaper)) {
-            return bingWallPaper.getDescription();
-        } else {
-            return siteService.getDescription(hashCode);
-        }
-    }
-
-    /**
      * 获取页面创作者
      */
-    public static String metaAuthor(String hashCode) {
-        String pageType = getRequestAttribute("page_type");
-
-        if (null != pageType && pageType.equals(hashCode)) {
+    public static String metaAuthor(BingWallpaper wallpaper) {
+        if (Objects.isNull(wallpaper)) {
             return BingWallpaperConst.META_AUTHOR;
         }
-
-        BingWallpaper bingWallPaper = currentBingWallPaper();
-        if (Objects.nonNull(bingWallPaper)) {
-            return bingWallPaper.getCopyright();
-        } else {
-            return siteService.getCopyright(hashCode);
-        }
+        return wallpaper.getCopyright();
     }
 
     /**
@@ -191,7 +155,7 @@ public final class Site {
     /**
      * 分页
      */
-    public static Page<BingWallpaper> wallPapers() {
+    public static Page<BingWallpaper> paging() {
         Request request = WebContext.request();
 
         Optional<Integer> optionalPage = Optional.of(request.attribute("page_num"));
@@ -234,17 +198,11 @@ public final class Site {
         return query.page(page, limit);
     }
 
-    /**
-     * 获取当前上下文的必应壁纸对象
-     */
-    public static BingWallpaper currentBingWallPaper() {
-        InterpretContext ctx = InterpretContext.current();
-        Object value = ctx.getValueStack().getValue("wallPaper");
-
-        return null == value ? null : (BingWallpaper) value;
+    private static <T> T getRequestAttribute(String name) {
+        return request().attribute(name);
     }
 
-    private static <T> T getRequestAttribute(String name) {
-        return WebContext.request().attribute(name);
+    private static Request request() {
+        return WebContext.request();
     }
 }

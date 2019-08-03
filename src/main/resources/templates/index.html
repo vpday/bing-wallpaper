@@ -1,5 +1,5 @@
-#set(io.github.biezhi.anima.page.Page wallPapers = wallPapers())
-#set(String page = page_type)
+#set(io.github.biezhi.anima.page.Page wallpaperPage = paging())
+#set(cool.develop.bingwallpaper.model.entity.BingWallpaper wallpaper = null)
 #include('./partial/header.html')
 <body>
 <header>
@@ -41,45 +41,46 @@
 <div class="holder"></div>
 <div class="mask"></div>
 <div class="container">
-    #for(wallPaper : wallPapers.rows)
+    #for(wallpaperItem : wallpaperPage.rows)
     <div class="item">
-        <div class="card progressive">
-            <img class="progressive__img progressive--not-loaded"
-                 data-progressive="${imgHref(wallPaper,'800x480')}"
-                 src="${imgHref(wallPaper,'400x240')}"
-                 alt="${wallPaper.copyright}">
-            <a class="mark" href="${detailsHref(wallPaper)}"></a>
+        <div class="card progressive" itemscope itemtype="https://schema.org.cn/ImageObject">
+            <span itemprop="inLanguage" hidden>${wallpaperItem.country}</span>
+            <img itemprop="contentUrl" class="progressive__img progressive--not-loaded"
+                 data-progressive="${context}${imgHref(wallpaperItem,'800x480')}"
+                 src="${context}${imgHref(wallpaperItem,'400x240')}"
+                 alt="${wallpaperItem.copyright}">
+            <a itemprop="url" class="mark" href="${context}${detailsHref(wallpaperItem)}"></a>
             <div class="description">
-                <h3>${wallPaper.copyright}</h3>
+                <h3 itemprop="name">${wallpaperItem.copyright}</h3>
                 <p class="calendar">
                     <i class="icon icon-calendar"></i>
-                    <em class="t">${unixTimeToString(wallPaper.date)}</em>
+                    <em class="t" itemscope="dateCreated">${unixTimeToString(wallpaperItem.date)}</em>
                 </p>
-                #if (attribute(wallPaper))
+                #if (attribute(wallpaperItem))
                 <p class="location">
                     <i class="icon icon-location"></i>
-                    <em class="t">${attribute(wallPaper)}</em>
+                    <em class="t">${attribute(wallpaperItem)}</em>
                 </p>
                 #end
                 <p class="view">
                     <i class="icon icon-eye"></i>
-                    <em class="t">${wallPaper.hits}</em>
+                    <em class="t">${wallpaperItem.hits}</em>
                 </p>
             </div>
-            <div class="options" copyright="${wallPaper.copyright}" code="${wallPaper.hash}" fileName="${getFileName(wallPaper)}">
-                #if (mapUrl(wallPaper))
-                <a class="ctrl share" rel="nofollow" href="${mapUrl(wallPaper)}" title="Google Map 查看">
+            <div class="options" copyright="${wallpaperItem.copyright}" code="${wallpaperItem.hash}" fileName="${getFileName(wallpaperItem)}">
+                #if (mapUrl(wallpaperItem))
+                <a class="ctrl share" rel="nofollow" href="${mapUrl(wallpaperItem)}" title="Google Map 查看">
                     <i class="icon icon-share"></i>
                     <em class="t">去看看</em>
                 </a>
                 #end
                 <span class="ctrl heart">
                         <i class="icon icon-heart"></i>
-                        <em class="t">${wallPaper.likes}</em>
+                        <em class="t">${wallpaperItem.likes}</em>
                 </span>
                 <span class="ctrl download">
                     <i class="icon icon-download"></i>
-                    <em class="t">${wallPaper.downloads}</em>
+                    <em class="t">${wallpaperItem.downloads}</em>
                 </span>
             </div>
         </div>
@@ -87,12 +88,12 @@
     #end
 </div>
 <div class="page">
-    #if(wallPapers.hasPrevPage)
-    <a href="${page_prefix}/${wallPapers.prevPage}/${wallPapers.limit}">上一页</a>
+    #if(wallpaperPage.hasPrevPage)
+    <a href="${page_prefix}/${wallpaperPage.prevPage}/${wallpaperPage.limit}">上一页</a>
     #end
-    <span>${wallPapers.pageNum} / ${wallPapers.totalPages}</span>
-    #if(wallPapers.hasNextPage)
-    <a href="${page_prefix}/${wallPapers.nextPage}/${wallPapers.limit}">下一页</a>
+    <span>${wallpaperPage.pageNum} / ${wallpaperPage.totalPages}</span>
+    #if(wallpaperPage.hasNextPage)
+    <a href="${page_prefix}/${wallpaperPage.nextPage}/${wallpaperPage.limit}">下一页</a>
     #end
 </div>
 <div class="copyright">
@@ -106,7 +107,8 @@
     <span>图片来源于<a rel="nofollow" href="https://www.bing.com"> Bing 搜索</a></span>
     <span> | &copy; ${getYear()} <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper">bing-wallpaper</a></span>
 </div>
-<script crossorigin="anonymous" integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB" src="https://lib.baomitu.com/jquery/2.2.4/jquery.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB"
+        src="https://lib.baomitu.com/jquery/2.2.4/jquery.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
         src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
 <script src="/static/js/device.js"></script>

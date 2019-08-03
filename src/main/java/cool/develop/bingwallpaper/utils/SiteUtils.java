@@ -86,7 +86,7 @@ public final class SiteUtils {
         Channel channel = new Channel("rss_2.0");
         channel.setTitle(BingWallpaperConst.HEAD_TITLE);
         channel.setLink(BingWallpaperConst.SITE_URL);
-        channel.setDescription(BingWallpaperConst.META_DESCRIPTION);
+        channel.setDescription(BingWallpaperConst.HEAD_TITLE);
         channel.setLanguage(country.code());
         channel.setCopyright(BingWallpaperConst.META_AUTHOR);
 
