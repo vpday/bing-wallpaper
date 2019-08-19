@@ -1,15 +1,19 @@
 package cool.develop.bingwallpaper.controller;
 
+import com.blade.exception.NotFoundException;
 import com.blade.ioc.annotation.Inject;
 import com.blade.kit.StringKit;
-import com.blade.mvc.annotation.*;
+import com.blade.mvc.annotation.GetRoute;
+import com.blade.mvc.annotation.JSON;
+import com.blade.mvc.annotation.Path;
+import com.blade.mvc.annotation.PathParam;
+import com.blade.mvc.annotation.PostRoute;
 import com.blade.mvc.http.ByteBody;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.exception.NotFoundException;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
@@ -21,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -41,6 +46,8 @@ public class IndexController {
 
     @Inject
     private SiteService siteService;
+
+    private final static String CODE = "code";
 
     /**
      * 首页
@@ -87,9 +94,7 @@ public class IndexController {
         request.attribute("page_limit", pageLimit);
         request.attribute("page_prefix", pagePrefix);
         request.attribute("page_type", pageType);
-
         request.attribute("country_code", country);
-
         return "index";
     }
 
@@ -103,9 +108,11 @@ public class IndexController {
         }
 
         CountryCode countryEnum = this.getCountryCode(request, lang);
-
         Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, countryEnum);
-        BingWallpaper bingWallpaper = optionalObj.orElseThrow(NotFoundException::new);
+        BingWallpaper bingWallpaper = optionalObj.orElseThrow(() -> {
+            log.error("Not Found, name: [{}], countryCode: [{}].", name, countryEnum);
+            return new NotFoundException("Not Found");
+        });
         bingWallpaper.setHits(bingWallpaper.getHits() + 1);
 
         bingWallpaperService.updateBingWallpaperByHits(bingWallpaper.getHash(), bingWallpaper.getHits());
@@ -131,28 +138,18 @@ public class IndexController {
      */
     @PostRoute(value = "download")
     public void downLoad(Request request, Response response) {
-        Map<String, List<String>> query = request.parameters();
-
-        String var = "code";
-        if (null == query.get(var) || StringKit.isEmpty(query.get(var).get(0))) {
-            response.json("{\"message\":\"request parameters are incomplete.\"}");
-        } else {
-            String code = query.get(var).get(0);
-            BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(code);
-
-            if (null == bingWallPaper) {
-                response.json("{\"message\":\"the parameter code is incorrect.\"}");
-            } else {
-                bingWallpaperService.updateBingWallpaperByDownLoads(code, (bingWallPaper.getHits() + 1));
-
-                File picture = bingWallpaperService.load(bingWallPaper.getName(),
-                        new Resolution(1920, 1080));
-
-                response.contentType("image/jpeg");
-                response.header("Content-Disposition", "attachment; filename=" + picture.getName());
-                response.body(ByteBody.of(picture));
-            }
+        BingWallpaper bingWallPaper = this.getBingWallpaperByCode(request, response);
+        if (Objects.isNull(bingWallPaper)) {
+            return;
         }
+
+        String code = bingWallPaper.getCode();
+        bingWallpaperService.updateBingWallpaperByDownLoads(code, (bingWallPaper.getHits() + 1));
+        File picture = bingWallpaperService.load(bingWallPaper.getName(),
+                new Resolution(1920, 1080));
+        response.contentType("image/jpeg");
+        response.header("Content-Disposition", "attachment; filename=" + picture.getName());
+        response.body(ByteBody.of(picture));
     }
 
     /**
@@ -160,29 +157,24 @@ public class IndexController {
      */
     @JSON
     @PostRoute(value = "like")
-    public RestResponse<?> likes(Request request) {
+    public void likes(Request request, Response response) {
         Session session = request.session();
-        Map<String, List<String>> query = request.parameters();
 
-        String var1 = "code";
-        if (null == query.get(var1) || StringKit.isEmpty(query.get(var1).get(0))) {
-            return RestResponse.fail("请求参数不完整");
+        BingWallpaper bingWallPaper = this.getBingWallpaperByCode(request, response);
+        if (Objects.isNull(bingWallPaper)) {
+            return;
         }
-        String code = query.get("code").get(0);
-        BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(code);
-        if (null == bingWallPaper) {
-            return RestResponse.fail("参数 code 不正确");
-        }
-
+        String code = bingWallPaper.getCode();
         Integer likes = bingWallPaper.getLikes();
+
         List<String> var = session.attribute("likes");
-        if (null == var) {
+        if (Objects.isNull(var)) {
             var = new ArrayList<>();
             session.attribute("likes", var);
         } else {
             long count = var.stream().filter(var2 -> var2.equals(code)).count();
             if (0 < count) {
-                return RestResponse.ok(likes);
+                response.json(RestResponse.ok());
             }
         }
         var.add(code);
@@ -190,7 +182,7 @@ public class IndexController {
         likes += 1;
         bingWallpaperService.updateBingWallpaperByLikes(code, likes);
 
-        return RestResponse.ok(likes);
+        response.json(RestResponse.ok());
     }
 
     /**
@@ -200,7 +192,26 @@ public class IndexController {
     public String setCountry(Request request, Response response, @PathParam String lang) {
         CountryCode country = CountryCode.getCountryCode(lang);
         response.cookie(COUNTRY, country.code(), (60 * 60 * 24 * 30));
-
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12, country);
+    }
+
+    private BingWallpaper getBingWallpaperByCode(Request request, Response response) {
+        Map<String, List<String>> query = request.parameters();
+
+        if (Objects.isNull(query.get(CODE)) || StringKit.isEmpty(query.get(CODE).get(0))) {
+            log.error("request parameters are incomplete.");
+            response.json(RestResponse.fail("request parameters are incomplete."));
+            return null;
+        }
+
+        String code = query.get(CODE).get(0);
+        BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(code);
+        if (Objects.isNull(bingWallPaper)) {
+            log.error("the parameter code [{}] is incorrect.", code);
+            response.json(RestResponse.fail("the parameter code is incorrect."));
+            return null;
+        }
+
+        return bingWallPaper;
     }
 }

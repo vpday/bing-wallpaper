@@ -11,9 +11,14 @@ $(function () {
             return;
         }
 
-         ma.trackEvent('likes', 'click', copyright, 1);
+        ma.trackEvent('likes', 'click', copyright, 1);
         $.post("/like", {"code": code, "_token": toke}, function (data) {
-            _this.addClass("active").children("em").html(data.payload);
+            if (data.success) {
+                updateShowNum(_this.addClass("active").children("em"));
+            } else {
+                var message = (typeof data.msg !== "undefined") ? data.msg : "unknown error";
+                console.error("download failed, " + message);
+            }
         }, "json");
     });
 
@@ -24,7 +29,7 @@ $(function () {
         var copyright = options.attr("copyright");
         var formData = "code=" + code + "&_token=" + toke;
 
-         ma.trackEvent('download', 'click', copyright, 1);
+        ma.trackEvent('download', 'click', copyright, 1);
         beforeDownloading(formData, fileName, $(this).children("em"));
     });
 
@@ -35,8 +40,7 @@ $(function () {
 
         request.onload = function () {
             if (this.status === 200) {
-                downloadImg(request, fileName);
-                updateShowNum(emElement);
+                downloadImg(request, fileName, emElement);
             }
         };
         request.ontimeout = function () {
@@ -56,7 +60,7 @@ $(function () {
         }
     }
 
-    function downloadImg(request, fileName) {
+    function downloadImg(request, fileName, emElement) {
         var blob = request.response;
 
         if (blob.type === "application/json") {
@@ -64,8 +68,10 @@ $(function () {
 
             reader.onloadend = function () {
                 var error = JSON.parse(reader.result);
-                var message = (typeof error.message !== "undefined") ? error.message : "unknown error";
-                console.error("download failed," + message);
+                if (!error.success) {
+                    var message = (typeof error.msg !== "undefined") ? error.msg : "unknown error";
+                    console.error("download failed, " + message);
+                }
             };
             reader.readAsBinaryString(blob);
         } else if (window.navigator.msSaveOrOpenBlob) {
@@ -73,6 +79,7 @@ $(function () {
         } else {
             var contentTypeHeader = request.getResponseHeader("Content-Type");
             createDownloadLink(fileName, blob, contentTypeHeader);
+            updateShowNum(emElement);
         }
     }
 

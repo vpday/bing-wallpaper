@@ -1,5 +1,7 @@
 package cool.develop.bingwallpaper.exception;
 
+import com.blade.exception.BladeException;
+import com.blade.exception.NotFoundException;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
 import com.blade.kit.JsonKit;
@@ -7,6 +9,7 @@ import com.blade.mvc.WebContext;
 import com.blade.mvc.handler.DefaultExceptionHandler;
 import com.blade.mvc.http.Request;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.service.EmailService;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import io.github.biezhi.ome.SendMailException;
@@ -23,14 +26,18 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
 
     @Override
     public void handle(Exception e) {
-        if (e instanceof NotFoundException) {
-            Response response = WebContext.response();
-            response.notFound();
-            response.render("comm/error_404");
+        Request request = WebContext.request();
+        Response response = WebContext.response();
+        boolean isNotFound = e instanceof BladeException && ((BladeException) e).getStatus() == NotFoundException.STATUS;
+        if (isNotFound) {
+            if (request.isJsonRequest()) {
+                response.json(RestResponse.fail(NotFoundException.STATUS, "Not Found [" + request.uri() + "]"));
+            } else {
+                response.notFound().render("comm/error_404");
+            }
         } else {
             // 发送邮件
             try {
-                Request request = WebContext.request();
                 String errorInfo = String.format("method: [%s]\nurl: [%s]\nparameters: [%s]\nuserAgent: [%s]\n\n",
                         request.method(),
                         request.url(),
