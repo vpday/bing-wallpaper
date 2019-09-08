@@ -21,15 +21,9 @@ public class BaseWebHook implements WebHook {
     public boolean before(RouteContext context) {
 
         String langByCookie = context.cookie(COUNTRY);
-        String langBySession = context.session().attribute(COUNTRY);
-
-        boolean isNotExist = StringKit.isEmpty(langBySession) ||
-                StringKit.isEmpty(langByCookie) ||
-                CountryCode.isNotExistCode(langByCookie);
+        boolean isNotExist = StringKit.isEmpty(langByCookie) || CountryCode.isNotExistCode(langByCookie);
         if (isNotExist) {
-            String displayName = SiteUtils.acceptLanguage(context).getDisplayName();
-
-            context.session().attribute(COUNTRY, displayName);
+            String displayName = SiteUtils.acceptLanguage(context.request()).getDisplayName();
             context.cookie(COUNTRY, displayName, 2592000);
         }
 

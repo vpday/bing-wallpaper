@@ -19,6 +19,7 @@ import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
 import cool.develop.bingwallpaper.service.SiteService;
+import cool.develop.bingwallpaper.utils.SiteUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -82,7 +83,8 @@ public class IndexController {
     }
 
     private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit) {
-        CountryCode countryCode = CountryCode.getCountryCode(request.session().attribute(COUNTRY));
+        String displayName = SiteUtils.acceptLanguage(request).getDisplayName();
+        CountryCode countryCode = CountryCode.getCountryCode(request.cookie(COUNTRY, displayName));
         return this.toIndex(request, pagePrefix, pageType, pageNum, pageLimit, countryCode);
     }
 

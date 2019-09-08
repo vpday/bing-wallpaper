@@ -2,7 +2,6 @@ package cool.develop.bingwallpaper.utils;
 
 import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.StringKit;
-import com.blade.mvc.RouteContext;
 import com.blade.mvc.http.Response;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Content;
@@ -14,7 +13,6 @@ import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import io.github.biezhi.request.Request;
 import jetbrick.template.JetEngine;
 import jetbrick.template.JetTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -46,7 +51,7 @@ public final class SiteUtils {
     }
 
     public static String requestBing(String url) {
-        Request request = Request.get(url).acceptJson()
+        io.github.biezhi.request.Request request = io.github.biezhi.request.Request.get(url).acceptJson()
                 .userAgent(BingWallpaperConst.USER_AGENT);
 
         checkStatus(request);
@@ -54,13 +59,13 @@ public final class SiteUtils {
     }
 
     public static byte[] downLoadWallpaper(String url) {
-        Request request = Request.get(url).userAgent(BingWallpaperConst.USER_AGENT);
+        io.github.biezhi.request.Request request = io.github.biezhi.request.Request.get(url).userAgent(BingWallpaperConst.USER_AGENT);
         checkStatus(request);
 
         return request.bytes();
     }
 
-    private static void checkStatus(Request request) {
+    private static void checkStatus(io.github.biezhi.request.Request request) {
         if (!request.ok()) {
             String message = String.format("请求失败，状态码：%s，URL：%s", request.code(), request.url().toString());
             log.error(message);
@@ -134,10 +139,10 @@ public final class SiteUtils {
         return sw.getBuffer().toString();
     }
 
-    public static Locale acceptLanguage(RouteContext context) {
+    public static Locale acceptLanguage(com.blade.mvc.http.Request request) {
         Locale locale = Locale.CHINA;
 
-        String languages = context.header("Accept-Language");
+        String languages = request.header("Accept-Language");
         if (StringKit.isNotEmpty(languages)) {
             Optional<Locale> useLocal = Locale.LanguageRange.parse(languages).stream()
                     .sorted(Comparator.comparing(Locale.LanguageRange::getWeight).reversed())
