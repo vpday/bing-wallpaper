@@ -1,7 +1,6 @@
 #set(io.github.biezhi.anima.page.Page wallpaperPage = paging())
 #set(cool.develop.bingwallpaper.model.entity.BingWallpaper wallpaper = null)
-#include('./partial/header.html')
-<body>
+#tag layout_block("bodyContent")
 <header>
     <div class="container">
         <a class="logo" href="/">
@@ -14,18 +13,6 @@
                     <a href="/">
                         <i class="icon icon-home"></i>
                         <p class="text">首页</p>
-                    </a>
-                </li>
-                <li id="event-top-list">
-                    <a href="/ranking/top">
-                        <i class="icon icon-ranking"></i>
-                        <p class="text">热门榜</p>
-                    </a>
-                </li>
-                <li id="event-down-list">
-                    <a href="/ranking/down">
-                        <i class="icon icon-ranking"></i>
-                        <p class="text">下载榜</p>
                     </a>
                 </li>
                 <li id="event-rss">
@@ -45,10 +32,7 @@
     <div class="item">
         <div class="card progressive" itemscope itemtype="https://schema.org.cn/ImageObject">
             <span itemprop="inLanguage" hidden>${wallpaperItem.country}</span>
-            <img itemprop="contentUrl" class="progressive__img progressive--not-loaded"
-                 data-progressive="${context}${imgHref(wallpaperItem,'800x480')}"
-                 src="${context}${imgHref(wallpaperItem,'400x240')}"
-                 alt="${wallpaperItem.copyright}">
+            <img itemprop="contentUrl" class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHref(wallpaperItem,'1920x1080')}" src="${context}${imgHref(wallpaperItem,'1920x1080')}" alt="${wallpaperItem.copyright}">
             <a itemprop="url" class="mark" href="${context}${detailsHref(wallpaperItem)}"></a>
             <div class="description">
                 <h3 itemprop="name">${wallpaperItem.copyright}</h3>
@@ -75,8 +59,8 @@
                 </a>
                 #end
                 <span class="ctrl heart">
-                        <i class="icon icon-heart"></i>
-                        <em class="t">${wallpaperItem.likes}</em>
+                    <i class="icon icon-heart"></i>
+                    <em class="t">${wallpaperItem.likes}</em>
                 </span>
                 <span class="ctrl download">
                     <i class="icon icon-download"></i>
@@ -107,14 +91,12 @@
     <span>图片来源于<a rel="nofollow" href="https://www.bing.com"> Bing 搜索</a></span>
     <span> | &copy; ${getYear()} <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper">bing-wallpaper</a></span>
 </div>
-<script crossorigin="anonymous" integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB"
-        src="https://lib.baomitu.com/jquery/2.2.4/jquery.min.js"></script>
-<script crossorigin="anonymous" integrity="sha384-YzuBzK7WpT5Zo4GNMMctt9DR4rDCGENOg33RhQeeIm3NKYuSOy0m+SFKdsMjmX05"
-        src="https://lib.baomitu.com/progressively/1.1.2/progressively.min.js"></script>
-<script src="/static/js/device.js"></script>
-<script src="/static/js/base.js"></script>
-<script>
+#end
+#tag layout_block("scriptContent")
+<script type="text/javascript">
     $(function () {
+        hearts();
+
         var i = 0;
         var timer = setInterval(function () {
             progressively.init();
@@ -126,8 +108,6 @@
         if (DEVICE.isMobile) {
             $(document.body).addClass("mobile");
         }
-
-        hearts();
 
         function hearts() {
             var $one = $("#hearts");
@@ -150,5 +130,5 @@
         return Math.floor(Math.random() * (n - m + 1)) + m;
     };
 </script>
-</body>
-</html>
+#end
+#include("layout/layout.html")

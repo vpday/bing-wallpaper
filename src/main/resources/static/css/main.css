@@ -67,7 +67,7 @@
     content: '\e809';
 }
 
-/*progressively 1.1.2*/
+/*progressively 1.2.5*/
 
 .progressive {
     overflow: hidden;
@@ -83,11 +83,13 @@
 
 .progressive--not-loaded {
     filter: blur(30px);
+    transform: scale(1.1);
 }
 
 .progressive--is-loaded {
     filter: blur(20px);
     animation: sharpen 0.5s both;
+    transform: scale(1);
 }
 
 @keyframes sharpen {
@@ -250,7 +252,7 @@
     padding: 0 .1rem;
 }
 
-.container .item .card .ctrl + .ctrl {
+.container .item .card .ctrl+.ctrl {
     margin-left: .05rem;
 }
 
@@ -365,6 +367,9 @@
 .detail {
     height: 100vh;
     position: relative;
+}
+
+.initBefore {
     background: rgba(1, 1, 1, .5);
 }
 
@@ -421,7 +426,7 @@
     padding: 0 .1rem;
 }
 
-.detail .preview .ctrl + .ctrl {
+.detail .preview .ctrl+.ctrl {
     margin-left: .05rem;
 }
 
@@ -472,6 +477,6 @@
     vertical-align: top;
 }
 
-.detail .preview .description .show + .show {
+.detail .preview .description .show+.show {
     margin-left: .3rem;
 }
