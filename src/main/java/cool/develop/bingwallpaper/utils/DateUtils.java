@@ -19,6 +19,9 @@ import java.util.Locale;
  */
 public final class DateUtils {
 
+    private DateUtils() {
+    }
+
     private static final DateTimeFormatterBuilder BUILDER = new DateTimeFormatterBuilder()
             .parseCaseInsensitive().parseLenient()
             .appendPattern("[MMM. dd, yyyy]")

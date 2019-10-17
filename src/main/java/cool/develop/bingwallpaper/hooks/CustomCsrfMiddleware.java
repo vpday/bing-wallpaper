@@ -23,7 +23,7 @@ public class CustomCsrfMiddleware implements WebHook {
     /**
      * Token stored in session
      */
-    private final String sessionToken = "_csrf_token_session";
+    private static final String SESSION_TOKEN = "_csrf_token_session";
 
     public CustomCsrfMiddleware(CsrfOption csrfOption) {
         this.csrfOption = csrfOption;
@@ -43,7 +43,7 @@ public class CustomCsrfMiddleware implements WebHook {
             return true;
         }
 
-        String tokenUUID = context.session().attribute(sessionToken);
+        String tokenUUID = context.session().attribute(SESSION_TOKEN);
         if (StringKit.isEmpty(tokenUUID)) {
             csrfOption.getErrorHandler().accept(context);
             return false;
@@ -64,10 +64,10 @@ public class CustomCsrfMiddleware implements WebHook {
     }
 
     private void genToken(RouteContext context) {
-        String tokenUUID = context.session().attribute(sessionToken);
+        String tokenUUID = context.session().attribute(SESSION_TOKEN);
         if (StringKit.isEmpty(tokenUUID)) {
             tokenUUID = UUID.UU64();
-            context.session().attribute(sessionToken, tokenUUID);
+            context.session().attribute(SESSION_TOKEN, tokenUUID);
         }
         String token = Base64.getEncoder().encodeToString(PasswordUtils.hashPassword(tokenUUID).getBytes());
         context.attribute("_csrf_token", token);

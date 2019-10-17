@@ -7,6 +7,10 @@ package cool.develop.bingwallpaper.bootstrap;
  * @create 2018/11/23
  */
 public final class BingWallpaperConst {
+
+    private BingWallpaperConst() {
+    }
+
     public static final String GOOGLE_MAP_URL = "https://www.google.cn/maps/search/";
     public static final String BING = "https://www.bing.com";
     public static final String LIFE = "https://www.bing.com/cnhp/life?mkt=zh-CN&currentDate=";

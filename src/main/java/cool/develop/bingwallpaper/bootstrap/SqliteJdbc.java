@@ -23,8 +23,9 @@ import java.util.stream.Collectors;
 public class SqliteJdbc {
 
     private static final String DB_NAME = "bing-wallpaper.db";
-    public static String DB_SRC;
-    public static Boolean IS_NEW_DB;
+    private static final String IS_NEW_DB_SQL = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('t_bing_wallpaper','t_filming_location')";
+    private static String DB_SRC;
+    private static Boolean IS_NEW_DB;
 
     static {
         try {
@@ -34,41 +35,44 @@ public class SqliteJdbc {
         }
     }
 
+    public static String dbSrc() {
+        return DB_SRC;
+    }
+
+    public static Boolean isNewDb() {
+        return IS_NEW_DB;
+    }
+
     /**
      * 测试连接并导入数据库
      */
     public static void importSql(boolean devMode) {
         String dbPath = Const.CLASSPATH + File.separatorChar + DB_NAME;
+        DB_SRC = "jdbc:sqlite://" + dbPath;
 
-        try {
+        if (devMode) {
+            dbPath = System.getProperty("user.dir") + "/" + DB_NAME;
             DB_SRC = "jdbc:sqlite://" + dbPath;
+        }
 
-            if (devMode) {
-                dbPath = System.getProperty("user.dir") + "/" + DB_NAME;
-                DB_SRC = "jdbc:sqlite://" + dbPath;
-            }
+        log.info("blade dev mode: {}", devMode);
+        log.info("load sqlite database path [{}]", dbPath);
+        log.info("load sqlite database src [{}]", DB_SRC);
 
-            log.info("blade dev mode: {}", devMode);
-            log.info("load sqlite database path [{}]", dbPath);
-            log.info("load sqlite database src [{}]", DB_SRC);
-
-            Connection con = DriverManager.getConnection(DB_SRC);
-            Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('t_bing_wallpaper','t_filming_location')");
+        try (Connection con = DriverManager.getConnection(DB_SRC);
+             Statement statement = con.createStatement();
+             ResultSet rs = statement.executeQuery(IS_NEW_DB_SQL)) {
 
             IS_NEW_DB = 0 == rs.getInt(1);
-            if (IS_NEW_DB) {
+            if (Boolean.TRUE.equals(IS_NEW_DB)) {
                 String cp = Objects.requireNonNull(SqliteJdbc.class.getClassLoader().getResource("")).getPath();
-                InputStreamReader isr = new InputStreamReader(new FileInputStream(cp + "schema.sql"), StandardCharsets.UTF_8);
-
-                String sql = new BufferedReader(isr).lines().collect(Collectors.joining("\n"));
-                int r = statement.executeUpdate(sql);
-                log.info("initialize import database - {}", r);
+                try (InputStreamReader isr = new InputStreamReader(new FileInputStream(cp + "schema.sql"), StandardCharsets.UTF_8); BufferedReader bufferedReader = new BufferedReader(isr)) {
+                    String sql = bufferedReader.lines().collect(Collectors.joining("\n"));
+                    int r = statement.executeUpdate(sql);
+                    log.info("initialize import database - {}", r);
+                }
             }
 
-            rs.close();
-            statement.close();
-            con.close();
             log.info("database path is: {}", dbPath);
         } catch (Exception e) {
             log.error("initialize database fail", e);

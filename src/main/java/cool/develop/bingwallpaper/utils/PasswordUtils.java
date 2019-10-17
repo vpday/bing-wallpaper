@@ -14,6 +14,9 @@ import java.util.Base64;
 @Slf4j
 public final class PasswordUtils {
 
+    private PasswordUtils() {
+    }
+
     public static String hashPassword(String plaintext) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-384");

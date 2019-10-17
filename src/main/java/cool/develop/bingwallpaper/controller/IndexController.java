@@ -48,7 +48,7 @@ public class IndexController {
     @Inject
     private SiteService siteService;
 
-    private final static String CODE = "code";
+    private static final String CODE = "code";
 
     /**
      * 首页
@@ -90,7 +90,8 @@ public class IndexController {
 
     private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit, CountryCode country) {
         pageNum = pageNum <= 0 ? 1 : pageNum;
-        pageLimit = pageLimit <= 0 ? 12 : pageLimit > 36 ? 12 : pageLimit;
+        pageLimit = pageLimit <= 0 ? 12 : pageLimit;
+        pageLimit = pageLimit > 36 ? 12 : pageLimit;
 
         request.attribute("page_num", pageNum);
         request.attribute("page_limit", pageLimit);

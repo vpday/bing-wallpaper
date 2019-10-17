@@ -30,7 +30,11 @@ import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
  * @create 2018/11/23
  */
 public final class Site {
+
     private static SiteService siteService;
+
+    private Site() {
+    }
 
     public static void setSiteService(SiteService ss) {
         siteService = ss;

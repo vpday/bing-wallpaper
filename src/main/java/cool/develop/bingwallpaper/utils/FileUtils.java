@@ -15,7 +15,11 @@ import java.nio.file.Paths;
  * @create 2019/1/25
  */
 @Slf4j
-public class FileUtils {
+public final class FileUtils {
+
+    private FileUtils() {
+    }
+
     /**
      * 创建并获取文件夹
      */

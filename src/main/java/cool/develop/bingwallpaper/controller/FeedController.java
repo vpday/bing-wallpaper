@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @Path
 public class FeedController {
 
-    private final static String XML_MEDIA_TYPE = "application/xml;charset=UTF-8";
+    private static final String XML_MEDIA_TYPE = "application/xml;charset=UTF-8";
 
     @Inject
     private SiteService siteService;

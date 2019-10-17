@@ -37,17 +37,13 @@ public class Bootstrap implements BladeLoader {
         Ioc ioc = blade.ioc();
 
         SqliteJdbc.importSql(this.isDevMode(blade));
-        Anima.open(SqliteJdbc.DB_SRC);
+        Anima.open(SqliteJdbc.dbSrc());
 
         Site.setSiteService(ioc.getBean(SiteService.class));
     }
 
     @Override
     public void load(Blade blade) {
-        JetbrickTemplateEngine templateEngine = new JetbrickTemplateEngine();
-        templateEngine.getGlobalResolver().registerFunctions(Site.class);
-        blade.templateEngine(templateEngine);
-
         String bingWallpaperDir = Const.CLASSPATH + "wallpapers/";
         BingWallpaperConst.BING_WALLPAPER_DIR = FileUtils.getFilePath(bingWallpaperDir);
         blade.addStatics("/wallpapers");
@@ -55,7 +51,10 @@ public class Bootstrap implements BladeLoader {
         BingWallpaperConst.HEAD_TITLE = environment.get("app.head_title", "");
         BingWallpaperConst.SITE_URL = environment.get("app.site_url", "");
 
+        JetbrickTemplateEngine templateEngine = new JetbrickTemplateEngine();
+        templateEngine.getGlobalResolver().registerFunctions(Site.class);
         templateEngine.getGlobalContext().set("context", BingWallpaperConst.SITE_URL);
+        blade.templateEngine(templateEngine);
 
         this.preAddData(blade.ioc());
         this.preConfigEmail();
@@ -65,7 +64,7 @@ public class Bootstrap implements BladeLoader {
      * 预先添加数据
      */
     private void preAddData(Ioc ioc) {
-        if (SqliteJdbc.IS_NEW_DB) {
+        if (Boolean.TRUE.equals(SqliteJdbc.isNewDb())) {
             log.info("发现数据库为新创建，自动添加最近 15 天的必应壁纸信息");
             ioc.getBean(ServiceHandle.class).initDataBases();
         }

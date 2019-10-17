@@ -42,6 +42,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class SiteUtils {
 
+    private SiteUtils() {
+    }
+
     public static String buildImageArchiveUrl(Integer index, Integer number, String mkt) {
         return BingWallpaperConst.IMAGE_ARCHIVE + "?" +
                 "format=js&pid=hp&video=1&setlang=en-us&" +
