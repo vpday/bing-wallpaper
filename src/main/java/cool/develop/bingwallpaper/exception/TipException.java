@@ -2,7 +2,7 @@ package cool.develop.bingwallpaper.exception;
 
 /**
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 public class TipException extends RuntimeException {
 

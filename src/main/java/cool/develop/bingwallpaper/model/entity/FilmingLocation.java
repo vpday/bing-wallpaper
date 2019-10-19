@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  * 拍摄地点表
  *
  * @author vpday
- * @create 2019/1/23
+ * @date 2019/1/23
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

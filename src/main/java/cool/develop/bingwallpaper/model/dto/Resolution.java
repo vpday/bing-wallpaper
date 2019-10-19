@@ -9,7 +9,7 @@ import java.util.List;
  * 图片分辨率 格式化
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Data
 public class Resolution {

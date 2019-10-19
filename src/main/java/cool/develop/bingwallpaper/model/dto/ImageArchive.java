@@ -11,7 +11,7 @@ import java.util.List;
  * 图片存档
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Data
 public class ImageArchive {

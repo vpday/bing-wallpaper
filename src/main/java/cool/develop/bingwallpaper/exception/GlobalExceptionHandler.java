@@ -16,7 +16,7 @@ import io.github.biezhi.ome.SendMailException;
 
 /**
  * @author vpday
- * @create 2019/1/31
+ * @date 2019/1/31
  */
 @Bean
 public class GlobalExceptionHandler extends DefaultExceptionHandler {
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
         } else {
             // 发送邮件
             try {
-                String errorInfo = String.format("method: [%s]\nurl: [%s]\nparameters: [%s]\nuserAgent: [%s]\n\n",
+                String errorInfo = String.format("method: [%s]%nurl: [%s]%nparameters: [%s]%nuserAgent: [%s]%n%n",
                         request.method(),
                         request.url(),
                         JsonKit.toString(request.parameters()),

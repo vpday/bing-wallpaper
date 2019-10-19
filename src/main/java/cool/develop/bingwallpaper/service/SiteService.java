@@ -1,8 +1,9 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
+import com.blade.ioc.annotation.Inject;
 import com.sun.syndication.io.FeedException;
-import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
@@ -22,17 +23,20 @@ import java.util.List;
  * Site Service
  *
  * @author vpdy
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Bean
 public class SiteService {
+
+    @Inject
+    private ApplicationProperties applicationProperties;
 
     public String getRssXml(CountryCode countryCode) throws FeedException {
         List<BingWallpaper> bingWallpapers = Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getCountry, countryCode.code())
                 .order(BingWallpaper::getBid, OrderBy.DESC).all();
 
-        return SiteUtils.getRssXml(bingWallpapers, countryCode);
+        return SiteUtils.getRssXml(bingWallpapers, countryCode, applicationProperties);
     }
 
     public List<BingWallpaper> getAllByCountry(CountryCode country) {
@@ -48,10 +52,11 @@ public class SiteService {
 
         List<Sitemap> sitemapList = new ArrayList<>(wallpapers.size());
         wallpapers.forEach(item -> {
-            String loc = BingWallpaperConst.SITE_URL + Site.detailsHref(item);
+            String siteUrl = applicationProperties.getSiteUrl();
+            String loc = siteUrl + Site.detailsHref(item);
             String lastmod = Site.unixTimeToString(item.getDate());
 
-            sitemapList.add(new Sitemap(loc, lastmod, item.getCountry(), BingWallpaperConst.SITE_URL));
+            sitemapList.add(new Sitemap(loc, lastmod, item.getCountry(), siteUrl));
         });
 
         return sitemapList;
@@ -62,10 +67,11 @@ public class SiteService {
         List<Sitemap> sitemapList = new ArrayList<>(lists.size());
 
         lists.forEach(item -> {
-            String loc = BingWallpaperConst.SITE_URL + "/sitemap/" + item.code() + ".xml";
+            String siteUrl = applicationProperties.getSiteUrl();
+            String loc = siteUrl + "/sitemap/" + item.code() + ".xml";
             String lastmod = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
-            sitemapList.add(new Sitemap(loc, lastmod, item.code(), BingWallpaperConst.SITE_URL));
+            sitemapList.add(new Sitemap(loc, lastmod, item.code(), siteUrl));
         });
 
         return sitemapList;

@@ -9,7 +9,7 @@ import java.util.Base64;
 
 /**
  * @author vpday
- * @create 2019/4/13
+ * @date 2019/4/13
  */
 @Slf4j
 public final class PasswordUtils {

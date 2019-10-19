@@ -7,6 +7,7 @@ import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.ImageArchive;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.model.dto.Resolution;
+import cool.develop.bingwallpaper.utils.GsonUtils;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.concurrent.Future;
  * Bing Service
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Bean
 public class BingService {
@@ -55,10 +56,10 @@ public class BingService {
      */
     public List<Images> getImageArchiveByFifteenDays(CountryCode country) {
         String sevenDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 7, country.code()));
-        List<Images> images = ((ImageArchive) JsonKit.formJson(sevenDays, ImageArchive.class)).getImages();
+        List<Images> images = GsonUtils.create().fromJson(sevenDays, ImageArchive.class).getImages();
 
         String eightDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(16, 8, country.code()));
-        images.addAll(((ImageArchive) JsonKit.formJson(eightDays, ImageArchive.class)).getImages());
+        images.addAll(GsonUtils.create().fromJson(eightDays, ImageArchive.class).getImages());
 
         return images;
     }

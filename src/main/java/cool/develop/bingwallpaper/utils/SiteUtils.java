@@ -9,6 +9,7 @@ import com.sun.syndication.feed.rss.Item;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.WireFeedOutput;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * 工具类
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Slf4j
 public final class SiteUtils {
@@ -90,11 +91,11 @@ public final class SiteUtils {
     /**
      * 构建 RSS 订阅的 XML 内容
      */
-    public static String getRssXml(List<BingWallpaper> wallpapers, CountryCode country) throws FeedException {
+    public static String getRssXml(List<BingWallpaper> wallpapers, CountryCode country, ApplicationProperties properties) throws FeedException {
         Channel channel = new Channel("rss_2.0");
-        channel.setTitle(BingWallpaperConst.HEAD_TITLE);
-        channel.setLink(BingWallpaperConst.SITE_URL);
-        channel.setDescription(BingWallpaperConst.HEAD_TITLE);
+        channel.setTitle(properties.getHeadTitle());
+        channel.setLink(properties.getSiteUrl());
+        channel.setDescription(properties.getHeadTitle());
         channel.setLanguage(country.code());
         channel.setCopyright(BingWallpaperConst.META_AUTHOR);
 
@@ -102,8 +103,8 @@ public final class SiteUtils {
         wallpapers.forEach(wallpaper -> {
             Item item = new Item();
             item.setTitle(wallpaper.getCopyright());
-            item.setContent(buildContent(wallpaper));
-            item.setLink(BingWallpaperConst.SITE_URL + Site.detailsHref(wallpaper));
+            item.setContent(buildContent(wallpaper, properties.getSiteUrl()));
+            item.setLink(properties.getSiteUrl() + Site.detailsHref(wallpaper));
             item.setPubDate(Date.from(Instant.ofEpochMilli(wallpaper.getDate())));
             items.add(item);
         });
@@ -113,9 +114,9 @@ public final class SiteUtils {
         return out.outputString(channel);
     }
 
-    private static Content buildContent(BingWallpaper wallpaper) {
+    private static Content buildContent(BingWallpaper wallpaper, String siteUrl) {
         Content content = new Content();
-        String url = BingWallpaperConst.SITE_URL + Site.imgHref(wallpaper, "1920x1080");
+        String url = siteUrl + Site.imgHref(wallpaper, "1920x1080");
 
         StringBuilder contentStr = new StringBuilder();
         contentStr.append("<img src=\"").append(url).append("\" border=\"0\"/><h2>");

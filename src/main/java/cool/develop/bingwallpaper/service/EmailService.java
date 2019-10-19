@@ -1,27 +1,32 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
-import cool.develop.bingwallpaper.bootstrap.Bootstrap;
+import com.blade.ioc.annotation.Inject;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
+import cool.develop.bingwallpaper.bootstrap.properties.QQEmailProperties;
 import io.github.biezhi.ome.OhMyEmail;
 import io.github.biezhi.ome.SendMailException;
 
-import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.ENABLE_EMAIL;
-import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.TO_EMAIL;
-
 /**
  * @author vpday
- * @create 2019/3/28
+ * @date 2019/3/28
  */
 @Bean
 public class EmailService {
+
+    @Inject
+    private QQEmailProperties qqEmailProperties;
+
+    @Inject
+    private ApplicationProperties applicationProperties;
 
     /**
      * 邮件通知系统异常信息
      */
     public void sendErrorInfo(String text) throws SendMailException {
-        if (ENABLE_EMAIL && !Bootstrap.devMode()) {
+        if (qqEmailProperties.isEnable() && !applicationProperties.isDevMode()) {
             OhMyEmail.subject("BingWallpaper_错误信息通知")
-                    .from("BingWallpaper").to(TO_EMAIL)
+                    .from("BingWallpaper").to(qqEmailProperties.getAddressee())
                     .text(text).send();
         }
     }

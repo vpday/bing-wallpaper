@@ -12,7 +12,7 @@ import java.nio.file.Paths;
  * 文件工具类
  *
  * @author vpday
- * @create 2019/1/25
+ * @date 2019/1/25
  */
 @Slf4j
 public final class FileUtils {

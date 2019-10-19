@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  * 每日任务
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Bean
 @Slf4j

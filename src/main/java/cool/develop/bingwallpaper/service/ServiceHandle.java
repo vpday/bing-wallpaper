@@ -4,7 +4,7 @@ import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
 import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
-import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * @author vpday
- * @create 2019/1/25
+ * @date 2019/1/25
  */
 @Bean
 @Slf4j
@@ -33,6 +33,9 @@ public class ServiceHandle {
 
     @Inject
     private BingWallpaperService bingWallpaperService;
+
+    @Inject
+    private ApplicationProperties applicationProperties;
 
     /**
      * 获取并存储全部国家的当日必应壁纸
@@ -49,9 +52,7 @@ public class ServiceHandle {
             ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, "country@");
 
             for (CountryCode code : countryCode) {
-                executorService.submit(() -> {
-                    this.saveBingWallpaper(code);
-                });
+                executorService.submit(() -> this.saveBingWallpaper(code));
             }
 
             executorService.shutdown();
@@ -64,8 +65,6 @@ public class ServiceHandle {
     public void saveBingWallpaper(CountryCode countryCode) {
         // 获取图片存档信息
         Images images = bingService.getImageArchiveByToDay(countryCode);
-        // 发布该壁纸的日期
-        long epochMilli = DateUtils.parseDate(countryCode, images);
         // 判断是否已存在该壁纸信息
         if (bingWallpaperService.isNotExistWallpaper(images.getName(), images.getCode())) {
             // 存储数据
@@ -139,11 +138,8 @@ public class ServiceHandle {
                 ExecutorService executorService2 = SiteUtils.newFixedThreadPool(length, "images@");
 
                 for (Images image : images) {
-                    // 每张图片都开启一个保存图片的线程
-                    executorService2.submit(() -> {
-                        // 存储数据
-                        this.saveExceptionHandle(country, image);
-                    });
+                    // 每张图片都开启一个保存图片的线程，存储数据
+                    executorService2.submit(() -> this.saveExceptionHandle(country, image));
                 }
 
                 executorService2.shutdown();
@@ -159,7 +155,7 @@ public class ServiceHandle {
     private void saveExceptionHandle(CountryCode country, Images images) {
         try {
             this.saveImage(country, images, DateUtils.parseDate(country, images));
-        } catch (ExecutionException | InterruptedException | IOException e) {
+        } catch (Exception e) {
             log.error(SiteUtils.getStackTrace(e));
             throw new TipException(e);
         }
@@ -169,12 +165,11 @@ public class ServiceHandle {
      * 存储壁纸文件到本地
      * 存储壁纸数据到数据库
      */
-    private void saveImage(CountryCode country, Images images, Long date)
-            throws ExecutionException, InterruptedException, IOException {
+    private void saveImage(CountryCode country, Images images, Long date) throws ExecutionException, InterruptedException, IOException {
         // 存储数据
         bingWallpaperService.save(date, images, country);
 
-        String pathName = BingWallpaperConst.BING_WALLPAPER_DIR + "/" + images.getName();
+        String pathName = applicationProperties.getBingWallpaperDir() + "/" + images.getName();
         if (FileUtils.isNotExistFile(pathName)) {
             // 获取壁纸文件
             Map<String, byte[]> downLoadImages = bingService.downLoadImages(images);

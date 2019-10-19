@@ -36,7 +36,7 @@ import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
  * 首页、壁纸详情页
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Slf4j
 @Path
@@ -129,7 +129,7 @@ public class IndexController {
         // 去除 .html 后缀
         String regex = "^.*\\.(html)$";
         if (StringKit.isNotEmpty(lang) && Pattern.matches(regex, lang)) {
-            codeStr = lang.substring(0, lang.lastIndexOf("."));
+            codeStr = lang.substring(0, lang.lastIndexOf('.'));
         } else {
             codeStr = StringKit.isEmpty(lang) ? request.cookie(COUNTRY) : lang;
         }

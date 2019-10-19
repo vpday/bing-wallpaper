@@ -4,15 +4,14 @@ import com.blade.Blade;
 import com.blade.Environment;
 import com.blade.ioc.Ioc;
 import com.blade.ioc.annotation.Bean;
-import com.blade.ioc.annotation.Inject;
 import com.blade.kit.StringKit;
 import com.blade.loader.BladeLoader;
-import com.blade.mvc.Const;
 import com.blade.mvc.view.template.JetbrickTemplateEngine;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
+import cool.develop.bingwallpaper.bootstrap.properties.QQEmailProperties;
+import cool.develop.bingwallpaper.exception.TipException;
 import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.service.ServiceHandle;
-import cool.develop.bingwallpaper.service.SiteService;
-import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.ome.OhMyEmail;
 import lombok.extern.slf4j.Slf4j;
@@ -21,39 +20,34 @@ import static io.github.biezhi.ome.OhMyEmail.SMTP_QQ;
 
 /**
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Bean
 @Slf4j
 public class Bootstrap implements BladeLoader {
 
-    @Inject
-    private Environment environment;
+    private ApplicationProperties applicationProperties;
 
-    private static boolean DEV_MODE = Boolean.TRUE;
+    private QQEmailProperties qqEmailProperties;
 
     @Override
     public void preLoad(Blade blade) {
-        Ioc ioc = blade.ioc();
+        this.preInitBean(blade.environment(), blade.ioc());
 
-        SqliteJdbc.importSql(this.isDevMode(blade));
+        log.info("blade dev mode: {}", applicationProperties.isDevMode());
+        SqliteJdbc.importSql(applicationProperties.isDevMode());
         Anima.open(SqliteJdbc.dbSrc());
 
-        Site.setSiteService(ioc.getBean(SiteService.class));
+        Site.setHeadTitle(applicationProperties.getHeadTitle());
     }
 
     @Override
     public void load(Blade blade) {
-        String bingWallpaperDir = Const.CLASSPATH + "wallpapers/";
-        BingWallpaperConst.BING_WALLPAPER_DIR = FileUtils.getFilePath(bingWallpaperDir);
         blade.addStatics("/wallpapers");
-
-        BingWallpaperConst.HEAD_TITLE = environment.get("app.head_title", "");
-        BingWallpaperConst.SITE_URL = environment.get("app.site_url", "");
 
         JetbrickTemplateEngine templateEngine = new JetbrickTemplateEngine();
         templateEngine.getGlobalResolver().registerFunctions(Site.class);
-        templateEngine.getGlobalContext().set("context", BingWallpaperConst.SITE_URL);
+        templateEngine.getGlobalContext().set("context", applicationProperties.getSiteUrl());
         blade.templateEngine(templateEngine);
 
         this.preAddData(blade.ioc());
@@ -61,7 +55,22 @@ public class Bootstrap implements BladeLoader {
     }
 
     /**
+     * 初始化配置属性
+     *
+     * @param environment Blade 环境配置
+     * @param ioc         IOC 容器
+     */
+    private void preInitBean(Environment environment, Ioc ioc) {
+        this.applicationProperties = new ApplicationProperties().init(environment);
+        ioc.addBean(this.applicationProperties);
+        this.qqEmailProperties = new QQEmailProperties().init(environment);
+        ioc.addBean(this.qqEmailProperties);
+    }
+
+    /**
      * 预先添加数据
+     *
+     * @param ioc IOC 容器
      */
     private void preAddData(Ioc ioc) {
         if (Boolean.TRUE.equals(SqliteJdbc.isNewDb())) {
@@ -74,33 +83,22 @@ public class Bootstrap implements BladeLoader {
      * 配置邮件发送
      */
     private void preConfigEmail() {
-        boolean isEnable = environment.getBoolean("app.qq_email.enable", Boolean.FALSE);
-        if (isEnable) {
-            String username = environment.get("app.qq_email.username", "");
-            String password = environment.get("app.qq_email.password", "");
-            String toEmail = environment.get("app.email.to_email", "");
+        if (qqEmailProperties.isEnable()) {
+            final String username = qqEmailProperties.getUsername();
+            final String password = qqEmailProperties.getPassword();
+            final String addressee = qqEmailProperties.getAddressee();
 
-            isEnable = StringKit.isNotEmpty(username) && StringKit.isNotEmpty(password) && StringKit.isNotEmpty(toEmail);
-            if (isEnable) {
-                BingWallpaperConst.ENABLE_EMAIL = Boolean.TRUE;
-                BingWallpaperConst.TO_EMAIL = toEmail;
-                OhMyEmail.config(SMTP_QQ(false), username, password);
+            if (StringKit.isBlank(username)) {
+                throw new TipException("邮件登录用户名不能为空");
             }
-        }
-    }
+            if (StringKit.isBlank(password)) {
+                throw new TipException("邮件登录密码不能为空");
+            }
+            if (StringKit.isBlank(addressee)) {
+                throw new TipException("收件人不能为空");
+            }
 
-    private boolean isDevMode(Blade blade) {
-        if (blade.environment().hasKey("app.dev")) {
-            DEV_MODE = blade.environment().getBoolean("app.dev", true);
+            OhMyEmail.config(SMTP_QQ(false), username, password);
         }
-        if (blade.environment().hasKey("app.devMode")) {
-            DEV_MODE = blade.environment().getBoolean("app.devMode", true);
-        }
-
-        return DEV_MODE;
-    }
-
-    public static boolean devMode() {
-        return DEV_MODE;
     }
 }

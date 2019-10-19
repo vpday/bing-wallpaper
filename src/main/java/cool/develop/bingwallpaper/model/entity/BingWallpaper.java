@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
  * 必应壁纸
  *
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

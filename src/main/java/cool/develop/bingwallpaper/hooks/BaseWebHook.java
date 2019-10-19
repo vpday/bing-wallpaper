@@ -12,7 +12,7 @@ import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
 
 /**
  * @author vpday
- * @create 2019/1/24
+ * @date 2019/1/24
  */
 @Bean
 @Slf4j

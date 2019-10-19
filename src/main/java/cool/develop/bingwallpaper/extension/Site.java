@@ -7,7 +7,6 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
-import cool.develop.bingwallpaper.service.SiteService;
 import cool.develop.bingwallpaper.utils.DateUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
@@ -27,29 +26,25 @@ import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
  * 全站函数
  *
  * @author vpdy
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 public final class Site {
 
-    private static SiteService siteService;
+    private static String headTitle;
 
     private Site() {
     }
 
-    public static void setSiteService(SiteService ss) {
-        siteService = ss;
+    public static void setHeadTitle(String setHeadTitle) {
+        headTitle = setHeadTitle;
     }
 
     public static int getYear() {
         return LocalDate.now().getYear();
     }
 
-    public static String context() {
-        return BingWallpaperConst.SITE_URL;
-    }
-
     public static String siteName() {
-        return BingWallpaperConst.HEAD_TITLE;
+        return headTitle;
     }
 
     public static String wallpaperLocale() {
@@ -63,12 +58,12 @@ public final class Site {
         if (Objects.isNull(wallpaper)) {
             final String pageType = getRequestAttribute("page_type");
             final Integer pageNum = getRequestAttribute("page_num");
-            String text = BingWallpaperConst.HEAD_TITLE;
+            String text = headTitle;
 
             if (BingWallpaperConst.TOP_CODE.equals(pageType)) {
-                text = "热门榜 | " + BingWallpaperConst.HEAD_TITLE;
+                text = "热门榜 | " + headTitle;
             } else if (BingWallpaperConst.DOWN_CODE.equals(pageType)) {
-                text = "下载榜 | " + BingWallpaperConst.HEAD_TITLE;
+                text = "下载榜 | " + headTitle;
             }
 
             if (1 == pageNum) {
@@ -86,7 +81,7 @@ public final class Site {
         if (!StringKit.isBlank(wallpaper.getCaption())) {
             title.append(" | ").append(wallpaper.getCaption());
         }
-        title.append(" | ").append(BingWallpaperConst.HEAD_TITLE);
+        title.append(" | ").append(headTitle);
 
         return title.toString();
     }

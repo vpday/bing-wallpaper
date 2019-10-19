@@ -6,6 +6,7 @@ import com.blade.mvc.annotation.GetRoute;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.PathParam;
 import com.blade.mvc.http.Response;
+import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.vo.Sitemap;
 import cool.develop.bingwallpaper.service.SiteService;
@@ -19,13 +20,11 @@ import java.util.regex.Pattern;
 
 /**
  * @author vpday
- * @create 2019/6/27
+ * @date 2019/6/27
  */
 @Slf4j
 @Path
 public class FeedController {
-
-    private static final String XML_MEDIA_TYPE = "application/xml;charset=UTF-8";
 
     @Inject
     private SiteService siteService;
@@ -40,7 +39,7 @@ public class FeedController {
         // 去除 .xml 后缀
         String regex = "^.*\\.(xml)$";
         if (StringKit.isNotEmpty(code) && Pattern.matches(regex, code)) {
-            String newCode = code.substring(0, code.lastIndexOf("."));
+            String newCode = code.substring(0, code.lastIndexOf('.'));
 
             country = CountryCode.getCountryCode(newCode);
         } else {
@@ -61,7 +60,7 @@ public class FeedController {
      */
     @GetRoute(value = {"sitemap", "sitemap.xml", "sitemap/:code"})
     public void sitemapXml(Response response, @PathParam String code) {
-        response.contentType(XML_MEDIA_TYPE);
+        response.contentType(BingWallpaperConst.XML_MEDIA_TYPE);
         String templatePath = "comm/web/sitemap_xml.html";
         String newCode = CountryCode.ZH_CN.code();
 
@@ -71,7 +70,7 @@ public class FeedController {
         String regex = "^.*\\.(xml)$";
         isContinue = StringKit.isNotEmpty(code) && Pattern.matches(regex, code);
         if (isContinue) {
-            newCode = code.substring(0, code.lastIndexOf("."));
+            newCode = code.substring(0, code.lastIndexOf('.'));
 
             isContinue = CountryCode.isExistCode(newCode);
         }

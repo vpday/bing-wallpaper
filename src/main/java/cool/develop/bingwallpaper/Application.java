@@ -6,7 +6,7 @@ import cool.develop.bingwallpaper.hooks.CustomCsrfMiddleware;
 
 /**
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 public class Application {
 

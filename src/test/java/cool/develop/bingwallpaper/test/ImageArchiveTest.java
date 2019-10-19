@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 /**
  * @author vpday
- * @create 2019/1/15
+ * @date 2019/1/15
  */
 @Slf4j
 public class ImageArchiveTest {

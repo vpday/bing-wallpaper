@@ -9,7 +9,7 @@ import org.junit.Test;
 
 /**
  * @author vpday
- * @create 2019/1/7
+ * @date 2019/1/7
  */
 @Slf4j
 public class BingServiceTest extends BaseTest {

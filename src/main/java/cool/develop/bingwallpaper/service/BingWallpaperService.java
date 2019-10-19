@@ -1,7 +1,8 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
-import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
+import com.blade.ioc.annotation.Inject;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.model.dto.Resolution;
@@ -22,10 +23,13 @@ import java.util.Optional;
 
 /**
  * @author vpday
- * @create 2018/11/23
+ * @date 2018/11/23
  */
 @Bean
 public class BingWallpaperService {
+
+    @Inject
+    private ApplicationProperties applicationProperties;
 
     /**
      * 判断是否已存在壁纸信息
@@ -97,7 +101,7 @@ public class BingWallpaperService {
      * 保存图片到本地文件夹
      */
     public void save(Map<String, byte[]> images, String name) throws IOException {
-        String filePath = FileUtils.getFilePath((BingWallpaperConst.BING_WALLPAPER_DIR + "/" + name));
+        String filePath = FileUtils.getFilePath((applicationProperties.getBingWallpaperDir() + "/" + name));
 
         for (Map.Entry<String, byte[]> var : images.entrySet()) {
             String pathName = filePath + "/" + var.getKey();
@@ -112,7 +116,7 @@ public class BingWallpaperService {
      * 加载壁纸文件
      */
     public File load(String name, Resolution resolution) {
-        String filePath = BingWallpaperConst.BING_WALLPAPER_DIR + "/" + name + "/" + name + "_" + resolution.format() + ".jpg";
+        String filePath = applicationProperties.getBingWallpaperDir() + "/" + name + "/" + name + "_" + resolution.format() + ".jpg";
         return new File(filePath);
     }
 }
