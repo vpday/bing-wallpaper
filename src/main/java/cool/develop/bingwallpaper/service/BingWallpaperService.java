@@ -4,7 +4,6 @@ import com.blade.ioc.annotation.Bean;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.dto.LifeInfo;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -93,23 +91,6 @@ public class BingWallpaperService {
 
         bingWallPaper.parseUrlBase(images.getUrlBase());
         bingWallPaper.save();
-    }
-
-    /**
-     * 保存拍摄地点信息
-     */
-    @Deprecated
-    public synchronized void save(String name, LifeInfo lifeInfo) {
-        FilmingLocation filmingLocation = new FilmingLocation(name, lifeInfo.getAttribute());
-
-        if (Objects.nonNull(lifeInfo.getLatitude()) && Objects.nonNull(lifeInfo.getLongitude())) {
-            String mapUrl = BingWallpaperConst.GOOGLE_MAP_URL + lifeInfo.getLatitude() + "," + lifeInfo.getLongitude();
-            filmingLocation.setLatitude(lifeInfo.getLatitude());
-            filmingLocation.setLongitude(lifeInfo.getLongitude());
-            filmingLocation.setMapUrl(mapUrl);
-        }
-
-        filmingLocation.save();
     }
 
     /**

@@ -6,15 +6,9 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.ImageArchive;
 import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.dto.LifeInfo;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.utils.SiteUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +25,6 @@ import java.util.concurrent.Future;
  */
 @Bean
 public class BingService {
-
-    /**
-     * 可获取最近几天的封面故事
-     */
-    @Deprecated
-    public LifeInfo getLifeInfo(LocalDate date) throws IOException {
-        String newUrl = BingWallpaperConst.LIFE + date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        Document document = Jsoup.connect(newUrl).userAgent(BingWallpaperConst.USER_AGENT).get();
-
-        return LifeInfo.parseDocument(document);
-    }
 
     /**
      * 获取当日图片存档
