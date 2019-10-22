@@ -1,7 +1,6 @@
 package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
-import com.blade.kit.JsonKit;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.ImageArchive;
@@ -39,7 +38,7 @@ public class BingService {
      */
     public Images getImageArchiveByToDay(CountryCode country) {
         String json = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 1, country.code()));
-        ImageArchive imageArchive = JsonKit.formJson(json, ImageArchive.class);
+        ImageArchive imageArchive = GsonUtils.create().fromJson(json, ImageArchive.class);
 
         return imageArchive.getImages().get(0);
     }

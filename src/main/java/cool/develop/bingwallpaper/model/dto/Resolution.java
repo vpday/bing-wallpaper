@@ -33,14 +33,6 @@ public class Resolution {
         this.height = height;
     }
 
-    public static boolean checkParam(String width, String height) {
-        long count = RESOLUTIONS.stream()
-                .filter(var -> var.getWidth().equals(Integer.valueOf(width)) && var.getHeight().equals(Integer.valueOf(height)))
-                .count();
-
-        return 0 < count;
-    }
-
     public String format() {
         return this.getWidth() + "x" + this.getHeight();
     }

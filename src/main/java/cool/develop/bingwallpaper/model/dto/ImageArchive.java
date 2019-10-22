@@ -1,7 +1,5 @@
 package cool.develop.bingwallpaper.model.dto;
 
-import com.blade.kit.json.JsonIgnore;
-import com.blade.kit.json.JsonProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -16,8 +14,4 @@ import java.util.List;
 @Data
 public class ImageArchive {
     private List<Images> images = new ArrayList<>(16);
-
-    @JsonProperty("tooltips")
-    @JsonIgnore
-    private ToolTips toolTips;
 }

@@ -141,15 +141,20 @@ public class IndexController {
      */
     @PostRoute(value = "download")
     public void downLoad(Request request, Response response) {
-        BingWallpaper bingWallPaper = this.getBingWallpaperByCode(request, response);
-        if (Objects.isNull(bingWallPaper)) {
+        RestResponse<String> checkResult = this.checkCode(request);
+        if (!checkResult.isSuccess()) {
+            response.json(checkResult);
+            return;
+        }
+        RestResponse<BingWallpaper> result = this.getBingWallpaperByCode(checkResult.getPayload());
+        if (!result.isSuccess()) {
+            response.json(result);
             return;
         }
 
-        String code = bingWallPaper.getCode();
-        bingWallpaperService.updateBingWallpaperByDownLoads(code, (bingWallPaper.getHits() + 1));
-        File picture = bingWallpaperService.load(bingWallPaper.getName(),
-                new Resolution(1920, 1080));
+        BingWallpaper bingWallpaper = result.getPayload();
+        bingWallpaperService.updateBingWallpaperByDownLoads(bingWallpaper.getHash(), (bingWallpaper.getHits() + 1));
+        File picture = bingWallpaperService.load(bingWallpaper.getName(), new Resolution(1920, 1080));
         response.contentType("image/jpeg");
         response.header("Content-Disposition", "attachment; filename=" + picture.getName());
         response.body(ByteBody.of(picture));
@@ -160,32 +165,37 @@ public class IndexController {
      */
     @JSON
     @PostRoute(value = "like")
-    public void likes(Request request, Response response) {
-        Session session = request.session();
-
-        BingWallpaper bingWallPaper = this.getBingWallpaperByCode(request, response);
-        if (Objects.isNull(bingWallPaper)) {
-            return;
+    public RestResponse likes(Request request) {
+        RestResponse<String> checkResult = this.checkCode(request);
+        if (!checkResult.isSuccess()) {
+            return checkResult;
         }
-        String code = bingWallPaper.getCode();
-        Integer likes = bingWallPaper.getLikes();
+        RestResponse<BingWallpaper> result = this.getBingWallpaperByCode(checkResult.getPayload());
+        if (!result.isSuccess()) {
+            return result;
+        }
 
+        BingWallpaper bingWallpaper = result.getPayload();
+        String wallPaperHash = bingWallpaper.getHash();
+        Integer likes = bingWallpaper.getLikes();
+
+        Session session = request.session();
         List<String> var = session.attribute("likes");
         if (Objects.isNull(var)) {
             var = new ArrayList<>();
             session.attribute("likes", var);
         } else {
-            long count = var.stream().filter(var2 -> var2.equals(code)).count();
+            long count = var.stream().filter(var2 -> var2.equals(wallPaperHash)).count();
             if (0 < count) {
-                response.json(RestResponse.ok());
+                return RestResponse.ok();
             }
         }
-        var.add(code);
+        var.add(wallPaperHash);
 
         likes += 1;
-        bingWallpaperService.updateBingWallpaperByLikes(code, likes);
+        bingWallpaperService.updateBingWallpaperByLikes(wallPaperHash, likes);
 
-        response.json(RestResponse.ok());
+        return RestResponse.ok();
     }
 
     /**
@@ -198,23 +208,21 @@ public class IndexController {
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12, country);
     }
 
-    private BingWallpaper getBingWallpaperByCode(Request request, Response response) {
+    private RestResponse<String> checkCode(Request request) {
         Map<String, List<String>> query = request.parameters();
-
         if (Objects.isNull(query.get(CODE)) || StringKit.isEmpty(query.get(CODE).get(0))) {
             log.error("request parameters are incomplete.");
-            response.json(RestResponse.fail("request parameters are incomplete."));
-            return null;
+            return RestResponse.fail("request parameters are incomplete.");
         }
+        return RestResponse.ok(query.get(CODE).get(0));
+    }
 
-        String code = query.get(CODE).get(0);
+    private RestResponse<BingWallpaper> getBingWallpaperByCode(String code) {
         BingWallpaper bingWallPaper = bingWallpaperService.getBingWallpaper(code);
         if (Objects.isNull(bingWallPaper)) {
             log.error("the parameter code [{}] is incorrect.", code);
-            response.json(RestResponse.fail("the parameter code is incorrect."));
-            return null;
+            return RestResponse.fail("the parameter code is incorrect.");
         }
-
-        return bingWallPaper;
+        return RestResponse.ok(bingWallPaper);
     }
 }

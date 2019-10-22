@@ -34,9 +34,9 @@ public class BingWallpaperService {
     /**
      * 判断是否已存在壁纸信息
      */
-    public boolean isNotExistWallpaper(String name, String code) {
+    public boolean isNotExistWallpaper(String name, String hash) {
         AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getName, name).and(BingWallpaper::getCode, code);
+                .where(BingWallpaper::getName, name).and(BingWallpaper::getHash, hash);
 
         return 0 == animaQuery.count();
     }

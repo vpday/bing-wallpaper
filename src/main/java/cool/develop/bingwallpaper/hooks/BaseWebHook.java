@@ -6,7 +6,6 @@ import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.WebHook;
 import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.utils.SiteUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
 
@@ -15,7 +14,6 @@ import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;
  * @date 2019/1/24
  */
 @Bean
-@Slf4j
 public class BaseWebHook implements WebHook {
     @Override
     public boolean before(RouteContext context) {
@@ -24,7 +22,8 @@ public class BaseWebHook implements WebHook {
         boolean isNotExist = StringKit.isEmpty(langByCookie) || CountryCode.isNotExistCode(langByCookie);
         if (isNotExist) {
             String displayName = SiteUtils.acceptLanguage(context.request()).getDisplayName();
-            context.cookie(COUNTRY, displayName, 2592000);
+            CountryCode countryCode = CountryCode.getCountryCode(displayName);
+            context.cookie(COUNTRY, countryCode.code(), 2592000);
         }
 
         return true;

@@ -78,9 +78,8 @@ public class ImageArchiveTest {
                 JsonObject imgInfo = GSON.fromJson(json, JsonObject.class).get("images").getAsJsonArray()
                         .get(0).getAsJsonObject();
                 String title = imgInfo.get("title").getAsString();
-                String copyright = imgInfo.get("copyright").getAsString();
 
-                if (!(null == title || title.isEmpty())) {
+                if (!(null == title || "".equals(title.trim()))) {
                     String date = imgInfo.get("date").getAsString();
                     System.out.println(String.format("CountryCode: %s ,Date: %s", LANGUAGE_CODES[i], date));
                 }

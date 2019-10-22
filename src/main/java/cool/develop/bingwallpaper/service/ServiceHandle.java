@@ -66,7 +66,7 @@ public class ServiceHandle {
         // 获取图片存档信息
         Images images = bingService.getImageArchiveByToDay(countryCode);
         // 判断是否已存在该壁纸信息
-        if (bingWallpaperService.isNotExistWallpaper(images.getName(), images.getCode())) {
+        if (bingWallpaperService.isNotExistWallpaper(images.getName(), images.getHsh())) {
             // 存储数据
             this.saveExceptionHandle(countryCode, images);
 
@@ -104,7 +104,7 @@ public class ServiceHandle {
 
             for (Images image : images) {
                 // 判断是否已存在该壁纸信息
-                if (bingWallpaperService.isNotExistWallpaper(image.getName(), image.getCode())) {
+                if (bingWallpaperService.isNotExistWallpaper(image.getName(), image.getHsh())) {
                     // 每张图片都开启一个保存图片的线程
                     executorService2.submit(() -> {
                         // 存储数据
