@@ -51,7 +51,7 @@
                     <em class="t">${wallpaperItem.hits}</em>
                 </p>
             </div>
-            <div class="options" copyright="${wallpaperItem.copyright}" code="${wallpaperItem.hash}" fileName="${getFileName(wallpaperItem)}">
+            <div class="options" copyright="${wallpaperItem.copyright}" code="${wallpaperItem.hash}" fileName="${getFileName(wallpaperItem)}" data-no-instant>
                 #if (mapUrl(wallpaperItem))
                 <a class="ctrl share" rel="nofollow" href="${mapUrl(wallpaperItem)}" title="Google Map 查看">
                     <i class="icon icon-share"></i>
@@ -93,14 +93,14 @@
 </div>
 #end
 #tag layout_block("scriptContent")
-<script type="text/javascript">
+<script type="text/javascript" data-instant-track>
     $(function () {
         hearts();
 
         var i = 0;
         var timer = setInterval(function () {
             progressively.init();
-            if (i++ === 5) {
+            if (i++ === 4) {
                 clearInterval(timer);
             }
         }, 1000 / 4);
@@ -109,26 +109,30 @@
             $(document.body).addClass("mobile");
         }
 
-        function hearts() {
-            var $one = $("#hearts");
-            var heartCount = $one.width() / 50 * 5;
-            for (var i = 0; i <= heartCount; i++) {
-                var size = $.rnd(60, 120) / 10;
-                $one.append('<span class="particle" style="top:' + $.rnd(20, 80) + '%; left:' + $.rnd(0, 95) + '%;width:' + size + 'px; height:' + size + 'px;animation-delay: ' + $.rnd(0, 30) / 10 + 's;"></span>');
-            }
-        }
-
         $("#select-country").change(function () {
             var code = $("#select-country option:selected").val();
             document.location = document.location.protocol + "//" + document.location.host + "/country/" + code;
         });
-    });
 
-    jQuery.rnd = function (m, n) {
-        m = parseInt(m);
-        n = parseInt(n);
-        return Math.floor(Math.random() * (n - m + 1)) + m;
-    };
+        function hearts() {
+            var $one = $("#hearts");
+            $one.children('span').remove();
+            var heartCount = $one.width() / 50 * 5;
+            for (var i = 0; i <= heartCount; i++) {
+                var size = rnd(60, 120) / 10;
+                $one.append('<span class="particle" style="top:' + rnd(20, 80) + '%; left:' + rnd(0, 95) + '%;width:' + size + 'px; height:' + size + 'px;animation-delay: ' + rnd(0, 30) / 10 + 's;"></span>');
+            }
+        }
+
+        function rnd(m, n) {
+            m = parseInt(m);
+            n = parseInt(n);
+            return Math.floor(Math.random() * (n - m + 1)) + m;
+        }
+    });
+</script>
+<script type="text/javascript" data-no-instant>
+    InstantClick.init('mousedown');
 </script>
 #end
 #include("layout/layout.html")

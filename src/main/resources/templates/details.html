@@ -6,7 +6,7 @@
             <img class="target progressive__img progressive--not-loaded" itemprop="contentUrl" alt="${wallpaper.copyright}" src="${context}${imgHref(wallpaper,'1920x1080')}" data-progressive="${context}${imgHref(wallpaper,'1920x1080')}">
         </div>
         <div class="mark"></div>
-        <div class="options" copyright="${wallpaper.copyright}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}">
+        <div class="options" copyright="${wallpaper.copyright}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}" data-no-instant>
             <a class="ctrl left" onclick="window.history.go(-1);">
                 <i class="icon icon-left"></i>
                 <em class="t">返回</em>
@@ -62,7 +62,7 @@
 </div>
 #end
 #tag layout_block("scriptContent")
-<script>
+<script type="text/javascript" data-instant-track>
     $(function () {
         var i = 0;
         var img = $(".target");
@@ -74,7 +74,7 @@
             throttle: 300,
             onLoadComplete: function () {
                 i++;
-                if (i >= 2) {
+                if (i >= 1) {
                     var big = img.attr("src");
                     mark.css({
                         backgroundImage: "url(" + big + ")",
@@ -86,6 +86,9 @@
             }
         });
     });
+</script>
+<script type="text/javascript" data-no-instant>
+    InstantClick.init('mousedown');
 </script>
 #end
 #include("layout/layout.html")
