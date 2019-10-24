@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -147,11 +148,21 @@ public final class SiteUtils {
         Locale locale = Locale.CHINA;
 
         String languages = request.header("Accept-Language");
-        if (StringKit.isNotEmpty(languages)) {
-            Optional<Locale> useLocal = Locale.LanguageRange.parse(languages).stream()
+        if (StringKit.isBlank(languages)) {
+            return locale;
+        }
+
+        String languages2 = languages.replace(" ", "").toLowerCase();
+        if (languages2.startsWith("accept-language:")) {
+            languages2 = languages2.substring(16);
+        }
+
+        List<String> localeList = Arrays.asList(languages2.split(","));
+        if (!localeList.isEmpty()) {
+            Optional<Locale> useLocal = Locale.LanguageRange.parse(localeList.get(0)).stream()
                     .sorted(Comparator.comparing(Locale.LanguageRange::getWeight).reversed())
                     .map(range -> new Locale(range.getRange())).findFirst();
-            locale = useLocal.orElse(Locale.CHINA);
+            return useLocal.orElse(Locale.CHINA);
         }
 
         return locale;

@@ -100,10 +100,10 @@ public class BingWallpaper extends Model {
     }
 
     public void parseUrlBase(String urlBase) {
-        String nameAndCode = urlBase.substring((urlBase.lastIndexOf(".") + 1));
+        String nameAndCode = urlBase.substring((urlBase.lastIndexOf('.') + 1));
 
-        this.name = nameAndCode.substring(0, nameAndCode.lastIndexOf("_"));
-        this.code = nameAndCode.substring((nameAndCode.lastIndexOf("_") + 1));
+        this.name = nameAndCode.substring(0, nameAndCode.lastIndexOf('_'));
+        this.code = nameAndCode.substring((nameAndCode.lastIndexOf('_') + 1));
     }
 
     /**

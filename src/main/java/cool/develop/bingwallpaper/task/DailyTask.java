@@ -23,7 +23,7 @@ public class DailyTask {
     /**
      * 获取当日的封面故事和图片存档
      */
-    @Schedule(name = "get-daily-archive-zero", cron = "30 0 0 * * ?")
+    @Schedule(name = "get-daily-archive-zero", cron = "30 1 0 * * ?")
     public void getCoverStoryAndImageArchiveByZero() {
         log.info("开始执行 get-daily-archive-zero 任务 ZH_CN、JA_JP、EN_AU");
         serviceHandle.saveBingWallpaper(CountryCode.ZH_CN, CountryCode.JA_JP, CountryCode.EN_AU);
