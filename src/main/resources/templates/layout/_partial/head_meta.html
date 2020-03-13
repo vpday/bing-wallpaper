@@ -7,18 +7,6 @@
 <meta name="renderer" content="webkit">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="csrf_token" content="${_csrf_token}">
-#if(wallpaper)
-<meta name="author" content="${metaAuthor(wallpaper)}">
-<meta name="keywords" content="${wallpaper.copyright}">
-<meta name="description" content="${wallpaper.metaDescription()}">
-<meta property="og:title" content="${wallpaper.htmlTitle()}">
-<meta property="og:description" content="${wallpaper.metaDescription()}">
-<meta property="og:url" content="${context}${detailsHref(wallPaper)}">
-<meta property="og:image" content="${context}${imgHref(wallpaper,'1920x1080')}">
-<meta property="og:image:secure_url" content="${context}${imgHref(wallpaper,'1920x1080')}">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:alt" content="${wallpaper.copyright}">
-#end
 <meta property="og:site_name" content="${siteName()}">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:locale:alternate" content="${wallpaperLocale()}">

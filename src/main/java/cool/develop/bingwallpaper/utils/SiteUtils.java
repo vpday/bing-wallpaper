@@ -117,7 +117,7 @@ public final class SiteUtils {
 
     private static Content buildContent(BingWallpaper wallpaper, String siteUrl) {
         Content content = new Content();
-        String url = siteUrl + Site.imgHref(wallpaper, "1920x1080");
+        String url = siteUrl + Site.imgHrefByHD(wallpaper);
 
         StringBuilder contentStr = new StringBuilder();
         contentStr.append("<img src=\"").append(url).append("\" border=\"0\"/><h2>");
@@ -183,6 +183,6 @@ public final class SiteUtils {
         JetTemplate template = engine.getTemplate(templatePath);
         template.render(context, writer);
 
-        response.text(writer.toString());
+        response.body(writer.toString());
     }
 }

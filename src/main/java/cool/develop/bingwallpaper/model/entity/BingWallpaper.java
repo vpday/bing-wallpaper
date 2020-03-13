@@ -107,31 +107,10 @@ public class BingWallpaper extends Model {
     }
 
     /**
-     * 获取页面关键字
-     */
-    public String metaKeywords() {
-        StringBuilder keywords = new StringBuilder();
-        keywords.append(this.getName()).append(",")
-                .append(this.getCopyright());
-
-        if (StringKit.isNotEmpty(this.getTitle())) {
-            keywords.append(",").append(this.getTitle());
-        }
-        if (StringKit.isNotEmpty(this.getCaption())) {
-            keywords.append(",").append(this.getCaption());
-        }
-
-        return keywords.toString();
-    }
-
-    /**
      * 获取页面描述
      */
     public String metaDescription() {
-        if (StringKit.isBlank(this.getDescription())) {
-            return this.getCopyright();
-        }
-        return this.getDescription();
+        return StringKit.isBlank(this.getDescription()) ? this.getCopyright() : this.getDescription();
     }
 
     public String htmlTitle() {

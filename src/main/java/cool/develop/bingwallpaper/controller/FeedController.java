@@ -48,7 +48,7 @@ public class FeedController {
 
         try {
             String xml = siteService.getRssXml(country);
-            response.contentType("text/xml; charset=utf-8");
+            response.contentType(BingWallpaperConst.XML_MEDIA_TYPE);
             response.body(xml);
         } catch (Exception e) {
             log.error("生成 rss 失败", e);

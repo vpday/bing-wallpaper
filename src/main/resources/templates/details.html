@@ -3,7 +3,7 @@
 <div class="detail initBefore">
     <div class="preview">
         <div class="progressive">
-            <img class="target progressive__img progressive--not-loaded" alt="${wallpaper.copyright}" src="${context}${imgHref(wallpaper,'1920x1080')}" data-progressive="${context}${imgHref(wallpaper,'1920x1080')}">
+            <img class="target progressive__img progressive--not-loaded" alt="${wallpaper.copyright}" src="${context}${imgHrefByHD(wallpaper)}" data-progressive="${context}${imgHrefByHD(wallpaper)}">
         </div>
         <div class="mark"></div>
         <div class="options" copyright="${wallpaper.copyright}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}" data-no-instant>
@@ -28,11 +28,11 @@
         </div>
         <div class="description">
             <p class="title">
-                #if (wallpaper.title)
-                ${wallpaper.title}
-                #else
-                ${wallpaper.copyright}
-                #end
+            #if (wallpaper.title)
+            ${wallpaper.title}
+            #else
+            ${wallpaper.copyright}
+            #end
             </p>
             #if (wallpaper.caption)
             <p>${wallpaper.caption}</p>

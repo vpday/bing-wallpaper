@@ -10,7 +10,6 @@ import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.vo.Sitemap;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import io.github.biezhi.anima.Anima;
-import io.github.biezhi.anima.core.AnimaQuery;
 import io.github.biezhi.anima.enums.OrderBy;
 
 import java.time.LocalDate;
@@ -32,31 +31,22 @@ public class SiteService {
     private ApplicationProperties applicationProperties;
 
     public String getRssXml(CountryCode countryCode) throws FeedException {
-        List<BingWallpaper> bingWallpapers = Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getCountry, countryCode.code())
-                .order(BingWallpaper::getBid, OrderBy.DESC).all();
-
-        return SiteUtils.getRssXml(bingWallpapers, countryCode, applicationProperties);
-    }
-
-    public List<BingWallpaper> getAllByCountry(CountryCode country) {
-        AnimaQuery<BingWallpaper> query = Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getCountry, country.code())
-                .order(BingWallpaper::getDate, OrderBy.DESC);
-
-        return query.all();
+        return SiteUtils.getRssXml(this.listAllByCountry(countryCode), countryCode, applicationProperties);
     }
 
     public List<Sitemap> getSitemapUrls(CountryCode country) {
-        List<BingWallpaper> wallpapers = this.getAllByCountry(country);
-
+        List<BingWallpaper> wallpapers = this.listAllByCountry(country);
         List<Sitemap> sitemapList = new ArrayList<>(wallpapers.size());
+
+        final String siteUrl = applicationProperties.getSiteUrl();
         wallpapers.forEach(item -> {
-            String siteUrl = applicationProperties.getSiteUrl();
+            String defaultHref = siteUrl + Site.detailsDefaultHref(item);
             String loc = siteUrl + Site.detailsHref(item);
             String lastmod = Site.unixTimeToString(item.getDate());
-
-            sitemapList.add(new Sitemap(loc, lastmod, item.getCountry(), siteUrl));
+            String imageLoc = siteUrl + Site.imgHrefByHD(item);
+            String imageCaption = item.getCopyright();
+            String imageTitle = item.getTitle();
+            sitemapList.add(new Sitemap(loc, lastmod, country.language(), defaultHref, Boolean.TRUE, imageLoc, imageCaption, imageTitle));
         });
 
         return sitemapList;
@@ -66,14 +56,21 @@ public class SiteService {
         List<CountryCode> lists = Arrays.asList(CountryCode.values());
         List<Sitemap> sitemapList = new ArrayList<>(lists.size());
 
+        final String siteUrl = applicationProperties.getSiteUrl();
+        final String defaultHref = siteUrl + "/sitemap.xml";
         lists.forEach(item -> {
-            String siteUrl = applicationProperties.getSiteUrl();
             String loc = siteUrl + "/sitemap/" + item.code() + ".xml";
             String lastmod = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-
-            sitemapList.add(new Sitemap(loc, lastmod, item.code(), siteUrl));
+            sitemapList.add(new Sitemap(loc, lastmod, item.code(), defaultHref));
         });
 
         return sitemapList;
+    }
+
+    private List<BingWallpaper> listAllByCountry(CountryCode country) {
+        return Anima.select().from(BingWallpaper.class)
+                .where(BingWallpaper::getCountry, country.code())
+                .order(BingWallpaper::getBid, OrderBy.DESC)
+                .limit(30);
     }
 }

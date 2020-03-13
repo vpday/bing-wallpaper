@@ -1,0 +1,24 @@
+<meta name="author" content="${metaAuthor(wallpaper)}">
+<meta name="keywords" content="${wallpaper.copyright}">
+<meta name="description" content="${wallpaper.metaDescription()}">
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org/",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "${context}${detailsHref(wallPaper)}"
+    },
+    "headline": "${wallpaper.title}",
+    "image": [
+        "${context}${imgHrefByHD(wallpaper)}"
+    ],
+    "datePublished": "${unixTimeToString(wallpaper.date)}",
+    "dateModified": "${unixTimeToString(wallpaper.date)}",
+    "author": {
+        "@type": "Person",
+        "name": "${metaAuthor(wallpaper)}"
+    },
+    "description": "${wallpaper.metaDescription()}"
+}
+</script>

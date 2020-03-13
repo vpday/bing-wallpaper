@@ -15,7 +15,6 @@ import io.github.biezhi.anima.core.Joins;
 import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,10 +36,6 @@ public final class Site {
 
     public static void setHeadTitle(String setHeadTitle) {
         headTitle = setHeadTitle;
-    }
-
-    public static int getYear() {
-        return LocalDate.now().getYear();
     }
 
     public static String siteName() {
@@ -70,20 +65,17 @@ public final class Site {
                 return text;
             }
             return text + " | 第 " + pageNum + " 页";
-        }
-
-        StringBuilder title = new StringBuilder();
-        if (!StringKit.isBlank(wallpaper.getTitle())) {
-            title.append(wallpaper.getTitle());
         } else {
-            title.append(wallpaper.getCopyright());
-        }
-        if (!StringKit.isBlank(wallpaper.getCaption())) {
-            title.append(" | ").append(wallpaper.getCaption());
-        }
-        title.append(" | ").append(headTitle);
+            StringBuilder title = new StringBuilder();
+            if (!StringKit.isBlank(wallpaper.getTitle())) {
+                title.append(wallpaper.getTitle());
+            } else {
+                title.append(wallpaper.getCopyright());
+            }
+            title.append(" | ").append(headTitle);
 
-        return title.toString();
+            return title.toString();
+        }
     }
 
     /**
@@ -111,6 +103,13 @@ public final class Site {
     }
 
     /**
+     * 获取高清图片的访问 URL
+     */
+    public static String imgHrefByHD(BingWallpaper bingWallPaper) {
+        return imgHref(bingWallPaper, "1920x1080");
+    }
+
+    /**
      * 获取图片的访问 URL
      */
     public static String imgHref(BingWallpaper bingWallPaper, String resolution) {
@@ -123,6 +122,13 @@ public final class Site {
      */
     public static String detailsHref(BingWallpaper bingWallPaper) {
         return String.format("/details/%s/%s.html", bingWallPaper.getName(), bingWallPaper.getCountry());
+    }
+
+    /**
+     * 获取壁纸详情页面的 URL
+     */
+    public static String detailsDefaultHref(BingWallpaper bingWallPaper) {
+        return "/details/" + bingWallPaper.getName();
     }
 
     /**

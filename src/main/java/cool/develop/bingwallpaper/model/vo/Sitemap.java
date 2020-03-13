@@ -18,4 +18,15 @@ public class Sitemap {
     private String hreflang;
     private String defaultHref;
 
+    private Boolean hasImage = Boolean.FALSE;
+    private String imageLoc;
+    private String imageCaption;
+    private String imageTitle;
+
+    public Sitemap(String loc, String lastmod, String hreflang, String defaultHref) {
+        this.loc = loc;
+        this.lastmod = lastmod;
+        this.hreflang = hreflang;
+        this.defaultHref = defaultHref;
+    }
 }

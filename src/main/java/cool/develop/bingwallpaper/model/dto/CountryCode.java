@@ -14,52 +14,57 @@ public enum CountryCode {
     /**
      * 中国
      */
-    ZH_CN("zh-CN", "中国"),
+    ZH_CN("zh-CN","zh", "中国"),
 
     /**
      * 日本
      */
-    JA_JP("ja-JP", "日本"),
+    JA_JP("ja-JP", "ja","日本"),
 
     /**
      * 印度
      */
-    EN_IN("en-IN", "印度"),
+    EN_IN("en-IN", "en","印度"),
 
     /**
      * 澳大利亚
      */
-    EN_AU("en-AU", "澳大利亚"),
+    EN_AU("en-AU", "en","澳大利亚"),
 
     /**
      * 加拿大
      */
-    EN_CA("en-CA", "加拿大"),
+    EN_CA("en-CA", "en","加拿大"),
 
     /**
      * 美国
      */
-    EN_US("en-US", "美国"),
+    EN_US("en-US", "eb","美国"),
 
     /**
      * 英国
      */
-    EN_GB("en-GB", "英国"),
+    EN_GB("en-GB", "en","英国"),
 
     /**
      * 法国
      */
-    FR_FR("fr-FR", "法国"),
+    FR_FR("fr-FR", "fr","法国"),
 
     /**
      * 德国
      */
-    DE_DE("de-DE", "德国");
+    DE_DE("de-DE", "de","德国");
 
     /**
      * 编码
      */
     private String code;
+
+    /**
+     * 语言
+     */
+    private String language;
 
     /**
      * 中文名称
@@ -70,6 +75,10 @@ public enum CountryCode {
         return code;
     }
 
+    public String language() {
+        return language;
+    }
+
     public String cnName() {
         return cnName;
     }
@@ -77,8 +86,9 @@ public enum CountryCode {
     CountryCode() {
     }
 
-    CountryCode(String code, String cnName) {
+    CountryCode(String code, String language, String cnName) {
         this.code = code;
+        this.language = language;
         this.cnName = cnName;
     }
 
