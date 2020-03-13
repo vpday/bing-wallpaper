@@ -1,16 +1,3 @@
-@font-face {
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 700;
-    src: url('//lib.baomitu.com/fonts/lato/lato-700.eot');
-    src: local('Lato'), local('Lato-Normal'),
-    url('//lib.baomitu.com/fonts/lato/lato-700.eot?#iefix') format('embedded-opentype'),
-    url('//lib.baomitu.com/fonts/lato/lato-700.woff2') format('woff2'),
-    url('//lib.baomitu.com/fonts/lato/lato-700.woff') format('woff'),
-    url('//lib.baomitu.com/fonts/lato/lato-700.ttf') format('truetype'),
-    url('//lib.baomitu.com/fonts/lato/lato-700.svg#Lato') format('svg');
-}
-
 .text-effect {
     overflow: hidden;
     position: relative;

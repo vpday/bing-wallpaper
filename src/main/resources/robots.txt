@@ -1,3 +1,8 @@
-User-Agent: * 
-Allow: /
+User-agent: *
+Allow: /details/
+Allow: /page/
+Allow: /country/
+Allow: /feed/
+Disallow: /static/
+Disallow: /wallpapers/
 Sitemap: https://bing.develop.cool/sitemap.xml

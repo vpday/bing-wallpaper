@@ -30,15 +30,14 @@
 <div class="container">
     #for(wallpaperItem : wallpaperPage.rows)
     <div class="item">
-        <div class="card progressive" itemscope itemtype="https://schema.org.cn/ImageObject">
-            <span itemprop="inLanguage" hidden>${wallpaperItem.country}</span>
-            <img itemprop="contentUrl" class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHref(wallpaperItem,'1920x1080')}" src="${context}${imgHref(wallpaperItem,'1920x1080')}" alt="${wallpaperItem.copyright}">
-            <a itemprop="url" class="mark" href="${context}${detailsHref(wallpaperItem)}"></a>
+        <div class="card progressive">
+            <img class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHref(wallpaperItem,'400x240')}" src="${context}${imgHref(wallpaperItem,'400x240')}" alt="${wallpaperItem.copyright}">
+            <a class="mark" href="${context}${detailsHref(wallpaperItem)}"></a>
             <div class="description">
-                <h3 itemprop="name">${wallpaperItem.copyright}</h3>
+                <h3>${wallpaperItem.copyright}</h3>
                 <p class="calendar">
                     <i class="icon icon-calendar"></i>
-                    <em class="t" itemscope="dateCreated">${unixTimeToString(wallpaperItem.date)}</em>
+                    <em class="t">${unixTimeToString(wallpaperItem.date)}</em>
                 </p>
                 #if (attribute(wallpaperItem))
                 <p class="location">
@@ -89,7 +88,7 @@
         #end
     </select></label>
     <span>图片来源于<a rel="nofollow" href="https://www.bing.com"> Bing 搜索</a></span>
-    <span> | &copy; ${getYear()} <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper">bing-wallpaper</a></span>
+    <span> | &copy; 2019-2020 <a rel="nofollow" href="https://github.com/vpday/bing-wallpaper">bing-wallpaper</a></span>
 </div>
 #end
 #tag layout_block("scriptContent")

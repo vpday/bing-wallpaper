@@ -1,9 +1,9 @@
 #set(cool.develop.bingwallpaper.model.entity.BingWallpaper wallpaper = wallPaper)
 #tag layout_block("bodyContent")
 <div class="detail initBefore">
-    <div class="preview" itemscope itemtype="https://schema.org.cn/ImageObject">
+    <div class="preview">
         <div class="progressive">
-            <img class="target progressive__img progressive--not-loaded" itemprop="contentUrl" alt="${wallpaper.copyright}" src="${context}${imgHref(wallpaper,'1920x1080')}" data-progressive="${context}${imgHref(wallpaper,'1920x1080')}">
+            <img class="target progressive__img progressive--not-loaded" alt="${wallpaper.copyright}" src="${context}${imgHref(wallpaper,'1920x1080')}" data-progressive="${context}${imgHref(wallpaper,'1920x1080')}">
         </div>
         <div class="mark"></div>
         <div class="options" copyright="${wallpaper.copyright}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}" data-no-instant>
@@ -27,11 +27,7 @@
             </a>
         </div>
         <div class="description">
-            <span itemprop="url" hidden>${context}${detailsHref(wallPaper)}</span>
-            <img itemprop="contentUrl" src="${context}${imgHref(wallpaper,'1920x1080')}" hidden/>
-            <span itemprop="inLanguage" hidden>${wallpaper.country}</span>
-            <span itemprop="copyrightHolder" hidden>${wallpaper.copyright}</span>
-            <p class="title" itemprop="name">
+            <p class="title">
                 #if (wallpaper.title)
                 ${wallpaper.title}
                 #else
@@ -39,13 +35,13 @@
                 #end
             </p>
             #if (wallpaper.caption)
-            <p itemscope="alternativeHeadline">${wallpaper.caption}</p>
+            <p>${wallpaper.caption}</p>
             #end
             #if (wallpaper.description)
-            <p class="sub" itemprop="description">${wallpaper.description}</p>
+            <p class="sub">${wallpaper.description}</p>
             #end
             <p class="icon icon-calendar">
-                <em class="t" itemscope="dateCreated">${unixTimeToString(wallpaper.date)}</em>
+                <em class="t">${unixTimeToString(wallpaper.date)}</em>
             </p>
             #if (attribute(wallpaper))
             <p class="location">

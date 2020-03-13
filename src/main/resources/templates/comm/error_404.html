@@ -9,18 +9,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,Chrome=1">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="csrf_token" content="${_csrf_token}"/>
     <title>404</title>
     <link rel="icon" href="/favicon.ico" sizes="32x32">
     <!--[if lte IE 8]>
-    <script crossorigin="anonymous" integrity="sha384-DpyZMYXeM1EZzDFVMTZohQpDybSnl2C5t7O9OFmUz/DtsSBtUv3Aac30gGal+y/t"
-            src="https://lib.baomitu.com/html5shiv/3.7/html5shiv.min.js"></script>
-    <script crossorigin="anonymous" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo"
-            src="https://lib.baomitu.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js" integrity="sha256-9uAoNWHdszsUDhSXf/rVcWOqKPfi5/8V5R4UdbZle2A=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js" integrity="sha256-nwhzW/P9gnvWMPOm84MK8BzQRRMdi8iutxMuYsYcOgw=" crossorigin="anonymous"></script>
     <![endif]-->
     <link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
-    <link crossorigin="anonymous" integrity="sha384-i/ZLCOBtDmoxztrtShNvc3vGe1+IbOGDzkZNC4KLXurv/BT7QInnM2AsPnvbgXH/"
-          href="https://lib.baomitu.com/normalize/5.0.0/normalize.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/normalize.min.css">
     <link rel="stylesheet" href="/static/css/error.css">
 </head>
 <body translate="no">
@@ -29,8 +25,7 @@
     <div class="gradient"></div>
     <div class="spotlight"></div>
 </div>
-<script crossorigin="anonymous" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7"
-        src="https://lib.baomitu.com/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.1.1/dist/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 <script>
     $('[data-text]').on("keyup", function () {
         $(this).attr("data-text", $(this).text());
