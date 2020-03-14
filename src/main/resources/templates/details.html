@@ -6,7 +6,7 @@
             <img class="target progressive__img progressive--not-loaded" alt="${wallpaper.copyright}" src="${context}${imgHrefByHD(wallpaper)}" data-progressive="${context}${imgHrefByHD(wallpaper)}">
         </div>
         <div class="mark"></div>
-        <div class="options" copyright="${wallpaper.copyright}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}" data-no-instant>
+        <div class="options" copyright="${wallpaper.title}" code="${wallpaper.hash}" fileName="${getFileName(wallpaper)}" data-no-instant>
             <a class="ctrl left" onclick="window.history.go(-1);">
                 <i class="icon icon-left"></i>
                 <em class="t">返回</em>
@@ -28,11 +28,7 @@
         </div>
         <div class="description">
             <p class="title">
-            #if (wallpaper.title)
             ${wallpaper.title}
-            #else
-            ${wallpaper.copyright}
-            #end
             </p>
             #if (wallpaper.caption)
             <p>${wallpaper.caption}</p>

@@ -6,7 +6,7 @@ import com.blade.kit.CollectionKit;
 import com.blade.kit.StringKit;
 import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.exception.TipException;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.utils.DateUtils;
 import cool.develop.bingwallpaper.utils.FileUtils;
@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 @Bean
 @Slf4j
 public class ServiceHandle {
+
+    private static final String THREAD_PREFIX = "country@";
 
     @Inject
     private BingService bingService;
@@ -49,7 +51,7 @@ public class ServiceHandle {
      */
     public void saveBingWallpaper(CountryCode... countryCode) {
         if (CollectionKit.isNotEmpty(countryCode)) {
-            ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, "country@");
+            ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, THREAD_PREFIX);
 
             for (CountryCode code : countryCode) {
                 executorService.submit(() -> this.saveBingWallpaper(code));
@@ -80,7 +82,7 @@ public class ServiceHandle {
      */
     public void saveBingWallpaperByFifteenDays() {
         CountryCode[] countryCode = CountryCode.values();
-        ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, "country@");
+        ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, THREAD_PREFIX);
 
         for (CountryCode country : countryCode) {
             // 获取图片存档信息
@@ -125,7 +127,7 @@ public class ServiceHandle {
      */
     public void initDataBases() {
         CountryCode[] countryCode = CountryCode.values();
-        ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, "country@");
+        ExecutorService executorService = SiteUtils.newFixedThreadPool(countryCode.length, THREAD_PREFIX);
 
         for (CountryCode country : countryCode) {
             // 获取图片存档信息

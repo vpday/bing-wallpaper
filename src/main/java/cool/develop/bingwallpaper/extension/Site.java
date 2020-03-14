@@ -1,12 +1,11 @@
 package cool.develop.bingwallpaper.extension;
 
-import com.blade.kit.StringKit;
 import com.blade.mvc.WebContext;
 import com.blade.mvc.http.Request;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.utils.DateUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
@@ -66,26 +65,8 @@ public final class Site {
             }
             return text + " | 第 " + pageNum + " 页";
         } else {
-            StringBuilder title = new StringBuilder();
-            if (!StringKit.isBlank(wallpaper.getTitle())) {
-                title.append(wallpaper.getTitle());
-            } else {
-                title.append(wallpaper.getCopyright());
-            }
-            title.append(" | ").append(headTitle);
-
-            return title.toString();
+            return wallpaper.getTitle() + " | " + headTitle;
         }
-    }
-
-    /**
-     * 获取页面创作者
-     */
-    public static String metaAuthor(BingWallpaper wallpaper) {
-        if (Objects.isNull(wallpaper)) {
-            return BingWallpaperConst.META_AUTHOR;
-        }
-        return wallpaper.getCopyright();
     }
 
     /**

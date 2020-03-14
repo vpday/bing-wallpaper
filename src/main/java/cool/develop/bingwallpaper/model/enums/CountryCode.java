@@ -1,4 +1,4 @@
-package cool.develop.bingwallpaper.model.dto;
+package cool.develop.bingwallpaper.model.enums;
 
 import java.util.Arrays;
 import java.util.Optional;

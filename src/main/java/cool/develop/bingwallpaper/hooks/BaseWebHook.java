@@ -4,7 +4,7 @@ import com.blade.ioc.annotation.Bean;
 import com.blade.kit.StringKit;
 import com.blade.mvc.RouteContext;
 import com.blade.mvc.hook.WebHook;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 
 import static cool.develop.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY;

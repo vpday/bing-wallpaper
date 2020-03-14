@@ -14,11 +14,10 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
-import cool.develop.bingwallpaper.service.SiteService;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,9 +43,6 @@ public class IndexController {
 
     @Inject
     private BingWallpaperService bingWallpaperService;
-
-    @Inject
-    private SiteService siteService;
 
     private static final String CODE = "code";
 

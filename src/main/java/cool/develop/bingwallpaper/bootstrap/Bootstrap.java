@@ -14,7 +14,10 @@ import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.service.ServiceHandle;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.ome.OhMyEmail;
+import jetbrick.template.JetEngine;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Objects;
 
 import static io.github.biezhi.ome.OhMyEmail.SMTP_QQ;
 
@@ -30,9 +33,19 @@ public class Bootstrap implements BladeLoader {
 
     private QQEmailProperties qqEmailProperties;
 
+    private JetbrickTemplateEngine jetbrickTemplateEngine;
+
     @Override
     public void preLoad(Blade blade) {
         this.preInitBean(blade.environment(), blade.ioc());
+
+        jetbrickTemplateEngine = new JetbrickTemplateEngine();
+        jetbrickTemplateEngine.getGlobalResolver().registerFunctions(Site.class);
+        jetbrickTemplateEngine.getGlobalContext().set("context", applicationProperties.getSiteUrl());
+        if (Objects.isNull(jetbrickTemplateEngine.getJetEngine())) {
+            jetbrickTemplateEngine.setJetEngine(JetEngine.create(jetbrickTemplateEngine.getConfig()));
+        }
+        blade.ioc().addBean(jetbrickTemplateEngine);
 
         log.info("blade dev mode: {}", applicationProperties.isDevMode());
         SqliteJdbc.importSql(applicationProperties.isDevMode());
@@ -44,11 +57,7 @@ public class Bootstrap implements BladeLoader {
     @Override
     public void load(Blade blade) {
         blade.addStatics("/wallpapers");
-
-        JetbrickTemplateEngine templateEngine = new JetbrickTemplateEngine();
-        templateEngine.getGlobalResolver().registerFunctions(Site.class);
-        templateEngine.getGlobalContext().set("context", applicationProperties.getSiteUrl());
-        blade.templateEngine(templateEngine);
+        blade.templateEngine(jetbrickTemplateEngine);
 
         this.preAddData(blade.ioc());
         this.preConfigEmail();

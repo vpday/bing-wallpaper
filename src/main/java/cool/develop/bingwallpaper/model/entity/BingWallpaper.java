@@ -109,8 +109,8 @@ public class BingWallpaper extends Model {
     /**
      * 获取页面描述
      */
-    public String metaDescription() {
-        return StringKit.isBlank(this.getDescription()) ? this.getCopyright() : this.getDescription();
+    public String defaultDescription() {
+        return StringKit.isBlank(this.getDescription()) ? this.getTitle() : this.getDescription();
     }
 
     public String htmlTitle() {

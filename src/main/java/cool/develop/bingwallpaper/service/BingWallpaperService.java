@@ -3,21 +3,23 @@ package cool.develop.bingwallpaper.service;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
 import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
 import io.github.biezhi.anima.core.JoinParam;
 import io.github.biezhi.anima.core.Joins;
+import io.github.biezhi.anima.enums.OrderBy;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,6 +62,13 @@ public class BingWallpaperService {
         return animaQuery.one();
     }
 
+    public List<BingWallpaper> listAllBy(CountryCode country, int limit) {
+        return Anima.select().from(BingWallpaper.class)
+                .where(BingWallpaper::getCountry, country.code())
+                .order(BingWallpaper::getBid, OrderBy.DESC)
+                .limit(limit);
+    }
+
     public void updateBingWallpaperByHits(String hash, Integer hits) {
         Anima.update().from(BingWallpaper.class)
                 .where(BingWallpaper::getHash, hash)
@@ -83,7 +92,7 @@ public class BingWallpaperService {
         BingWallpaper bingWallPaper = new BingWallpaper(
                 images.getHsh(),
                 date,
-                images.getCopyright(),
+                images.getCopyrightOnly(),
                 country.code(),
                 1, 1, 1
         );

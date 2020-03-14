@@ -6,11 +6,16 @@ import com.blade.mvc.annotation.GetRoute;
 import com.blade.mvc.annotation.Path;
 import com.blade.mvc.annotation.PathParam;
 import com.blade.mvc.http.Response;
+import com.blade.mvc.view.template.JetbrickTemplateEngine;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
+import cool.develop.bingwallpaper.model.entity.BingWallpaper;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.vo.Sitemap;
-import cool.develop.bingwallpaper.service.SiteService;
-import cool.develop.bingwallpaper.utils.SiteUtils;
+import cool.develop.bingwallpaper.service.BingWallpaperService;
+import cool.develop.bingwallpaper.service.FeedService;
+import cool.develop.bingwallpaper.utils.JetbrickTemplateUtils;
+import jetbrick.template.JetTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -26,8 +31,19 @@ import java.util.regex.Pattern;
 @Path
 public class FeedController {
 
+    private static final int LIMIT_CONTENT = 30;
+
     @Inject
-    private SiteService siteService;
+    private JetbrickTemplateEngine jetbrickTemplateEngine;
+
+    @Inject
+    private ApplicationProperties applicationProperties;
+
+    @Inject
+    private FeedService feedService;
+
+    @Inject
+    private BingWallpaperService bingWallpaperService;
 
     /**
      * feed 页
@@ -40,19 +56,21 @@ public class FeedController {
         String regex = "^.*\\.(xml)$";
         if (StringKit.isNotEmpty(code) && Pattern.matches(regex, code)) {
             String newCode = code.substring(0, code.lastIndexOf('.'));
-
             country = CountryCode.getCountryCode(newCode);
         } else {
             country = CountryCode.getCountryCode(code);
         }
 
-        try {
-            String xml = siteService.getRssXml(country);
-            response.contentType(BingWallpaperConst.XML_MEDIA_TYPE);
-            response.body(xml);
-        } catch (Exception e) {
-            log.error("生成 rss 失败", e);
-        }
+        List<BingWallpaper> bingWallpapers = bingWallpaperService.listAllBy(country, LIMIT_CONTENT);
+        Map<String, Object> context = new ConcurrentHashMap<>(16);
+        context.put("copyright", BingWallpaperConst.META_AUTHOR);
+        context.put("countryCode", country);
+        context.put("bingWallpapers", bingWallpapers);
+        context.put("applicationProperties", applicationProperties);
+
+        JetTemplate jetTemplate = jetbrickTemplateEngine.getJetEngine().getTemplate("comm/web/rss.html");
+        String xmlBody = JetbrickTemplateUtils.processTemplateIntoString(jetTemplate, context);
+        this.responseXml(response, xmlBody);
     }
 
     /**
@@ -60,10 +78,7 @@ public class FeedController {
      */
     @GetRoute(value = {"sitemap", "sitemap.xml", "sitemap/:code"})
     public void sitemapXml(Response response, @PathParam String code) {
-        response.contentType(BingWallpaperConst.XML_MEDIA_TYPE);
-        String templatePath = "comm/web/sitemap_xml.html";
         String newCode = CountryCode.ZH_CN.code();
-
         boolean isContinue;
 
         // 去除 .xml 后缀
@@ -71,20 +86,28 @@ public class FeedController {
         isContinue = StringKit.isNotEmpty(code) && Pattern.matches(regex, code);
         if (isContinue) {
             newCode = code.substring(0, code.lastIndexOf('.'));
-
             isContinue = CountryCode.isExistCode(newCode);
         }
 
         List<Sitemap> urlInfos;
         if (isContinue) {
             CountryCode country = CountryCode.getCountryCode(newCode);
-            urlInfos = siteService.getSitemapUrls(country);
+            List<BingWallpaper> bingWallpapers = bingWallpaperService.listAllBy(country, LIMIT_CONTENT);
+            urlInfos = feedService.listAllSitemapUrls(country, bingWallpapers);
         } else {
-            urlInfos = siteService.getSitemapUrls();
+            urlInfos = feedService.listAllSitemapUrls();
         }
 
-        Map<String, Object> context = new ConcurrentHashMap<>(urlInfos.size());
+        Map<String, Object> context = new ConcurrentHashMap<>(16);
         context.put("urls", urlInfos);
-        SiteUtils.render(response, context, templatePath);
+
+        JetTemplate jetTemplate = jetbrickTemplateEngine.getJetEngine().getTemplate("comm/web/sitemap_xml.html");
+        String xmlBody = JetbrickTemplateUtils.processTemplateIntoString(jetTemplate, context);
+        this.responseXml(response, xmlBody);
+    }
+
+    private void responseXml(Response response, String xmlBody) {
+        response.contentType(BingWallpaperConst.XML_MEDIA_TYPE);
+        response.body(xmlBody);
     }
 }

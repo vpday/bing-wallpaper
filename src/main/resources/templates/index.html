@@ -27,17 +27,20 @@
 </header>
 <div class="holder"></div>
 <div class="mask"></div>
-<div class="container">
+<div class="container" itemscope itemtype="http://schema.org/ImageGallery">
     #for(wallpaperItem : wallpaperPage.rows)
-    <div class="item">
+    <div class="item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+        <meta itemprop="width" content="400">
+        <meta itemprop="height" content="240">
+        <meta itemprop="description" content="${wallpaperItem.description}">
         <div class="card progressive">
-            <img class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHref(wallpaperItem,'400x240')}" src="${context}${imgHref(wallpaperItem,'400x240')}" alt="${wallpaperItem.copyright}">
-            <a class="mark" href="${context}${detailsHref(wallpaperItem)}"></a>
+            <img class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHref(wallpaperItem,'400x240')}" src="${context}${imgHref(wallpaperItem,'400x240')}" alt="${wallpaperItem.title}" itemprop="thumbnail">
+            <a class="mark" href="${context}${detailsHref(wallpaperItem)}" itemprop="discussionUrl"></a>
             <div class="description">
-                <h3>${wallpaperItem.copyright}</h3>
+                <h3 itemprop="caption">${wallpaperItem.title}</h3>
                 <p class="calendar">
                     <i class="icon icon-calendar"></i>
-                    <em class="t">${unixTimeToString(wallpaperItem.date)}</em>
+                    <em class="t" itemprop="dateCreated datePublished">${unixTimeToString(wallpaperItem.date)}</em>
                 </p>
                 #if (attribute(wallpaperItem))
                 <p class="location">
@@ -50,7 +53,7 @@
                     <em class="t">${wallpaperItem.hits}</em>
                 </p>
             </div>
-            <div class="options" copyright="${wallpaperItem.copyright}" code="${wallpaperItem.hash}" fileName="${getFileName(wallpaperItem)}" data-no-instant>
+            <div class="options" copyright="${wallpaperItem.title}" code="${wallpaperItem.hash}" fileName="${getFileName(wallpaperItem)}" data-no-instant>
                 #if (mapUrl(wallpaperItem))
                 <a class="ctrl share" rel="nofollow" href="${mapUrl(wallpaperItem)}" title="Google Map 查看">
                     <i class="icon icon-share"></i>

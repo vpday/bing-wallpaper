@@ -2,7 +2,7 @@ package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.dto.ImageArchive;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.model.dto.Resolution;

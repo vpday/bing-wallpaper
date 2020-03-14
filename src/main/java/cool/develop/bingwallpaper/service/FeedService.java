@@ -2,15 +2,11 @@ package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
-import com.sun.syndication.io.FeedException;
 import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.extension.Site;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.vo.Sitemap;
-import cool.develop.bingwallpaper.utils.SiteUtils;
-import io.github.biezhi.anima.Anima;
-import io.github.biezhi.anima.enums.OrderBy;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,21 +21,16 @@ import java.util.List;
  * @date 2018/11/23
  */
 @Bean
-public class SiteService {
+public class FeedService {
 
     @Inject
     private ApplicationProperties applicationProperties;
 
-    public String getRssXml(CountryCode countryCode) throws FeedException {
-        return SiteUtils.getRssXml(this.listAllByCountry(countryCode), countryCode, applicationProperties);
-    }
-
-    public List<Sitemap> getSitemapUrls(CountryCode country) {
-        List<BingWallpaper> wallpapers = this.listAllByCountry(country);
-        List<Sitemap> sitemapList = new ArrayList<>(wallpapers.size());
+    public List<Sitemap> listAllSitemapUrls(CountryCode country, List<BingWallpaper> bingWallpapers) {
+        List<Sitemap> sitemapList = new ArrayList<>(bingWallpapers.size());
 
         final String siteUrl = applicationProperties.getSiteUrl();
-        wallpapers.forEach(item -> {
+        bingWallpapers.forEach(item -> {
             String defaultHref = siteUrl + Site.detailsDefaultHref(item);
             String loc = siteUrl + Site.detailsHref(item);
             String lastmod = Site.unixTimeToString(item.getDate());
@@ -52,7 +43,7 @@ public class SiteService {
         return sitemapList;
     }
 
-    public List<Sitemap> getSitemapUrls() {
+    public List<Sitemap> listAllSitemapUrls() {
         List<CountryCode> lists = Arrays.asList(CountryCode.values());
         List<Sitemap> sitemapList = new ArrayList<>(lists.size());
 
@@ -65,12 +56,5 @@ public class SiteService {
         });
 
         return sitemapList;
-    }
-
-    private List<BingWallpaper> listAllByCountry(CountryCode country) {
-        return Anima.select().from(BingWallpaper.class)
-                .where(BingWallpaper::getCountry, country.code())
-                .order(BingWallpaper::getBid, OrderBy.DESC)
-                .limit(30);
     }
 }

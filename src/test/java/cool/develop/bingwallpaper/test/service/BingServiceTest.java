@@ -1,7 +1,7 @@
 package cool.develop.bingwallpaper.test.service;
 
 import com.blade.ioc.annotation.Inject;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.service.BingService;
 import cool.develop.bingwallpaper.test.BaseTest;

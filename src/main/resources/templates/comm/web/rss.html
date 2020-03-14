@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+    <channel>
+        <title>${applicationProperties.headTitle}</title>
+        <link>${applicationProperties.siteUrl}</link>
+        <description>${applicationProperties.headTitle}</description>
+        <language>${applicationProperties.siteUrl}</language>
+        <copyright>${copyright}</copyright>
+        #if (null != bingWallpapers && 0 < bingWallpapers.size())
+        #for(cool.develop.bingwallpaper.model.entity.BingWallpaper entry : bingWallpapers)
+        <item>
+            <title>
+                <![CDATA[
+                ${entry.title}
+                ]]>
+            </title>
+            <link>${context}${detailsHref(entry)}</link>
+            <description>
+                <![CDATA[
+                <img src="${context}${imgHrefByHD(entry)}" border="0"/>
+                <h2>${entry.title}</h2>
+                <h4>${entry.description}</h4>
+                ]]>
+            </description>
+            <pubDate>${unixTimeToString(entry.date).asDate()}</pubDate>
+        </item>
+        #end
+        #end
+    </channel>
+</rss>

@@ -3,7 +3,7 @@ package cool.develop.bingwallpaper.task;
 import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
 import com.blade.task.annotation.Schedule;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.service.ServiceHandle;
 import lombok.extern.slf4j.Slf4j;
 

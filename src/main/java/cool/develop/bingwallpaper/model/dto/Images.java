@@ -1,5 +1,6 @@
 package cool.develop.bingwallpaper.model.dto;
 
+import com.blade.kit.StringKit;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
@@ -37,7 +38,25 @@ public class Images {
     private Integer drk;
     private Integer top;
     private Integer bot;
-    private List hs = new LinkedList();
+    private List<?> hs = new LinkedList<>();
+
+    private static final String COPYRIGHT_ICO = "©";
+
+    public String getTitle() {
+        if (StringKit.isNotBlank(title)) {
+            return title;
+        } else {
+            return copyright.substring(0, (copyright.lastIndexOf(COPYRIGHT_ICO) - 1)).trim();
+        }
+    }
+
+    public String getCopyrightOnly() {
+        if (StringKit.isNotBlank(copyrightOnly)) {
+            return copyrightOnly;
+        } else {
+            return copyright.substring((copyright.lastIndexOf(COPYRIGHT_ICO)), copyright.length() - 1).trim();
+        }
+    }
 
     public String getNameAndCode() {
         return this.urlBase.substring((this.urlBase.lastIndexOf('.') + 1));

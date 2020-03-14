@@ -1,24 +1,23 @@
-<meta name="author" content="${metaAuthor(wallpaper)}">
-<meta name="keywords" content="${wallpaper.copyright}">
-<meta name="description" content="${wallpaper.metaDescription()}">
+<meta name="author" content="${wallpaper.copyright}">
+<meta name="keywords" content="${wallpaper.title}">
+<meta name="description" content="${wallpaper.defaultDescription()}">
 <script type="application/ld+json">
 {
     "@context": "http://schema.org/",
-    "@type": "NewsArticle",
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "${context}${detailsHref(wallPaper)}"
-    },
-    "headline": "${wallpaper.title}",
-    "image": [
-        "${context}${imgHrefByHD(wallpaper)}"
-    ],
+    "@type": "ImageObject",
+    "caption": "${wallpaper.title}",
+    "alternateName": "${wallpaper.caption}",
+    "representativeOfPage": "false",
     "datePublished": "${unixTimeToString(wallpaper.date)}",
     "dateModified": "${unixTimeToString(wallpaper.date)}",
+    "description": "${wallpaper.defaultDescription()}",
+    "width": "1920",
+    "height": "1080",
+    "thumbnail": "${context}${imgHrefByHD(wallpaper)}",
+    "url": "${context}${detailsHref(wallPaper)}",
     "author": {
         "@type": "Person",
-        "name": "${metaAuthor(wallpaper)}"
-    },
-    "description": "${wallpaper.metaDescription()}"
+        "name": "${wallpaper.copyright}"
+    }
 }
 </script>

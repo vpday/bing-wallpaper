@@ -36,7 +36,7 @@ public class BasisTest {
     }
 
     @Test
-    public void parseDate() {
+    public void testParseDate() {
         DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
                 .parseCaseInsensitive().parseLenient()
                 .appendPattern("[MMM. dd, yyyy]")
@@ -49,5 +49,21 @@ public class BasisTest {
         System.out.println(LocalDate.parse("Feb 20, 2019", builder.toFormatter(Locale.ENGLISH)));
         System.out.println(LocalDate.parse("2 20, 2019", builder.toFormatter(Locale.JAPAN)));
         System.out.println(LocalDate.parse("20190304", builder.toFormatter(Locale.GERMANY)));
+    }
+
+    @Test
+    public void testCopyright() {
+        String copyrightText = "泰河畔伊尔的Les Orgues，法国北加泰罗尼亚 (© SFL Choice/Alamy)";
+        assertNotNull("copyrightText not blank", copyrightText);
+
+        String title = copyrightText.substring(0, (copyrightText.lastIndexOf("©") - 1)).trim();
+        assertNotNull("title not blank", title);
+
+        log.info("title: {}", title);
+
+        String copyrightOnly = copyrightText.substring((copyrightText.lastIndexOf("©")), copyrightText.length() - 1).trim();
+        assertNotNull("copyrightOnly not blank", copyrightOnly);
+
+        log.info("copyrightOnly: {}", copyrightOnly);
     }
 }

@@ -2,34 +2,17 @@ package cool.develop.bingwallpaper.utils;
 
 import com.blade.kit.NamedThreadFactory;
 import com.blade.kit.StringKit;
-import com.blade.mvc.http.Response;
-import com.sun.syndication.feed.rss.Channel;
-import com.sun.syndication.feed.rss.Content;
-import com.sun.syndication.feed.rss.Item;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.WireFeedOutput;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.exception.TipException;
-import cool.develop.bingwallpaper.extension.Site;
-import cool.develop.bingwallpaper.model.dto.CountryCode;
-import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import jetbrick.template.JetEngine;
-import jetbrick.template.JetTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -89,54 +72,6 @@ public final class SiteUtils {
                 new ThreadPoolExecutor.AbortPolicy());
     }
 
-    /**
-     * 构建 RSS 订阅的 XML 内容
-     */
-    public static String getRssXml(List<BingWallpaper> wallpapers, CountryCode country, ApplicationProperties properties) throws FeedException {
-        Channel channel = new Channel("rss_2.0");
-        channel.setTitle(properties.getHeadTitle());
-        channel.setLink(properties.getSiteUrl());
-        channel.setDescription(properties.getHeadTitle());
-        channel.setLanguage(country.code());
-        channel.setCopyright(BingWallpaperConst.META_AUTHOR);
-
-        List<Item> items = new ArrayList<>();
-        wallpapers.forEach(wallpaper -> {
-            Item item = new Item();
-            item.setTitle(wallpaper.getCopyright());
-            item.setContent(buildContent(wallpaper, properties.getSiteUrl()));
-            item.setLink(properties.getSiteUrl() + Site.detailsHref(wallpaper));
-            item.setPubDate(Date.from(Instant.ofEpochMilli(wallpaper.getDate())));
-            items.add(item);
-        });
-        channel.setItems(items);
-
-        WireFeedOutput out = new WireFeedOutput();
-        return out.outputString(channel);
-    }
-
-    private static Content buildContent(BingWallpaper wallpaper, String siteUrl) {
-        Content content = new Content();
-        String url = siteUrl + Site.imgHrefByHD(wallpaper);
-
-        StringBuilder contentStr = new StringBuilder();
-        contentStr.append("<img src=\"").append(url).append("\" border=\"0\"/><h2>");
-        if (StringKit.isNotEmpty(wallpaper.getTitle())) {
-            contentStr.append(wallpaper.getTitle());
-        }
-        if (StringKit.isNotEmpty(wallpaper.getCaption())) {
-            contentStr.append(" —— ").append(wallpaper.getCaption());
-        }
-        contentStr.append("</h2><h4>");
-        if (StringKit.isNotEmpty(wallpaper.getDescription())) {
-            contentStr.append(wallpaper.getDescription());
-        }
-        contentStr.append("</h4>");
-
-        content.setValue(contentStr.toString());
-        return content;
-    }
-
     public static String getStackTrace(final Throwable throwable) {
         final StringWriter sw = new StringWriter();
         final PrintWriter pw = new PrintWriter(sw, true);
@@ -166,23 +101,5 @@ public final class SiteUtils {
         }
 
         return locale;
-    }
-
-    public static void render(Response response, Map<String, Object> context, String templatePath) {
-        StringWriter writer = new StringWriter();
-
-        Properties config = new Properties();
-        String classpathLoader = "jetbrick.template.loader.ClasspathResourceLoader";
-        config.put("jetx.template.suffix", ".html");
-        config.put("jetx.template.loaders", "$classpathLoader");
-        config.put("$classpathLoader", classpathLoader);
-        config.put("$classpathLoader.root", "/templates/");
-        config.put("$classpathLoader.reloadable", "true");
-
-        JetEngine engine = JetEngine.create(config);
-        JetTemplate template = engine.getTemplate(templatePath);
-        template.render(context, writer);
-
-        response.body(writer.toString());
     }
 }

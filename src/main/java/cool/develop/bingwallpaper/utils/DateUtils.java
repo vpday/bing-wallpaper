@@ -1,6 +1,6 @@
 package cool.develop.bingwallpaper.utils;
 
-import cool.develop.bingwallpaper.model.dto.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.dto.Images;
 
 import java.time.Instant;
