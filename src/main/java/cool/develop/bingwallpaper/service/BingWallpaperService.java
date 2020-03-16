@@ -6,7 +6,7 @@ import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
@@ -42,7 +42,7 @@ public class BingWallpaperService {
         return 0 == animaQuery.count();
     }
 
-    public Optional<BingWallpaper> getBingWallpaper(String name, CountryCode countryCode) {
+    public Optional<BingWallpaper> getBingWallpaper(String name, CountryCodeEnum countryCodeEnum) {
         JoinParam param = Joins.with(FilmingLocation.class).as(BingWallpaper::getFilmingLocation)
                 .on(BingWallpaper::getName, FilmingLocation::getName);
         param.setFieldName("filmingLocation");
@@ -50,7 +50,7 @@ public class BingWallpaperService {
         AnimaQuery<BingWallpaper> animaQuery = Anima.select().from(BingWallpaper.class)
                 .join(param)
                 .where(BingWallpaper::getName, name)
-                .and(BingWallpaper::getCountry, countryCode.code());
+                .and(BingWallpaper::getCountry, countryCodeEnum.code());
 
         return Optional.ofNullable(animaQuery.one());
     }
@@ -62,7 +62,7 @@ public class BingWallpaperService {
         return animaQuery.one();
     }
 
-    public List<BingWallpaper> listAllBy(CountryCode country, int limit) {
+    public List<BingWallpaper> listAllBy(CountryCodeEnum country, int limit) {
         return Anima.select().from(BingWallpaper.class)
                 .where(BingWallpaper::getCountry, country.code())
                 .order(BingWallpaper::getBid, OrderBy.DESC)
@@ -88,12 +88,12 @@ public class BingWallpaperService {
     /**
      * 保存信息到数据库
      */
-    public synchronized void save(Long date, Images images, CountryCode country) {
+    public synchronized void save(Long date, Images images, CountryCodeEnum countryCodeEnum) {
         BingWallpaper bingWallPaper = new BingWallpaper(
                 images.getHsh(),
                 date,
                 images.getCopyrightOnly(),
-                country.code(),
+                countryCodeEnum,
                 1, 1, 1
         );
 

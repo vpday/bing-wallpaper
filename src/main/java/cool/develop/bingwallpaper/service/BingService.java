@@ -4,7 +4,7 @@ import com.blade.ioc.annotation.Bean;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.dto.ImageArchive;
 import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.utils.GsonUtils;
 import cool.develop.bingwallpaper.utils.SiteUtils;
@@ -31,13 +31,13 @@ public class BingService {
      * 获取当日图片存档
      */
     public Images getImageArchiveByToDay() {
-        return this.getImageArchiveByToDay(CountryCode.ZH_CN);
+        return this.getImageArchiveByToDay(CountryCodeEnum.ZH_CN);
     }
 
     /**
      * 获取当日图片存档
      */
-    public Images getImageArchiveByToDay(CountryCode country) {
+    public Images getImageArchiveByToDay(CountryCodeEnum country) {
         String json = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 1, country.code()));
         ImageArchive imageArchive = GsonUtils.create().fromJson(json, ImageArchive.class);
 
@@ -47,7 +47,7 @@ public class BingService {
     /**
      * 获取最近 15 天的图片存档
      */
-    public List<Images> getImageArchiveByFifteenDays(CountryCode country) {
+    public List<Images> getImageArchiveByFifteenDays(CountryCodeEnum country) {
         String sevenDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 7, country.code()));
         List<Images> images = GsonUtils.create().fromJson(sevenDays, ImageArchive.class).getImages();
 

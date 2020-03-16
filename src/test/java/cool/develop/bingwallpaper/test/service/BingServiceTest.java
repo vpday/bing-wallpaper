@@ -1,7 +1,7 @@
 package cool.develop.bingwallpaper.test.service;
 
 import com.blade.ioc.annotation.Inject;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.dto.Images;
 import cool.develop.bingwallpaper.service.BingService;
 import cool.develop.bingwallpaper.test.BaseTest;
@@ -31,7 +31,7 @@ public class BingServiceTest extends BaseTest {
 
     @Test
     public void testGetImageArchiveByFifteenDays() {
-        List<Images> images = bingService.getImageArchiveByFifteenDays(CountryCode.ZH_CN);
+        List<Images> images = bingService.getImageArchiveByFifteenDays(CountryCodeEnum.ZH_CN);
         assertNotNull("image list isn't null", images);
         images.forEach(var -> log.info(var.toString()));
     }

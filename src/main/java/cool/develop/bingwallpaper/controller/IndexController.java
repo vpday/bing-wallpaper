@@ -15,7 +15,7 @@ import com.blade.mvc.http.Session;
 import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
 import cool.develop.bingwallpaper.utils.SiteUtils;
@@ -80,11 +80,11 @@ public class IndexController {
 
     private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit) {
         String displayName = SiteUtils.acceptLanguage(request).getDisplayName();
-        CountryCode countryCode = CountryCode.getCountryCode(request.cookie(COUNTRY, displayName));
-        return this.toIndex(request, pagePrefix, pageType, pageNum, pageLimit, countryCode);
+        CountryCodeEnum countryCodeEnum = CountryCodeEnum.getCountryCode(request.cookie(COUNTRY, displayName));
+        return this.toIndex(request, pagePrefix, pageType, pageNum, pageLimit, countryCodeEnum);
     }
 
-    private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit, CountryCode country) {
+    private String toIndex(Request request, String pagePrefix, String pageType, Integer pageNum, Integer pageLimit, CountryCodeEnum country) {
         pageNum = pageNum <= 0 ? 1 : pageNum;
         pageLimit = pageLimit <= 0 ? 12 : pageLimit;
         pageLimit = pageLimit > 36 ? 12 : pageLimit;
@@ -106,7 +106,7 @@ public class IndexController {
             return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
         }
 
-        CountryCode countryEnum = this.getCountryCode(request, lang);
+        CountryCodeEnum countryEnum = this.getCountryCode(request, lang);
         Optional<BingWallpaper> optionalObj = bingWallpaperService.getBingWallpaper(name, countryEnum);
         BingWallpaper bingWallpaper = optionalObj.orElseThrow(() -> {
             log.error("Not Found, name: [{}], countryCode: [{}].", name, countryEnum);
@@ -120,7 +120,7 @@ public class IndexController {
         return "details";
     }
 
-    private CountryCode getCountryCode(Request request, String lang) {
+    private CountryCodeEnum getCountryCode(Request request, String lang) {
         String codeStr;
         // 去除 .html 后缀
         String regex = "^.*\\.(html)$";
@@ -129,7 +129,7 @@ public class IndexController {
         } else {
             codeStr = StringKit.isEmpty(lang) ? request.cookie(COUNTRY) : lang;
         }
-        return CountryCode.getCountryCode(codeStr);
+        return CountryCodeEnum.getCountryCode(codeStr);
     }
 
     /**
@@ -199,7 +199,7 @@ public class IndexController {
      */
     @GetRoute(value = {"country/:lang"})
     public String setCountry(Request request, Response response, @PathParam String lang) {
-        CountryCode country = CountryCode.getCountryCode(lang);
+        CountryCodeEnum country = CountryCodeEnum.getCountryCode(lang);
         response.cookie(COUNTRY, country.code(), (60 * 60 * 24 * 30));
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12, country);
     }

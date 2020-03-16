@@ -1,6 +1,6 @@
 package cool.develop.bingwallpaper.utils;
 
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.dto.Images;
 
 import java.time.Instant;
@@ -55,16 +55,16 @@ public final class DateUtils {
     /**
      * 解析日期
      */
-    public static Long parseDate(CountryCode countryCode, Images images) {
+    public static Long parseDate(CountryCodeEnum countryCodeEnum, Images images) {
         LocalDate toParse;
 
-        if (countryCode.equals(CountryCode.ZH_CN)) {
+        if (countryCodeEnum.equals(CountryCodeEnum.ZH_CN)) {
             toParse = LocalDate.parse(images.getEndDate(), BUILDER.toFormatter(Locale.CHINA));
-        } else if (countryCode.equals(CountryCode.JA_JP)) {
+        } else if (countryCodeEnum.equals(CountryCodeEnum.JA_JP)) {
             toParse = LocalDate.parse(images.getDate(), BUILDER.toFormatter(Locale.JAPAN));
-        } else if (countryCode.equals(CountryCode.FR_FR)) {
+        } else if (countryCodeEnum.equals(CountryCodeEnum.FR_FR)) {
             toParse = LocalDate.parse(images.getDate(), BUILDER.toFormatter(Locale.FRANCE));
-        } else if (countryCode.equals(CountryCode.DE_DE)) {
+        } else if (countryCodeEnum.equals(CountryCodeEnum.DE_DE)) {
             toParse = LocalDate.parse(images.getEndDate(), BUILDER.toFormatter(Locale.GERMANY));
         } else {
             toParse = LocalDate.parse(images.getDate(), BUILDER.toFormatter(Locale.ENGLISH));

@@ -1,7 +1,9 @@
 package cool.develop.bingwallpaper.model.entity;
 
 import com.blade.kit.StringKit;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import io.github.biezhi.anima.Model;
+import io.github.biezhi.anima.annotation.Column;
 import io.github.biezhi.anima.annotation.Ignore;
 import io.github.biezhi.anima.annotation.Table;
 import lombok.Data;
@@ -66,7 +68,8 @@ public class BingWallpaper extends Model {
     /**
      * 国家编码
      */
-    private String country;
+    @Column(name = "country")
+    private CountryCodeEnum country;
 
     /**
      * 点击次数
@@ -89,7 +92,7 @@ public class BingWallpaper extends Model {
     public BingWallpaper() {
     }
 
-    public BingWallpaper(String hash, Long date, String copyright, String country, Integer hits, Integer likes, Integer downloads) {
+    public BingWallpaper(String hash, Long date, String copyright, CountryCodeEnum country, Integer hits, Integer likes, Integer downloads) {
         this.hash = hash;
         this.date = date;
         this.copyright = copyright;

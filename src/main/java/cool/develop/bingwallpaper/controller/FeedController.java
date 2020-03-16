@@ -10,7 +10,7 @@ import com.blade.mvc.view.template.JetbrickTemplateEngine;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.vo.Sitemap;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
 import cool.develop.bingwallpaper.service.FeedService;
@@ -50,15 +50,15 @@ public class FeedController {
      */
     @GetRoute(value = {"feed", "feed.xml", "feed/:code"})
     public void feed(Response response, @PathParam String code) {
-        CountryCode country;
+        CountryCodeEnum country;
 
         // 去除 .xml 后缀
         String regex = "^.*\\.(xml)$";
         if (StringKit.isNotEmpty(code) && Pattern.matches(regex, code)) {
             String newCode = code.substring(0, code.lastIndexOf('.'));
-            country = CountryCode.getCountryCode(newCode);
+            country = CountryCodeEnum.getCountryCode(newCode);
         } else {
-            country = CountryCode.getCountryCode(code);
+            country = CountryCodeEnum.getCountryCode(code);
         }
 
         List<BingWallpaper> bingWallpapers = bingWallpaperService.listAllBy(country, LIMIT_CONTENT);
@@ -78,7 +78,7 @@ public class FeedController {
      */
     @GetRoute(value = {"sitemap", "sitemap.xml", "sitemap/:code"})
     public void sitemapXml(Response response, @PathParam String code) {
-        String newCode = CountryCode.ZH_CN.code();
+        String newCode = CountryCodeEnum.ZH_CN.code();
         boolean isContinue;
 
         // 去除 .xml 后缀
@@ -86,12 +86,12 @@ public class FeedController {
         isContinue = StringKit.isNotEmpty(code) && Pattern.matches(regex, code);
         if (isContinue) {
             newCode = code.substring(0, code.lastIndexOf('.'));
-            isContinue = CountryCode.isExistCode(newCode);
+            isContinue = CountryCodeEnum.isExistCode(newCode);
         }
 
         List<Sitemap> urlInfos;
         if (isContinue) {
-            CountryCode country = CountryCode.getCountryCode(newCode);
+            CountryCodeEnum country = CountryCodeEnum.getCountryCode(newCode);
             List<BingWallpaper> bingWallpapers = bingWallpaperService.listAllBy(country, LIMIT_CONTENT);
             urlInfos = feedService.listAllSitemapUrls(country, bingWallpapers);
         } else {

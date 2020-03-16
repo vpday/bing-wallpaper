@@ -5,7 +5,7 @@ import com.blade.mvc.http.Request;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.utils.DateUtils;
 import io.github.biezhi.anima.Anima;
@@ -43,7 +43,7 @@ public final class Site {
     }
 
     public static String wallpaperLocale() {
-        return CountryCode.getCountryCode(request().session().attribute(COUNTRY)).code();
+        return CountryCodeEnum.getCountryCode(request().session().attribute(COUNTRY)).code();
     }
 
     /**
@@ -73,8 +73,8 @@ public final class Site {
     /**
      * 获取全部语言编码
      */
-    public static CountryCode[] getAllCountry() {
-        return CountryCode.values();
+    public static CountryCodeEnum[] getAllCountry() {
+        return CountryCodeEnum.values();
     }
 
     /**
@@ -110,7 +110,7 @@ public final class Site {
      * 获取壁纸详情页面的 URL
      */
     public static String detailsHref(BingWallpaper bingWallPaper) {
-        return String.format("/details/%s/%s.html", bingWallPaper.getName(), bingWallPaper.getCountry());
+        return String.format("/details/%s/%s.html", bingWallPaper.getName(), bingWallPaper.getCountry().code());
     }
 
     /**
@@ -161,8 +161,8 @@ public final class Site {
         Optional<String> optionalType = Optional.of(request.attribute("page_type"));
         String type = optionalType.orElse("index");
 
-        Optional<CountryCode> optionalCountry = Optional.of(request.attribute("country_code"));
-        CountryCode country = optionalCountry.orElse(CountryCode.ZH_CN);
+        Optional<CountryCodeEnum> optionalCountry = Optional.of(request.attribute("country_code"));
+        CountryCodeEnum country = optionalCountry.orElse(CountryCodeEnum.ZH_CN);
 
         Page<BingWallpaper> wallPapers = getPaging(page, limit, type, country);
         request.attribute("wallPapers", wallPapers);
@@ -173,7 +173,7 @@ public final class Site {
     /**
      * 构建分页查询
      */
-    private static Page<BingWallpaper> getPaging(Integer page, Integer limit, String type, CountryCode country) {
+    private static Page<BingWallpaper> getPaging(Integer page, Integer limit, String type, CountryCodeEnum country) {
         JoinParam param = Joins.with(FilmingLocation.class).as(BingWallpaper::getFilmingLocation)
                 .on(BingWallpaper::getName, FilmingLocation::getName);
         param.setFieldName("filmingLocation");

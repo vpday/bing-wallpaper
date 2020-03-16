@@ -5,7 +5,7 @@ import com.blade.ioc.annotation.Inject;
 import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.extension.Site;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.CountryCodeEnum;
 import cool.develop.bingwallpaper.model.vo.Sitemap;
 
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ public class FeedService {
     @Inject
     private ApplicationProperties applicationProperties;
 
-    public List<Sitemap> listAllSitemapUrls(CountryCode country, List<BingWallpaper> bingWallpapers) {
+    public List<Sitemap> listAllSitemapUrls(CountryCodeEnum country, List<BingWallpaper> bingWallpapers) {
         List<Sitemap> sitemapList = new ArrayList<>(bingWallpapers.size());
 
         final String siteUrl = applicationProperties.getSiteUrl();
@@ -44,7 +44,7 @@ public class FeedService {
     }
 
     public List<Sitemap> listAllSitemapUrls() {
-        List<CountryCode> lists = Arrays.asList(CountryCode.values());
+        List<CountryCodeEnum> lists = Arrays.asList(CountryCodeEnum.values());
         List<Sitemap> sitemapList = new ArrayList<>(lists.size());
 
         final String siteUrl = applicationProperties.getSiteUrl();

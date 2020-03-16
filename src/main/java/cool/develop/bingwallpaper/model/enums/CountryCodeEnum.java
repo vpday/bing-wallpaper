@@ -1,5 +1,8 @@
 package cool.develop.bingwallpaper.model.enums;
 
+import io.github.biezhi.anima.annotation.EnumMapping;
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -9,7 +12,9 @@ import java.util.Optional;
  * @author vpday
  * @date 2019/1/23
  */
-public enum CountryCode {
+@Getter
+@EnumMapping("code")
+public enum CountryCodeEnum {
 
     /**
      * 中国
@@ -83,23 +88,23 @@ public enum CountryCode {
         return cnName;
     }
 
-    CountryCode() {
+    CountryCodeEnum() {
     }
 
-    CountryCode(String code, String language, String cnName) {
+    CountryCodeEnum(String code, String language, String cnName) {
         this.code = code;
         this.language = language;
         this.cnName = cnName;
     }
 
-    public static CountryCode getCountryCode(String code) {
-        Optional<CountryCode> optionalLang = Arrays.stream(CountryCode.values())
+    public static CountryCodeEnum getCountryCode(String code) {
+        Optional<CountryCodeEnum> optionalLang = Arrays.stream(CountryCodeEnum.values())
                 .filter(var -> var.code.equalsIgnoreCase(code)).findFirst();
-        return optionalLang.orElse(CountryCode.ZH_CN);
+        return optionalLang.orElse(CountryCodeEnum.ZH_CN);
     }
 
     public static boolean isExistCode(String code) {
-        long count = Arrays.stream(CountryCode.values())
+        long count = Arrays.stream(CountryCodeEnum.values())
                 .filter(var -> var.code.equalsIgnoreCase(code)).count();
         return 0 < count;
     }
