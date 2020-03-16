@@ -11,7 +11,7 @@
         <item>
             <title>${entry.title.escapeXml()}</title>
             <link>${context}${detailsHref(entry)}</link>
-            <description><![CDATA[<img src="${context}${imgHrefByHD(entry)}" border="0"/><h2>${entry.title.escapeXml()}</h2><h4>${entry.description.escapeXml()}</h4>]]></description>
+            <description><![CDATA[<img src="${context}${imgHrefByHD(entry)}" border="0"/><h2>${entry.title.escapeXml()}</h2><h4>${entry.defaultDescription().escapeXml()}</h4>]]></description>
             <pubDate>${unixTimeToString(entry.date).asDate()}</pubDate>
         </item>
         #end
