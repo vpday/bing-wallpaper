@@ -14,9 +14,9 @@ import com.blade.mvc.http.Response;
 import com.blade.mvc.http.Session;
 import com.blade.mvc.ui.RestResponse;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.service.BingWallpaperService;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -150,7 +150,7 @@ public class IndexController {
 
         BingWallpaper bingWallpaper = result.getPayload();
         bingWallpaperService.updateBingWallpaperByDownLoads(bingWallpaper.getHash(), (bingWallpaper.getHits() + 1));
-        File picture = bingWallpaperService.load(bingWallpaper.getName(), new Resolution(1920, 1080));
+        File picture = bingWallpaperService.load(bingWallpaper.getName(), ResolutionEnum.HD_1080P);
         response.contentType("image/jpeg");
         response.header("Content-Disposition", "attachment; filename=" + picture.getName());
         response.body(ByteBody.of(picture));

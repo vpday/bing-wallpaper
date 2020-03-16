@@ -2,22 +2,5 @@
 <meta name="keywords" content="${wallpaper.title}">
 <meta name="description" content="${wallpaper.defaultDescription()}">
 <script type="application/ld+json">
-{
-    "@context": "http://schema.org/",
-    "@type": "ImageObject",
-    "caption": "${wallpaper.title}",
-    "alternateName": "${wallpaper.caption}",
-    "representativeOfPage": "false",
-    "datePublished": "${unixTimeToString(wallpaper.date)}",
-    "dateModified": "${unixTimeToString(wallpaper.date)}",
-    "description": "${wallpaper.defaultDescription()}",
-    "width": "1920",
-    "height": "1080",
-    "thumbnail": "${context}${imgHrefByHD(wallpaper)}",
-    "url": "${context}${detailsHref(wallPaper)}",
-    "author": {
-        "@type": "Person",
-        "name": "${wallpaper.copyright}"
-    }
-}
+{"@context": "https://schema.org", "@type": "ImageObject", "caption": "${wallpaper.title.escapeXml()}", "alternateName": "${wallpaper.caption}", "representativeOfPage": "false", "datePublished": "${unixTimeToString(wallpaper.date)}", "dateModified": "${unixTimeToString(wallpaper.date)}", "description": "${wallpaper.defaultDescription().escapeXml()}", "width": "1920", "height": "1080", "thumbnail": "${context}${imgHrefByHD(wallpaper)}", "url": "${context}${detailsHref(wallPaper)}", "author": {"@type": "Person","name": "${wallpaper.copyright}"}}
 </script>

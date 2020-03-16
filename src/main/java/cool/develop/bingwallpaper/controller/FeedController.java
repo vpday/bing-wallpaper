@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @Path
 public class FeedController {
 
-    private static final int LIMIT_CONTENT = 30;
+    private static final int LIMIT_CONTENT = Integer.MAX_VALUE;
 
     @Inject
     private JetbrickTemplateEngine jetbrickTemplateEngine;

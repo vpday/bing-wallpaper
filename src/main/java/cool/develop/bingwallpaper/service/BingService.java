@@ -2,14 +2,15 @@ package cool.develop.bingwallpaper.service;
 
 import com.blade.ioc.annotation.Bean;
 import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
-import cool.develop.bingwallpaper.model.enums.CountryCode;
 import cool.develop.bingwallpaper.model.dto.ImageArchive;
 import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.dto.Resolution;
+import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.utils.GsonUtils;
 import cool.develop.bingwallpaper.utils.SiteUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,13 +47,6 @@ public class BingService {
     /**
      * 获取最近 15 天的图片存档
      */
-    public List<Images> getImageArchiveByFifteenDays() {
-        return this.getImageArchiveByFifteenDays(CountryCode.ZH_CN);
-    }
-
-    /**
-     * 获取最近 15 天的图片存档
-     */
     public List<Images> getImageArchiveByFifteenDays(CountryCode country) {
         String sevenDays = SiteUtils.requestBing(SiteUtils.buildImageArchiveUrl(0, 7, country.code()));
         List<Images> images = GsonUtils.create().fromJson(sevenDays, ImageArchive.class).getImages();
@@ -67,22 +61,23 @@ public class BingService {
      * 下载已知分辨率的所有图片
      */
     public Map<String, byte[]> downLoadImages(Images images) throws ExecutionException, InterruptedException {
-        List<String> urlAll = new ArrayList<>(Resolution.RESOLUTIONS.size());
-        List<String> imageNames = new ArrayList<>(Resolution.RESOLUTIONS.size());
+        List<ResolutionEnum> resolutionEnumList = Arrays.asList(ResolutionEnum.values());
+        List<String> urlAll = new ArrayList<>(resolutionEnumList.size());
+        List<String> imageNames = new ArrayList<>(resolutionEnumList.size());
         String name = images.getName();
 
-        Resolution.RESOLUTIONS.forEach(var -> {
-            String suffix = "_" + var.getWidth() + "x" + var.getHeight() + BingWallpaperConst.IMAGE_FILE_SUFFIX;
+        resolutionEnumList.forEach(var -> {
+            String suffix = "_" + var.width() + "x" + var.height() + BingWallpaperConst.IMAGE_FILE_SUFFIX;
             String url = BingWallpaperConst.BING + images.getUrlBase() + suffix;
 
             urlAll.add(url);
             imageNames.add(name + suffix);
         });
 
-        int initialCapacity = (int) Math.pow(2, (Resolution.RESOLUTIONS.size() * 1.0) / 2 + 1);
+        int initialCapacity = (int) Math.pow(2, (resolutionEnumList.size() * 1.0) / 2 + 1);
         Map<String, byte[]> file = new ConcurrentHashMap<>(initialCapacity);
         List<Future<byte[]>> futures = this.useMultiThread(urlAll);
-        for (int i = 0; i < Resolution.RESOLUTIONS.size(); i++) {
+        for (int i = 0, length = resolutionEnumList.size(); i < length; i++) {
             file.put(imageNames.get(i), futures.get(i).get());
         }
 

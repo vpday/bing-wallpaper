@@ -10,8 +10,8 @@
             #if (entry.hasImage)
             <image:image>
                 <image:loc>${entry.imageLoc}</image:loc>
-                <image:caption>${entry.imageCaption}</image:caption>
-                <image:title>${entry.imageTitle}</image:title>
+                <image:caption>${entry.imageCaption.escapeXml()}</image:caption>
+                <image:title>${entry.imageTitle.escapeXml()}</image:title>
             </image:image>
             #end
         </url>

@@ -4,10 +4,10 @@ import com.blade.ioc.annotation.Bean;
 import com.blade.ioc.annotation.Inject;
 import cool.develop.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import cool.develop.bingwallpaper.model.dto.Images;
-import cool.develop.bingwallpaper.model.dto.Resolution;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
 import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.utils.FileUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
@@ -123,8 +123,8 @@ public class BingWallpaperService {
     /**
      * 加载壁纸文件
      */
-    public File load(String name, Resolution resolution) {
-        String filePath = applicationProperties.getBingWallpaperDir() + "/" + name + "/" + name + "_" + resolution.format() + ".jpg";
+    public File load(String name, ResolutionEnum resolutionEnum) {
+        String filePath = applicationProperties.getBingWallpaperDir() + "/" + name + "/" + name + "_" + resolutionEnum.format() + ".jpg";
         return new File(filePath);
     }
 }

@@ -6,6 +6,7 @@ import cool.develop.bingwallpaper.bootstrap.BingWallpaperConst;
 import cool.develop.bingwallpaper.model.entity.BingWallpaper;
 import cool.develop.bingwallpaper.model.entity.FilmingLocation;
 import cool.develop.bingwallpaper.model.enums.CountryCode;
+import cool.develop.bingwallpaper.model.enums.ResolutionEnum;
 import cool.develop.bingwallpaper.utils.DateUtils;
 import io.github.biezhi.anima.Anima;
 import io.github.biezhi.anima.core.AnimaQuery;
@@ -87,7 +88,14 @@ public final class Site {
      * 获取高清图片的访问 URL
      */
     public static String imgHrefByHD(BingWallpaper bingWallPaper) {
-        return imgHref(bingWallPaper, "1920x1080");
+        return imgHref(bingWallPaper, ResolutionEnum.HD_1080P.format());
+    }
+
+    /**
+     * 获取图片的访问 URL
+     */
+    public static String imgHrefByMobileWXGA(BingWallpaper bingWallPaper) {
+        return imgHref(bingWallPaper, ResolutionEnum.MOBILE_WXGA_360P.format());
     }
 
     /**

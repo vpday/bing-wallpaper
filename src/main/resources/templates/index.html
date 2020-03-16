@@ -27,14 +27,14 @@
 </header>
 <div class="holder"></div>
 <div class="mask"></div>
-<div class="container" itemscope itemtype="http://schema.org/ImageGallery">
+<div class="container" itemscope itemtype="https://schema.org/ImageGallery">
     #for(wallpaperItem : wallpaperPage.rows)
-    <div class="item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-        <meta itemprop="width" content="400">
-        <meta itemprop="height" content="240">
+    <div class="item" itemprop="associatedMedia" itemscope itemtype="https://schema.org/ImageObject">
+        <meta itemprop="width" content="640">
+        <meta itemprop="height" content="360">
         <meta itemprop="description" content="${wallpaperItem.description}">
         <div class="card progressive">
-            <img class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHref(wallpaperItem,'400x240')}" src="${context}${imgHref(wallpaperItem,'400x240')}" alt="${wallpaperItem.title}" itemprop="thumbnail">
+            <img class="progressive__img progressive--not-loaded" data-progressive="${context}${imgHrefByMobileWXGA(wallpaperItem)}" src="${context}${imgHrefByMobileWXGA(wallpaperItem)}" alt="${wallpaperItem.title}" itemprop="thumbnail">
             <a class="mark" href="${context}${detailsHref(wallpaperItem)}" itemprop="discussionUrl"></a>
             <div class="description">
                 <h3 itemprop="caption">${wallpaperItem.title}</h3>

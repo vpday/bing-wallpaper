@@ -464,6 +464,7 @@
 
 .detail .preview .description .title {
     font-size: .2rem;
+    font-weight: normal;
 }
 
 .detail .preview .description .sub {
