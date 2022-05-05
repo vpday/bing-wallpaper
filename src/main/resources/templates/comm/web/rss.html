@@ -7,7 +7,7 @@
         <language>${applicationProperties.siteUrl}</language>
         <copyright>${copyright}</copyright>
         #if (null != bingWallpapers && 0 < bingWallpapers.size())
-        #for(cool.develop.bingwallpaper.model.entity.BingWallpaper entry : bingWallpapers)
+        #for(io.github.vpday.bingwallpaper.model.entity.BingWallpaper entry : bingWallpapers)
         <item>
             <title>${entry.title.escapeXml()}</title>
             <link>${context}${detailsHref(entry)}</link>
