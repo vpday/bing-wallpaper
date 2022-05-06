@@ -10,13 +10,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <blade-core.version>2.1.0.BETA</blade-core.version>
+        <blade-core.version>2.1.1.RELEASE</blade-core.version>
         <anima.version>0.3.1</anima.version>
         <blade-tpl.verion>0.2.0</blade-tpl.verion>
         <oh-my-request.version>0.0.1</oh-my-request.version>
         <oh-my-email.version>0.0.4</oh-my-email.version>
         <sqlite.version>3.36.0.3</sqlite.version>
-        <gson.version>2.9.0</gson.version>
         <lombok.version>1.18.24</lombok.version>
         <junit.version>4.13.2</junit.version>
     </properties>
@@ -55,6 +54,12 @@
             <groupId>com.hellokaton</groupId>
             <artifactId>blade-template-jetbrick</artifactId>
             <version>${blade-tpl.verion}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- HTTP 请求类库 -->
@@ -69,12 +74,6 @@
             <groupId>io.github.biezhi</groupId>
             <artifactId>oh-my-email</artifactId>
             <version>${oh-my-email.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
         </dependency>
 
         <!-- lombok -->

@@ -203,7 +203,7 @@ public class IndexController {
     }
 
     private RestResponse<String> checkCode(Request request) {
-        Map<String, List<String>> query = request.queries();
+        Map<String, List<String>> query = request.queryParams();
         if (Objects.isNull(query.get(CODE)) || StringKit.isEmpty(query.get(CODE).get(0))) {
             log.error("request parameters are incomplete.");
             return RestResponse.fail("request parameters are incomplete.");

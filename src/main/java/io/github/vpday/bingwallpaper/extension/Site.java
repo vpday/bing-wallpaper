@@ -43,7 +43,7 @@ public final class Site {
     }
 
     public static String wallpaperLocale() {
-        return CountryCodeEnum.getCountryCode(request().session().attribute(COUNTRY)).code();
+        return CountryCodeEnum.getCountryCode(request().cookie(COUNTRY)).code();
     }
 
     /**

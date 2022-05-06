@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends DefaultExceptionHandler {
                 String errorInfo = String.format("method: [%s]%nurl: [%s]%nparameters: [%s]%nuserAgent: [%s]%n%n",
                         request.method(),
                         request.url(),
-                        JsonKit.toString(request.queries()),
+                        JsonKit.toString(request.formParams()),
                         request.userAgent());
 
                 emailService.sendErrorInfo((errorInfo + SiteUtils.getStackTrace(e)));
