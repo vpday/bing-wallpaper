@@ -1,6 +1,6 @@
 $(function () {
     var click = "ontouchstart" in window ? "touchstart" : "click";
-    var toke = document.querySelector('meta[name="csrf_token"]').getAttribute("content");
+    var token = document.querySelector('meta[name="csrf_token"]').getAttribute("content");
 
     $(document).off(click, ".ctrl.heart").on(click, ".ctrl.heart", function (e) {
         var _this = $(this);
@@ -12,7 +12,7 @@ $(function () {
         }
 
         ma.trackEvent('likes', 'click', copyright, 1);
-        $.post("/like", {"code": code, "_token": toke}, function (data) {
+        $.post("/like", {"code": code, "_csrf_token": token}, function (data) {
             if (data.success) {
                 updateShowNum(_this.addClass("active").children("em"));
             } else {

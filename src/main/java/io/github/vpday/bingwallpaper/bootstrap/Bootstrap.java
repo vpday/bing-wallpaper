@@ -1,5 +1,6 @@
 package io.github.vpday.bingwallpaper.bootstrap;
 
+import com.hellokaton.anima.Anima;
 import com.hellokaton.blade.Blade;
 import com.hellokaton.blade.Environment;
 import com.hellokaton.blade.ioc.Ioc;
@@ -7,13 +8,12 @@ import com.hellokaton.blade.ioc.annotation.Bean;
 import com.hellokaton.blade.kit.StringKit;
 import com.hellokaton.blade.loader.BladeLoader;
 import com.hellokaton.blade.template.JetbrickTemplateEngine;
+import io.github.biezhi.ome.OhMyEmail;
 import io.github.vpday.bingwallpaper.bootstrap.properties.ApplicationProperties;
 import io.github.vpday.bingwallpaper.bootstrap.properties.QQEmailProperties;
 import io.github.vpday.bingwallpaper.exception.TipException;
 import io.github.vpday.bingwallpaper.extension.Site;
 import io.github.vpday.bingwallpaper.service.ServiceHandle;
-import com.hellokaton.anima.Anima;
-import io.github.biezhi.ome.OhMyEmail;
 import jetbrick.template.JetEngine;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,8 +47,7 @@ public class Bootstrap implements BladeLoader {
         }
         blade.ioc().addBean(jetbrickTemplateEngine);
 
-        log.info("blade dev mode: {}", applicationProperties.isDevMode());
-        SqliteJdbc.importSql(applicationProperties.isDevMode());
+        SqliteJdbc.importSql();
         Anima.open(SqliteJdbc.dbSrc());
 
         Site.setHeadTitle(applicationProperties.getHeadTitle());
@@ -56,7 +55,6 @@ public class Bootstrap implements BladeLoader {
 
     @Override
     public void load(Blade blade) {
-        blade.addStatics("/wallpapers");
         blade.templateEngine(jetbrickTemplateEngine);
 
         this.preAddData(blade.ioc());

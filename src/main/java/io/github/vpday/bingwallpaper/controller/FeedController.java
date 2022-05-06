@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @Path
 public class FeedController {
 
-    private static final int LIMIT_CONTENT = Integer.MAX_VALUE;
+    private static final int LIMIT_CONTENT = 15;
 
     @Inject
     private JetbrickTemplateEngine jetbrickTemplateEngine;
@@ -89,17 +89,17 @@ public class FeedController {
             isContinue = CountryCodeEnum.isExistCode(newCode);
         }
 
-        List<Sitemap> urlInfos;
+        List<Sitemap> urlInfoList;
         if (isContinue) {
             CountryCodeEnum country = CountryCodeEnum.getCountryCode(newCode);
             List<BingWallpaper> bingWallpapers = bingWallpaperService.listAllBy(country, LIMIT_CONTENT);
-            urlInfos = feedService.listAllSitemapUrls(country, bingWallpapers);
+            urlInfoList = feedService.listAllSitemapUrls(country, bingWallpapers);
         } else {
-            urlInfos = feedService.listAllSitemapUrls();
+            urlInfoList = feedService.listAllSitemapUrls();
         }
 
         Map<String, Object> context = new ConcurrentHashMap<>(16);
-        context.put("urls", urlInfos);
+        context.put("urls", urlInfoList);
 
         JetTemplate jetTemplate = jetbrickTemplateEngine.getJetEngine().getTemplate("comm/web/sitemap_xml.html");
         String xmlBody = JetbrickTemplateUtils.processTemplateIntoString(jetTemplate, context);

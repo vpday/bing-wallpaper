@@ -2,10 +2,10 @@ package io.github.vpday.bingwallpaper.service;
 
 import com.hellokaton.blade.ioc.annotation.Bean;
 import com.hellokaton.blade.ioc.annotation.Inject;
-import io.github.vpday.bingwallpaper.bootstrap.properties.ApplicationProperties;
-import io.github.vpday.bingwallpaper.bootstrap.properties.QQEmailProperties;
+import com.hellokaton.blade.mvc.WebContext;
 import io.github.biezhi.ome.OhMyEmail;
 import io.github.biezhi.ome.SendMailException;
+import io.github.vpday.bingwallpaper.bootstrap.properties.QQEmailProperties;
 
 /**
  * @author vpday
@@ -17,16 +17,14 @@ public class EmailService {
     @Inject
     private QQEmailProperties qqEmailProperties;
 
-    @Inject
-    private ApplicationProperties applicationProperties;
-
     /**
      * 邮件通知系统异常信息
      */
     public void sendErrorInfo(String text) throws SendMailException {
-        if (qqEmailProperties.isEnable() && !applicationProperties.isDevMode()) {
+        if (qqEmailProperties.isEnable() && !WebContext.blade().devMode()) {
             OhMyEmail.subject("BingWallpaper_错误信息通知")
-                    .from("BingWallpaper").to(qqEmailProperties.getAddressee())
+                    .from("BingWallpaper")
+                    .to(qqEmailProperties.getAddressee())
                     .text(text).send();
         }
     }

@@ -25,4 +25,6 @@ public final class BingWallpaperConst {
     public static final String META_AUTHOR = "Bing 必应搜索";
 
     public static final String XML_MEDIA_TYPE = "application/xml;charset=UTF-8";
+
+    public static final String WALLPAPERS_PATH = "wallpapers";
 }

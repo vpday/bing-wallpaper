@@ -11,6 +11,7 @@ import com.hellokaton.blade.mvc.http.ByteBody;
 import com.hellokaton.blade.mvc.http.Request;
 import com.hellokaton.blade.mvc.http.Response;
 import com.hellokaton.blade.mvc.http.Session;
+import com.hellokaton.blade.mvc.ui.ResponseType;
 import com.hellokaton.blade.mvc.ui.RestResponse;
 import io.github.vpday.bingwallpaper.bootstrap.BingWallpaperConst;
 import io.github.vpday.bingwallpaper.model.entity.BingWallpaper;
@@ -158,7 +159,7 @@ public class IndexController {
     /**
      * 点击喜欢操作
      */
-    @POST(value = "like")
+    @POST(value = "like", responseType =  ResponseType.JSON)
     public RestResponse<?> likes(Request request) {
         RestResponse<String> checkResult = this.checkCode(request);
         if (!checkResult.isSuccess()) {
@@ -174,17 +175,17 @@ public class IndexController {
         Integer likes = bingWallpaper.getLikes();
 
         Session session = request.session();
-        List<String> var = session.attribute("likes");
-        if (Objects.isNull(var)) {
-            var = new ArrayList<>();
-            session.attribute("likes", var);
+        List<String> likeList = session.attribute("likes");
+        if (Objects.isNull(likeList)) {
+            likeList = new ArrayList<>();
+            session.attribute("likes", likeList);
         } else {
-            long count = var.stream().filter(var2 -> var2.equals(wallPaperHash)).count();
+            long count = likeList.stream().filter(var2 -> var2.equals(wallPaperHash)).count();
             if (0 < count) {
                 return RestResponse.ok();
             }
         }
-        var.add(wallPaperHash);
+        likeList.add(wallPaperHash);
 
         likes += 1;
         bingWallpaperService.updateBingWallpaperByLikes(wallPaperHash, likes);
@@ -195,7 +196,7 @@ public class IndexController {
     /**
      * 设置国家编码
      */
-    @GET(value = {"country/:lang"})
+    @GET(value = "country/:lang")
     public String setCountry(Request request, Response response, @PathParam String lang) {
         CountryCodeEnum country = CountryCodeEnum.getCountryCode(lang);
         response.cookie(COUNTRY, country.code(), (60 * 60 * 24 * 30));
@@ -203,7 +204,7 @@ public class IndexController {
     }
 
     private RestResponse<String> checkCode(Request request) {
-        Map<String, List<String>> query = request.queryParams();
+        Map<String, List<String>> query = request.formParams();
         if (Objects.isNull(query.get(CODE)) || StringKit.isEmpty(query.get(CODE).get(0))) {
             log.error("request parameters are incomplete.");
             return RestResponse.fail("request parameters are incomplete.");
