@@ -27,7 +27,7 @@ $(function () {
         var code = options.attr("code");
         var fileName = options.attr("fileName");
         var copyright = options.attr("copyright");
-        var formData = "code=" + code + "&_token=" + toke;
+        var formData = "code=" + code + "&_csrf_token=" + token;
 
         ma.trackEvent('download', 'click', copyright, 1);
         beforeDownloading(formData, fileName, $(this).children("em"));

@@ -1,11 +1,9 @@
 package io.github.vpday.bingwallpaper.bootstrap;
 
 import com.hellokaton.blade.mvc.BladeConst;
-import com.hellokaton.blade.mvc.WebContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,7 +12,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -52,13 +49,8 @@ class SqliteJdbc {
      * 测试连接并导入数据库
      */
     static void importSql() {
-        String dbPath = BladeConst.CLASSPATH + File.separatorChar + DB_NAME;
+        String dbPath = BladeConst.CLASSPATH + DB_NAME;
         dbSrc = "jdbc:sqlite://" + dbPath;
-
-        if (WebContext.blade().devMode()) {
-            dbPath = System.getProperty("user.dir") + File.separatorChar + DB_NAME;
-            dbSrc = "jdbc:sqlite://" + dbPath;
-        }
 
         log.info("load sqlite database path [{}]", dbPath);
         log.info("load sqlite database src [{}]", dbSrc);
@@ -69,8 +61,7 @@ class SqliteJdbc {
 
             isNewDb = 0 == rs.getInt(1);
             if (Boolean.TRUE.equals(isNewDb)) {
-                String cp = Objects.requireNonNull(SqliteJdbc.class.getClassLoader().getResource("")).getPath();
-                try (InputStreamReader isr = new InputStreamReader(Files.newInputStream(Paths.get(cp + "schema.sql")), StandardCharsets.UTF_8);
+                try (InputStreamReader isr = new InputStreamReader(Files.newInputStream(Paths.get(BladeConst.CLASSPATH + "schema.sql")), StandardCharsets.UTF_8);
                      BufferedReader bufferedReader = new BufferedReader(isr)) {
                     String sql = bufferedReader.lines().collect(Collectors.joining("\n"));
                     int r = statement.executeUpdate(sql);

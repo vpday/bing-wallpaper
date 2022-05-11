@@ -3,9 +3,6 @@ package io.github.vpday.bingwallpaper.bootstrap;
 import com.hellokaton.blade.Blade;
 import com.hellokaton.blade.mvc.BladeConst;
 import com.hellokaton.blade.security.csrf.CsrfMiddleware;
-import com.hellokaton.blade.security.csrf.CsrfOptions;
-
-import java.util.LinkedHashSet;
 
 /**
  * @author vpday
@@ -17,11 +14,8 @@ public final class ApplicationLoader {
     }
 
     public static void init(Blade blade) {
-        CsrfOptions csrfOptions = CsrfOptions.create();
-        csrfOptions.setExcludeURLs(new LinkedHashSet<>());
-        blade.use(new CsrfMiddleware(csrfOptions));
-
-        blade.addStatics("/" + BingWallpaperConst.WALLPAPERS_PATH);
+        blade.use(new CsrfMiddleware());
+        blade.staticOptions(staticOptions -> staticOptions.addStatic("/" + BingWallpaperConst.WALLPAPERS_PATH));
         loadConfig(blade);
     }
 

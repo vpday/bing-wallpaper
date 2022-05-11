@@ -38,7 +38,7 @@ import static io.github.vpday.bingwallpaper.bootstrap.BingWallpaperConst.COUNTRY
  * @date 2018/11/23
  */
 @Slf4j
-@Path
+@Path(responseType = ResponseType.VIEW)
 public class IndexController {
 
     @Inject
@@ -49,7 +49,7 @@ public class IndexController {
     /**
      * 首页
      */
-    @GET(value = {"/", "index", "index.html"})
+    @GET(value = {"/", "/index", "/index.html"})
     public String index(Request request) {
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
     }
@@ -57,7 +57,7 @@ public class IndexController {
     /**
      * 首页分页
      */
-    @GET(value = {"page", "page/:page", "page/:page/:limit"})
+    @GET(value = {"/page", "page/:page", "/page/:page/:limit"})
     public String index(Request request, @PathParam(defaultValue = "1") int page, @PathParam(defaultValue = "12") int limit) {
         return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, page, limit);
     }
@@ -65,7 +65,7 @@ public class IndexController {
     /**
      * 热门榜
      */
-    @GET(value = {"ranking", "ranking/top", "ranking/top/:page", "ranking/top/:page/:limit"})
+    @GET(value = {"/ranking", "/ranking/top", "/ranking/top/:page", "/ranking/top/:page/:limit"})
     public String topRanking(Request request, @PathParam(defaultValue = "1") int page, @PathParam(defaultValue = "12") int limit) {
         return this.toIndex(request, "/ranking/top", BingWallpaperConst.TOP_CODE, page, limit);
     }
@@ -73,7 +73,7 @@ public class IndexController {
     /**
      * 下载榜
      */
-    @GET(value = {"ranking/down", "ranking/down/:page", "ranking/down/:page/:limit"})
+    @GET(value = {"/ranking/down", "/ranking/down/:page", "/ranking/down/:page/:limit"})
     public String downRanking(Request request, @PathParam(defaultValue = "1") int page, @PathParam(defaultValue = "12") int limit) {
         return this.toIndex(request, "/ranking/down", BingWallpaperConst.DOWN_CODE, page, limit);
     }
@@ -100,7 +100,7 @@ public class IndexController {
     /**
      * 必应壁纸详情页
      */
-    @GET(value = {"details/:name", "details/:name/:lang"})
+    @GET(value = {"/details/:name", "/details/:name/:lang"})
     public String details(Request request, @PathParam String name, @PathParam String lang) {
         if (StringKit.isEmpty(name)) {
             return this.toIndex(request, "/page", BingWallpaperConst.INDEX_CODE, 1, 12);
@@ -135,7 +135,7 @@ public class IndexController {
     /**
      * 点击下载操作
      */
-    @POST(value = "download")
+    @POST(value = "/download")
     public void downLoad(Request request, Response response) {
         RestResponse<String> checkResult = this.checkCode(request);
         if (!checkResult.isSuccess()) {
@@ -159,7 +159,7 @@ public class IndexController {
     /**
      * 点击喜欢操作
      */
-    @POST(value = "like", responseType =  ResponseType.JSON)
+    @POST(value = "/like", responseType = ResponseType.JSON)
     public RestResponse<?> likes(Request request) {
         RestResponse<String> checkResult = this.checkCode(request);
         if (!checkResult.isSuccess()) {
