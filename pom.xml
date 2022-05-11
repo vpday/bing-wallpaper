@@ -10,7 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <blade-core.version>2.1.1.RELEASE</blade-core.version>
+        <blade-core.version>2.1.2.RELEASE</blade-core.version>
         <anima.version>0.3.1</anima.version>
         <blade-tpl.verion>0.2.0</blade-tpl.verion>
         <oh-my-request.version>0.0.1</oh-my-request.version>
